@@ -43,3 +43,8 @@ Strictly speaking, no — this is decompiled code from Myau-250910.
 ### RAT?
 
 If you think this source might contain a RAT, don’t just assume — provide evidence.
+
+### Broken things
+
+runClient broken
+GUISettings is also broken(I'm dumb)
