@@ -1,0 +1,22 @@
+
+# Gradle
+.gradle
+build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Other
+run/
+configs/
+OpenMyau-return.zip

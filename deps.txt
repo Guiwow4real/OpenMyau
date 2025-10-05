@@ -1,0 +1,1496 @@
+Initialized native services in: C:\Users\GuiwowUWU\.gradle\native
+Initialized jansi services in: C:\Users\GuiwowUWU\.gradle\native
+Received JVM installation metadata from 'D:\zulu21.40.17-ca-jdk21.0.6-win_x64': {JAVA_HOME=D:\zulu21.40.17-ca-jdk21.0.6-win_x64, JAVA_VERSION=21.0.6, JAVA_VENDOR=Azul Systems, Inc., RUNTIME_NAME=OpenJDK Runtime Environment, RUNTIME_VERSION=21.0.6+7-LTS, VM_NAME=OpenJDK 64-Bit Server VM, VM_VERSION=21.0.6+7-LTS, VM_VENDOR=Azul Systems, Inc., OS_ARCH=amd64}
+The client will now receive all logging from the daemon (pid: 2528). The daemon log file: C:\Users\GuiwowUWU\.gradle\daemon\8.8\daemon-2528.out.log
+Starting 13th build in daemon [uptime: 5 mins 24.993 secs, performance: 100%, GC rate: 0.00/s, heap usage: 0% of 2 GiB]
+Using 12 worker leases.
+Now considering [D:\OpenMyau-main] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Transforming foojay-resolver-0.6.0.jar (org.gradle.toolchains:foojay-resolver:0.6.0) with InstrumentationAnalysisTransform
+Transforming gson-2.9.1.jar (com.google.code.gson:gson:2.9.1) with InstrumentationAnalysisTransform
+Transforming foojay-resolver-0.6.0.jar (org.gradle.toolchains:foojay-resolver:0.6.0) with InstrumentationAnalysisTransform
+Transforming foojay-resolver-0.6.0.jar (org.gradle.toolchains:foojay-resolver:0.6.0) with MergeInstrumentationAnalysisTransform
+Transforming gson-2.9.1.jar (com.google.code.gson:gson:2.9.1) with InstrumentationAnalysisTransform
+Transforming gson-2.9.1.jar (com.google.code.gson:gson:2.9.1) with MergeInstrumentationAnalysisTransform
+Transforming foojay-resolver-0.6.0.jar (org.gradle.toolchains:foojay-resolver:0.6.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming gson-2.9.1.jar (com.google.code.gson:gson:2.9.1) with ExternalDependencyInstrumentingArtifactTransform
+Settings evaluated using settings file 'D:\OpenMyau-main\settings.gradle.kts'.
+Using local directory build cache for the root build (location = C:\Users\GuiwowUWU\.gradle\caches\build-cache-1, removeUnusedEntriesAfter = 7 days).
+Projects loaded. Root project using build file 'D:\OpenMyau-main\build.gradle.kts'.
+Included projects: [root project 'myau']
+
+> Configure project :
+Evaluating root project 'myau' using build file 'D:\OpenMyau-main\build.gradle.kts'.
+Transforming architectury-loom-0.10.0.5.jar (gg.essential:architectury-loom:0.10.0.5) with InstrumentationAnalysisTransform
+Transforming shadow-8.1.1.jar (com.github.johnrengelman:shadow:8.1.1) with InstrumentationAnalysisTransform
+Transforming log4j-core-2.20.0.jar (org.apache.logging.log4j:log4j-core:2.20.0) with InstrumentationAnalysisTransform
+Transforming binarypatcher-1.1.1.jar (net.minecraftforge:binarypatcher:1.1.1) with InstrumentationAnalysisTransform
+Transforming commons-io-2.11.0.jar (commons-io:commons-io:2.11.0) with InstrumentationAnalysisTransform
+Transforming installertools-1.2.0.jar (net.minecraftforge:installertools:1.2.0) with InstrumentationAnalysisTransform
+Transforming mcinjector-3.8.0.jar (de.oceanlabs.mcp:mcinjector:3.8.0) with InstrumentationAnalysisTransform
+Transforming gson-2.8.8.jar (com.google.code.gson:gson:2.8.8) with InstrumentationAnalysisTransform
+Transforming jackson-annotations-2.12.5.jar (com.fasterxml.jackson.core:jackson-annotations:2.12.5) with InstrumentationAnalysisTransform
+Transforming jackson-core-2.12.5.jar (com.fasterxml.jackson.core:jackson-core:2.12.5) with InstrumentationAnalysisTransform
+Transforming jackson-databind-2.12.5.jar (com.fasterxml.jackson.core:jackson-databind:2.12.5) with InstrumentationAnalysisTransform
+Transforming stitch-0.6.1.jar (net.fabricmc:stitch:0.6.1) with InstrumentationAnalysisTransform
+Transforming SpecialSource-1.8.5.jar (net.md-5:SpecialSource:1.8.5) with InstrumentationAnalysisTransform
+Transforming guava-30.1.1-jre.jar (com.google.guava:guava:30.1.1-jre) with InstrumentationAnalysisTransform
+Transforming asm-util-9.3.jar (org.ow2.asm:asm-util:9.3) with InstrumentationAnalysisTransform
+Transforming mapping-io-0.2.1.jar (net.fabricmc:mapping-io:0.2.1) with InstrumentationAnalysisTransform
+Transforming lorenz-asm-0.5.3.jar (org.cadixdev:lorenz-asm:0.5.3) with InstrumentationAnalysisTransform
+Transforming bombe-asm-0.3.2.jar (org.cadixdev:bombe-asm:0.3.2) with InstrumentationAnalysisTransform
+Transforming asm-commons-9.4.jar (org.ow2.asm:asm-commons:9.4) with InstrumentationAnalysisTransform
+Transforming asm-analysis-9.3.jar (org.ow2.asm:asm-analysis:9.3) with InstrumentationAnalysisTransform
+Transforming asm-tree-9.4.jar (org.ow2.asm:asm-tree:9.4) with InstrumentationAnalysisTransform
+Transforming asm-9.4.jar (org.ow2.asm:asm:9.4) with InstrumentationAnalysisTransform
+Transforming progressbar-0.9.0.jar (me.tongfei:progressbar:0.9.0) with InstrumentationAnalysisTransform
+Transforming tiny-remapper-1.5.16.jar (dev.architectury:tiny-remapper:1.5.16) with InstrumentationAnalysisTransform
+Transforming access-widener-2.1.0.jar (net.fabricmc:access-widener:2.1.0) with InstrumentationAnalysisTransform
+Transforming lorenz-tiny-4.0.2.jar (net.fabricmc:lorenz-tiny:4.0.2) with InstrumentationAnalysisTransform
+Transforming refmap-remapper-1.0.5.jar (dev.architectury:refmap-remapper:1.0.5) with InstrumentationAnalysisTransform
+Transforming fabric-fernflower-1.4.1.jar (net.fabricmc:fabric-fernflower:1.4.1) with InstrumentationAnalysisTransform
+Transforming cfr-0.0.9.jar (net.fabricmc:cfr:0.0.9) with InstrumentationAnalysisTransform
+Transforming mercury-0.1.1.11.jar (dev.architectury:mercury:0.1.1.11) with InstrumentationAnalysisTransform
+Transforming lorenz-0.5.7.jar (org.cadixdev:lorenz:0.5.7) with InstrumentationAnalysisTransform
+Transforming opencsv-5.4.jar (com.opencsv:opencsv:5.4) with InstrumentationAnalysisTransform
+Transforming architectury-pack200-0.1.3.jar (dev.architectury:architectury-pack200:0.1.3) with InstrumentationAnalysisTransform
+Transforming failureaccess-1.0.1.jar (com.google.guava:failureaccess:1.0.1) with InstrumentationAnalysisTransform
+Transforming listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar (com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava) with InstrumentationAnalysisTransform
+Transforming jsr305-3.0.2.jar (com.google.code.findbugs:jsr305:3.0.2) with InstrumentationAnalysisTransform
+Transforming checker-qual-3.8.0.jar (org.checkerframework:checker-qual:3.8.0) with InstrumentationAnalysisTransform
+Transforming error_prone_annotations-2.5.1.jar (com.google.errorprone:error_prone_annotations:2.5.1) with InstrumentationAnalysisTransform
+Transforming j2objc-annotations-1.3.jar (com.google.j2objc:j2objc-annotations:1.3) with InstrumentationAnalysisTransform
+Transforming jline-3.16.0.jar (org.jline:jline:3.16.0) with InstrumentationAnalysisTransform
+Transforming tiny-mappings-parser-0.3.0+build.17.jar (net.fabricmc:tiny-mappings-parser:0.3.0+build.17) with InstrumentationAnalysisTransform
+Transforming at-0.1.0-rc1.jar (org.cadixdev:at:0.1.0-rc1) with InstrumentationAnalysisTransform
+Transforming jopt-simple-5.0.4.jar (net.sf.jopt-simple:jopt-simple:5.0.4) with InstrumentationAnalysisTransform
+Transforming fastcsv-2.0.0.jar (de.siegmar:fastcsv:2.0.0) with InstrumentationAnalysisTransform
+Transforming srgutils-0.4.1.jar (net.minecraftforge:srgutils:0.4.1) with InstrumentationAnalysisTransform
+Transforming lzma-java-1.3.jar (com.github.jponge:lzma-java:1.3) with InstrumentationAnalysisTransform
+Transforming javaxdelta-2.0.1.jar (com.nothome:javaxdelta:2.0.1) with InstrumentationAnalysisTransform
+Transforming commons-text-1.9.jar (org.apache.commons:commons-text:1.9) with InstrumentationAnalysisTransform
+Transforming commons-lang3-3.11.jar (org.apache.commons:commons-lang3:3.11) with InstrumentationAnalysisTransform
+Transforming commons-beanutils-1.9.4.jar (commons-beanutils:commons-beanutils:1.9.4) with InstrumentationAnalysisTransform
+Transforming commons-collections4-4.4.jar (org.apache.commons:commons-collections4:4.4) with InstrumentationAnalysisTransform
+Transforming jdom2-2.0.6.1.jar (org.jdom:jdom2:2.0.6.1) with InstrumentationAnalysisTransform
+Transforming ant-1.10.13.jar (org.apache.ant:ant:1.10.13) with InstrumentationAnalysisTransform
+Transforming plexus-utils-3.5.1.jar (org.codehaus.plexus:plexus-utils:3.5.1) with InstrumentationAnalysisTransform
+Transforming jdependency-2.8.0.jar (org.vafer:jdependency:2.8.0) with InstrumentationAnalysisTransform
+Transforming bombe-0.3.4.jar (org.cadixdev:bombe:0.3.4) with InstrumentationAnalysisTransform
+Transforming opencsv-2.3.jar (net.sf.opencsv:opencsv:2.3) with InstrumentationAnalysisTransform
+Transforming trove-1.0.2.jar (trove:trove:1.0.2) with InstrumentationAnalysisTransform
+Transforming commons-logging-1.2.jar (commons-logging:commons-logging:1.2) with InstrumentationAnalysisTransform
+Transforming commons-collections-3.2.2.jar (commons-collections:commons-collections:3.2.2) with InstrumentationAnalysisTransform
+Transforming ant-launcher-1.10.13.jar (org.apache.ant:ant-launcher:1.10.13) with InstrumentationAnalysisTransform
+Transforming log4j-api-2.20.0.jar (org.apache.logging.log4j:log4j-api:2.20.0) with InstrumentationAnalysisTransform
+Transforming architectury-loom-0.10.0.5.jar (gg.essential:architectury-loom:0.10.0.5) with InstrumentationAnalysisTransform
+Transforming architectury-loom-0.10.0.5.jar (gg.essential:architectury-loom:0.10.0.5) with MergeInstrumentationAnalysisTransform
+Transforming shadow-8.1.1.jar (com.github.johnrengelman:shadow:8.1.1) with InstrumentationAnalysisTransform
+Transforming shadow-8.1.1.jar (com.github.johnrengelman:shadow:8.1.1) with MergeInstrumentationAnalysisTransform
+Transforming log4j-core-2.20.0.jar (org.apache.logging.log4j:log4j-core:2.20.0) with InstrumentationAnalysisTransform
+Transforming log4j-core-2.20.0.jar (org.apache.logging.log4j:log4j-core:2.20.0) with MergeInstrumentationAnalysisTransform
+Transforming architectury-loom-0.10.0.5.jar (gg.essential:architectury-loom:0.10.0.5) with ExternalDependencyInstrumentingArtifactTransform
+Transforming binarypatcher-1.1.1.jar (net.minecraftforge:binarypatcher:1.1.1) with InstrumentationAnalysisTransform
+Transforming log4j-core-2.20.0.jar (org.apache.logging.log4j:log4j-core:2.20.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming shadow-8.1.1.jar (com.github.johnrengelman:shadow:8.1.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming binarypatcher-1.1.1.jar (net.minecraftforge:binarypatcher:1.1.1) with MergeInstrumentationAnalysisTransform
+Transforming commons-io-2.11.0.jar (commons-io:commons-io:2.11.0) with InstrumentationAnalysisTransform
+Transforming commons-io-2.11.0.jar (commons-io:commons-io:2.11.0) with MergeInstrumentationAnalysisTransform
+Transforming binarypatcher-1.1.1.jar (net.minecraftforge:binarypatcher:1.1.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming installertools-1.2.0.jar (net.minecraftforge:installertools:1.2.0) with InstrumentationAnalysisTransform
+Transforming installertools-1.2.0.jar (net.minecraftforge:installertools:1.2.0) with MergeInstrumentationAnalysisTransform
+Transforming commons-io-2.11.0.jar (commons-io:commons-io:2.11.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming mcinjector-3.8.0.jar (de.oceanlabs.mcp:mcinjector:3.8.0) with InstrumentationAnalysisTransform
+Transforming mcinjector-3.8.0.jar (de.oceanlabs.mcp:mcinjector:3.8.0) with MergeInstrumentationAnalysisTransform
+Transforming installertools-1.2.0.jar (net.minecraftforge:installertools:1.2.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming gson-2.8.8.jar (com.google.code.gson:gson:2.8.8) with InstrumentationAnalysisTransform
+Transforming gson-2.8.8.jar (com.google.code.gson:gson:2.8.8) with MergeInstrumentationAnalysisTransform
+Transforming mcinjector-3.8.0.jar (de.oceanlabs.mcp:mcinjector:3.8.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jackson-annotations-2.12.5.jar (com.fasterxml.jackson.core:jackson-annotations:2.12.5) with InstrumentationAnalysisTransform
+Transforming jackson-annotations-2.12.5.jar (com.fasterxml.jackson.core:jackson-annotations:2.12.5) with MergeInstrumentationAnalysisTransform
+Transforming gson-2.8.8.jar (com.google.code.gson:gson:2.8.8) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jackson-core-2.12.5.jar (com.fasterxml.jackson.core:jackson-core:2.12.5) with InstrumentationAnalysisTransform
+Transforming jackson-core-2.12.5.jar (com.fasterxml.jackson.core:jackson-core:2.12.5) with MergeInstrumentationAnalysisTransform
+Transforming jackson-annotations-2.12.5.jar (com.fasterxml.jackson.core:jackson-annotations:2.12.5) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jackson-databind-2.12.5.jar (com.fasterxml.jackson.core:jackson-databind:2.12.5) with InstrumentationAnalysisTransform
+Transforming jackson-core-2.12.5.jar (com.fasterxml.jackson.core:jackson-core:2.12.5) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jackson-databind-2.12.5.jar (com.fasterxml.jackson.core:jackson-databind:2.12.5) with MergeInstrumentationAnalysisTransform
+Transforming stitch-0.6.1.jar (net.fabricmc:stitch:0.6.1) with InstrumentationAnalysisTransform
+Transforming stitch-0.6.1.jar (net.fabricmc:stitch:0.6.1) with MergeInstrumentationAnalysisTransform
+Transforming SpecialSource-1.8.5.jar (net.md-5:SpecialSource:1.8.5) with InstrumentationAnalysisTransform
+Transforming jackson-databind-2.12.5.jar (com.fasterxml.jackson.core:jackson-databind:2.12.5) with ExternalDependencyInstrumentingArtifactTransform
+Transforming SpecialSource-1.8.5.jar (net.md-5:SpecialSource:1.8.5) with MergeInstrumentationAnalysisTransform
+Transforming stitch-0.6.1.jar (net.fabricmc:stitch:0.6.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming guava-30.1.1-jre.jar (com.google.guava:guava:30.1.1-jre) with InstrumentationAnalysisTransform
+Transforming guava-30.1.1-jre.jar (com.google.guava:guava:30.1.1-jre) with MergeInstrumentationAnalysisTransform
+Transforming SpecialSource-1.8.5.jar (net.md-5:SpecialSource:1.8.5) with ExternalDependencyInstrumentingArtifactTransform
+Transforming asm-util-9.3.jar (org.ow2.asm:asm-util:9.3) with InstrumentationAnalysisTransform
+Transforming asm-util-9.3.jar (org.ow2.asm:asm-util:9.3) with MergeInstrumentationAnalysisTransform
+Transforming mapping-io-0.2.1.jar (net.fabricmc:mapping-io:0.2.1) with InstrumentationAnalysisTransform
+Transforming mapping-io-0.2.1.jar (net.fabricmc:mapping-io:0.2.1) with MergeInstrumentationAnalysisTransform
+Transforming lorenz-asm-0.5.3.jar (org.cadixdev:lorenz-asm:0.5.3) with InstrumentationAnalysisTransform
+Transforming asm-util-9.3.jar (org.ow2.asm:asm-util:9.3) with ExternalDependencyInstrumentingArtifactTransform
+Transforming lorenz-asm-0.5.3.jar (org.cadixdev:lorenz-asm:0.5.3) with MergeInstrumentationAnalysisTransform
+Transforming bombe-asm-0.3.2.jar (org.cadixdev:bombe-asm:0.3.2) with InstrumentationAnalysisTransform
+Transforming mapping-io-0.2.1.jar (net.fabricmc:mapping-io:0.2.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming bombe-asm-0.3.2.jar (org.cadixdev:bombe-asm:0.3.2) with MergeInstrumentationAnalysisTransform
+Transforming guava-30.1.1-jre.jar (com.google.guava:guava:30.1.1-jre) with ExternalDependencyInstrumentingArtifactTransform
+Transforming asm-commons-9.4.jar (org.ow2.asm:asm-commons:9.4) with InstrumentationAnalysisTransform
+Transforming lorenz-asm-0.5.3.jar (org.cadixdev:lorenz-asm:0.5.3) with ExternalDependencyInstrumentingArtifactTransform
+Transforming asm-commons-9.4.jar (org.ow2.asm:asm-commons:9.4) with MergeInstrumentationAnalysisTransform
+Transforming asm-analysis-9.3.jar (org.ow2.asm:asm-analysis:9.3) with InstrumentationAnalysisTransform
+Transforming bombe-asm-0.3.2.jar (org.cadixdev:bombe-asm:0.3.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming asm-commons-9.4.jar (org.ow2.asm:asm-commons:9.4) with ExternalDependencyInstrumentingArtifactTransform
+Transforming asm-analysis-9.3.jar (org.ow2.asm:asm-analysis:9.3) with MergeInstrumentationAnalysisTransform
+Transforming asm-tree-9.4.jar (org.ow2.asm:asm-tree:9.4) with InstrumentationAnalysisTransform
+Transforming asm-tree-9.4.jar (org.ow2.asm:asm-tree:9.4) with MergeInstrumentationAnalysisTransform
+Transforming asm-9.4.jar (org.ow2.asm:asm:9.4) with InstrumentationAnalysisTransform
+Transforming asm-9.4.jar (org.ow2.asm:asm:9.4) with MergeInstrumentationAnalysisTransform
+Transforming progressbar-0.9.0.jar (me.tongfei:progressbar:0.9.0) with InstrumentationAnalysisTransform
+Transforming asm-analysis-9.3.jar (org.ow2.asm:asm-analysis:9.3) with ExternalDependencyInstrumentingArtifactTransform
+Transforming asm-9.4.jar (org.ow2.asm:asm:9.4) with ExternalDependencyInstrumentingArtifactTransform
+Transforming progressbar-0.9.0.jar (me.tongfei:progressbar:0.9.0) with MergeInstrumentationAnalysisTransform
+Transforming asm-tree-9.4.jar (org.ow2.asm:asm-tree:9.4) with ExternalDependencyInstrumentingArtifactTransform
+Transforming tiny-remapper-1.5.16.jar (dev.architectury:tiny-remapper:1.5.16) with InstrumentationAnalysisTransform
+Transforming tiny-remapper-1.5.16.jar (dev.architectury:tiny-remapper:1.5.16) with MergeInstrumentationAnalysisTransform
+Transforming access-widener-2.1.0.jar (net.fabricmc:access-widener:2.1.0) with InstrumentationAnalysisTransform
+Transforming progressbar-0.9.0.jar (me.tongfei:progressbar:0.9.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming access-widener-2.1.0.jar (net.fabricmc:access-widener:2.1.0) with MergeInstrumentationAnalysisTransform
+Transforming tiny-remapper-1.5.16.jar (dev.architectury:tiny-remapper:1.5.16) with ExternalDependencyInstrumentingArtifactTransform
+Transforming lorenz-tiny-4.0.2.jar (net.fabricmc:lorenz-tiny:4.0.2) with InstrumentationAnalysisTransform
+Transforming lorenz-tiny-4.0.2.jar (net.fabricmc:lorenz-tiny:4.0.2) with MergeInstrumentationAnalysisTransform
+Transforming refmap-remapper-1.0.5.jar (dev.architectury:refmap-remapper:1.0.5) with InstrumentationAnalysisTransform
+Transforming access-widener-2.1.0.jar (net.fabricmc:access-widener:2.1.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming refmap-remapper-1.0.5.jar (dev.architectury:refmap-remapper:1.0.5) with MergeInstrumentationAnalysisTransform
+Transforming fabric-fernflower-1.4.1.jar (net.fabricmc:fabric-fernflower:1.4.1) with InstrumentationAnalysisTransform
+Transforming lorenz-tiny-4.0.2.jar (net.fabricmc:lorenz-tiny:4.0.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming fabric-fernflower-1.4.1.jar (net.fabricmc:fabric-fernflower:1.4.1) with MergeInstrumentationAnalysisTransform
+Transforming cfr-0.0.9.jar (net.fabricmc:cfr:0.0.9) with InstrumentationAnalysisTransform
+Transforming cfr-0.0.9.jar (net.fabricmc:cfr:0.0.9) with MergeInstrumentationAnalysisTransform
+Transforming mercury-0.1.1.11.jar (dev.architectury:mercury:0.1.1.11) with InstrumentationAnalysisTransform
+Transforming fabric-fernflower-1.4.1.jar (net.fabricmc:fabric-fernflower:1.4.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming refmap-remapper-1.0.5.jar (dev.architectury:refmap-remapper:1.0.5) with ExternalDependencyInstrumentingArtifactTransform
+Transforming mercury-0.1.1.11.jar (dev.architectury:mercury:0.1.1.11) with MergeInstrumentationAnalysisTransform
+Transforming cfr-0.0.9.jar (net.fabricmc:cfr:0.0.9) with ExternalDependencyInstrumentingArtifactTransform
+Transforming mercury-0.1.1.11.jar (dev.architectury:mercury:0.1.1.11) with ExternalDependencyInstrumentingArtifactTransform
+Transforming lorenz-0.5.7.jar (org.cadixdev:lorenz:0.5.7) with InstrumentationAnalysisTransform
+Transforming lorenz-0.5.7.jar (org.cadixdev:lorenz:0.5.7) with MergeInstrumentationAnalysisTransform
+Transforming opencsv-5.4.jar (com.opencsv:opencsv:5.4) with InstrumentationAnalysisTransform
+Transforming opencsv-5.4.jar (com.opencsv:opencsv:5.4) with MergeInstrumentationAnalysisTransform
+Transforming architectury-pack200-0.1.3.jar (dev.architectury:architectury-pack200:0.1.3) with InstrumentationAnalysisTransform
+Transforming lorenz-0.5.7.jar (org.cadixdev:lorenz:0.5.7) with ExternalDependencyInstrumentingArtifactTransform
+Transforming architectury-pack200-0.1.3.jar (dev.architectury:architectury-pack200:0.1.3) with MergeInstrumentationAnalysisTransform
+Transforming opencsv-5.4.jar (com.opencsv:opencsv:5.4) with ExternalDependencyInstrumentingArtifactTransform
+Transforming failureaccess-1.0.1.jar (com.google.guava:failureaccess:1.0.1) with InstrumentationAnalysisTransform
+Transforming failureaccess-1.0.1.jar (com.google.guava:failureaccess:1.0.1) with MergeInstrumentationAnalysisTransform
+Transforming architectury-pack200-0.1.3.jar (dev.architectury:architectury-pack200:0.1.3) with ExternalDependencyInstrumentingArtifactTransform
+Transforming listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar (com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava) with InstrumentationAnalysisTransform
+Transforming listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar (com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava) with MergeInstrumentationAnalysisTransform
+Transforming failureaccess-1.0.1.jar (com.google.guava:failureaccess:1.0.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jsr305-3.0.2.jar (com.google.code.findbugs:jsr305:3.0.2) with InstrumentationAnalysisTransform
+Transforming jsr305-3.0.2.jar (com.google.code.findbugs:jsr305:3.0.2) with MergeInstrumentationAnalysisTransform
+Transforming checker-qual-3.8.0.jar (org.checkerframework:checker-qual:3.8.0) with InstrumentationAnalysisTransform
+Transforming listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar (com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava) with ExternalDependencyInstrumentingArtifactTransform
+Transforming checker-qual-3.8.0.jar (org.checkerframework:checker-qual:3.8.0) with MergeInstrumentationAnalysisTransform
+Transforming jsr305-3.0.2.jar (com.google.code.findbugs:jsr305:3.0.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming error_prone_annotations-2.5.1.jar (com.google.errorprone:error_prone_annotations:2.5.1) with InstrumentationAnalysisTransform
+Transforming error_prone_annotations-2.5.1.jar (com.google.errorprone:error_prone_annotations:2.5.1) with MergeInstrumentationAnalysisTransform
+Transforming j2objc-annotations-1.3.jar (com.google.j2objc:j2objc-annotations:1.3) with InstrumentationAnalysisTransform
+Transforming j2objc-annotations-1.3.jar (com.google.j2objc:j2objc-annotations:1.3) with MergeInstrumentationAnalysisTransform
+Transforming checker-qual-3.8.0.jar (org.checkerframework:checker-qual:3.8.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jline-3.16.0.jar (org.jline:jline:3.16.0) with InstrumentationAnalysisTransform
+Transforming error_prone_annotations-2.5.1.jar (com.google.errorprone:error_prone_annotations:2.5.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jline-3.16.0.jar (org.jline:jline:3.16.0) with MergeInstrumentationAnalysisTransform
+Transforming tiny-mappings-parser-0.3.0+build.17.jar (net.fabricmc:tiny-mappings-parser:0.3.0+build.17) with InstrumentationAnalysisTransform
+Transforming j2objc-annotations-1.3.jar (com.google.j2objc:j2objc-annotations:1.3) with ExternalDependencyInstrumentingArtifactTransform
+Transforming tiny-mappings-parser-0.3.0+build.17.jar (net.fabricmc:tiny-mappings-parser:0.3.0+build.17) with MergeInstrumentationAnalysisTransform
+Transforming at-0.1.0-rc1.jar (org.cadixdev:at:0.1.0-rc1) with InstrumentationAnalysisTransform
+Transforming at-0.1.0-rc1.jar (org.cadixdev:at:0.1.0-rc1) with MergeInstrumentationAnalysisTransform
+Transforming jline-3.16.0.jar (org.jline:jline:3.16.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jopt-simple-5.0.4.jar (net.sf.jopt-simple:jopt-simple:5.0.4) with InstrumentationAnalysisTransform
+Transforming tiny-mappings-parser-0.3.0+build.17.jar (net.fabricmc:tiny-mappings-parser:0.3.0+build.17) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jopt-simple-5.0.4.jar (net.sf.jopt-simple:jopt-simple:5.0.4) with MergeInstrumentationAnalysisTransform
+Transforming fastcsv-2.0.0.jar (de.siegmar:fastcsv:2.0.0) with InstrumentationAnalysisTransform
+Transforming fastcsv-2.0.0.jar (de.siegmar:fastcsv:2.0.0) with MergeInstrumentationAnalysisTransform
+Transforming at-0.1.0-rc1.jar (org.cadixdev:at:0.1.0-rc1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming srgutils-0.4.1.jar (net.minecraftforge:srgutils:0.4.1) with InstrumentationAnalysisTransform
+Transforming jopt-simple-5.0.4.jar (net.sf.jopt-simple:jopt-simple:5.0.4) with ExternalDependencyInstrumentingArtifactTransform
+Transforming fastcsv-2.0.0.jar (de.siegmar:fastcsv:2.0.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming srgutils-0.4.1.jar (net.minecraftforge:srgutils:0.4.1) with MergeInstrumentationAnalysisTransform
+Transforming lzma-java-1.3.jar (com.github.jponge:lzma-java:1.3) with InstrumentationAnalysisTransform
+Transforming lzma-java-1.3.jar (com.github.jponge:lzma-java:1.3) with MergeInstrumentationAnalysisTransform
+Transforming srgutils-0.4.1.jar (net.minecraftforge:srgutils:0.4.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming javaxdelta-2.0.1.jar (com.nothome:javaxdelta:2.0.1) with InstrumentationAnalysisTransform
+Transforming javaxdelta-2.0.1.jar (com.nothome:javaxdelta:2.0.1) with MergeInstrumentationAnalysisTransform
+Transforming lzma-java-1.3.jar (com.github.jponge:lzma-java:1.3) with ExternalDependencyInstrumentingArtifactTransform
+Transforming commons-text-1.9.jar (org.apache.commons:commons-text:1.9) with InstrumentationAnalysisTransform
+Transforming commons-text-1.9.jar (org.apache.commons:commons-text:1.9) with MergeInstrumentationAnalysisTransform
+Transforming javaxdelta-2.0.1.jar (com.nothome:javaxdelta:2.0.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming commons-lang3-3.11.jar (org.apache.commons:commons-lang3:3.11) with InstrumentationAnalysisTransform
+Transforming commons-lang3-3.11.jar (org.apache.commons:commons-lang3:3.11) with MergeInstrumentationAnalysisTransform
+Transforming commons-text-1.9.jar (org.apache.commons:commons-text:1.9) with ExternalDependencyInstrumentingArtifactTransform
+Transforming commons-beanutils-1.9.4.jar (commons-beanutils:commons-beanutils:1.9.4) with InstrumentationAnalysisTransform
+Transforming commons-beanutils-1.9.4.jar (commons-beanutils:commons-beanutils:1.9.4) with MergeInstrumentationAnalysisTransform
+Transforming commons-lang3-3.11.jar (org.apache.commons:commons-lang3:3.11) with ExternalDependencyInstrumentingArtifactTransform
+Transforming commons-collections4-4.4.jar (org.apache.commons:commons-collections4:4.4) with InstrumentationAnalysisTransform
+Transforming commons-beanutils-1.9.4.jar (commons-beanutils:commons-beanutils:1.9.4) with ExternalDependencyInstrumentingArtifactTransform
+Transforming commons-collections4-4.4.jar (org.apache.commons:commons-collections4:4.4) with MergeInstrumentationAnalysisTransform
+Transforming jdom2-2.0.6.1.jar (org.jdom:jdom2:2.0.6.1) with InstrumentationAnalysisTransform
+Transforming jdom2-2.0.6.1.jar (org.jdom:jdom2:2.0.6.1) with MergeInstrumentationAnalysisTransform
+Transforming ant-1.10.13.jar (org.apache.ant:ant:1.10.13) with InstrumentationAnalysisTransform
+Transforming ant-1.10.13.jar (org.apache.ant:ant:1.10.13) with MergeInstrumentationAnalysisTransform
+Transforming plexus-utils-3.5.1.jar (org.codehaus.plexus:plexus-utils:3.5.1) with InstrumentationAnalysisTransform
+Transforming commons-collections4-4.4.jar (org.apache.commons:commons-collections4:4.4) with ExternalDependencyInstrumentingArtifactTransform
+Transforming ant-1.10.13.jar (org.apache.ant:ant:1.10.13) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jdom2-2.0.6.1.jar (org.jdom:jdom2:2.0.6.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming plexus-utils-3.5.1.jar (org.codehaus.plexus:plexus-utils:3.5.1) with MergeInstrumentationAnalysisTransform
+Transforming jdependency-2.8.0.jar (org.vafer:jdependency:2.8.0) with InstrumentationAnalysisTransform
+Transforming jdependency-2.8.0.jar (org.vafer:jdependency:2.8.0) with MergeInstrumentationAnalysisTransform
+Transforming bombe-0.3.4.jar (org.cadixdev:bombe:0.3.4) with InstrumentationAnalysisTransform
+Transforming plexus-utils-3.5.1.jar (org.codehaus.plexus:plexus-utils:3.5.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming bombe-0.3.4.jar (org.cadixdev:bombe:0.3.4) with MergeInstrumentationAnalysisTransform
+Transforming jdependency-2.8.0.jar (org.vafer:jdependency:2.8.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming opencsv-2.3.jar (net.sf.opencsv:opencsv:2.3) with InstrumentationAnalysisTransform
+Transforming bombe-0.3.4.jar (org.cadixdev:bombe:0.3.4) with ExternalDependencyInstrumentingArtifactTransform
+Transforming opencsv-2.3.jar (net.sf.opencsv:opencsv:2.3) with MergeInstrumentationAnalysisTransform
+Transforming trove-1.0.2.jar (trove:trove:1.0.2) with InstrumentationAnalysisTransform
+Transforming trove-1.0.2.jar (trove:trove:1.0.2) with MergeInstrumentationAnalysisTransform
+Transforming commons-logging-1.2.jar (commons-logging:commons-logging:1.2) with InstrumentationAnalysisTransform
+Transforming commons-logging-1.2.jar (commons-logging:commons-logging:1.2) with MergeInstrumentationAnalysisTransform
+Transforming opencsv-2.3.jar (net.sf.opencsv:opencsv:2.3) with ExternalDependencyInstrumentingArtifactTransform
+Transforming commons-collections-3.2.2.jar (commons-collections:commons-collections:3.2.2) with InstrumentationAnalysisTransform
+Transforming commons-collections-3.2.2.jar (commons-collections:commons-collections:3.2.2) with MergeInstrumentationAnalysisTransform
+Transforming ant-launcher-1.10.13.jar (org.apache.ant:ant-launcher:1.10.13) with InstrumentationAnalysisTransform
+Transforming trove-1.0.2.jar (trove:trove:1.0.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming ant-launcher-1.10.13.jar (org.apache.ant:ant-launcher:1.10.13) with MergeInstrumentationAnalysisTransform
+Transforming commons-logging-1.2.jar (commons-logging:commons-logging:1.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming log4j-api-2.20.0.jar (org.apache.logging.log4j:log4j-api:2.20.0) with InstrumentationAnalysisTransform
+Transforming commons-collections-3.2.2.jar (commons-collections:commons-collections:3.2.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming log4j-api-2.20.0.jar (org.apache.logging.log4j:log4j-api:2.20.0) with MergeInstrumentationAnalysisTransform
+Transforming ant-launcher-1.10.13.jar (org.apache.ant:ant-launcher:1.10.13) with ExternalDependencyInstrumentingArtifactTransform
+Transforming log4j-api-2.20.0.jar (org.apache.logging.log4j:log4j-api:2.20.0) with ExternalDependencyInstrumentingArtifactTransform
+Architectury Loom: 0.10.0.5
+:setting up loom dependencies
+:setting up mappings (mcp_stable 22-1.8.9)
+Configuring compiler arguments for Java
+Adding mixin to classpath of AP config: annotationProcessor
+Adding mixin to classpath of AP config: testAnnotationProcessor
+All projects evaluated.
+Task name matched 'dependencies'
+Selected primary task 'dependencies' from project :
+Tasks to be executed: [task ':dependencies']
+Tasks that were excluded: []
+Resolve mutations for :dependencies (Thread[#1013,Execution worker,5,main]) started.
+:dependencies (Thread[#1021,Execution worker Thread 9,5,main]) started.
+
+> Task :dependencies
+Caching disabled for task ':dependencies' because:
+  Not worth caching
+Task ':dependencies' is not up-to-date because:
+  Task is untracked because: Uses the whole project state as an input
+
+------------------------------------------------------------
+Root project 'myau'
+------------------------------------------------------------
+
+annotationProcessor - Annotation processors and their dependencies for source set 'main'.
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: fedd9298-415e-4b80-b3cb-1a982c54e864. (DevOps Activity ID: FEDD9298-415E-4B80-B3CB-1A982C54E864): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraftforge-loom/forge-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge/forge-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: fedd92e6-415e-4b80-b3cb-1a982c54e864. (DevOps Activity ID: FEDD92E6-415E-4B80-B3CB-1A982C54E864): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/loom/resolved/mappings/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/mappings-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: fedd92f6-415e-4b80-b3cb-1a982c54e864. (DevOps Activity ID: FEDD92F6-415E-4B80-B3CB-1A982C54E864): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraft/minecraft-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/minecraft-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
++--- org.spongepowered:mixin:0.8.5-SNAPSHOT
++--- net.fabricmc:fabric-mixin-compile-extensions:0.5.0
+|    +--- net.fabricmc:mapping-io:0.2.1
+|    |    \--- org.ow2.asm:asm:9.1 -> 9.3
+|    +--- net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5
+|    \--- org.ow2.asm:asm:9.3
++--- net.minecraft:launchwrapper:1.12
+|    +--- org.ow2.asm:asm-debug-all:5.0.3
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9
+|    |    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- net.sf.jopt-simple:jopt-simple:4.5 -> 4.6
+|    +--- org.lwjgl.lwjgl:lwjgl:2.9.1 -> 2.9.4-nightly-20150209
+|    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
+|    |    \--- net.java.jinput:jinput:2.0.5
+|    |         +--- net.java.jutils:jutils:1.0.0
+|    |         \--- net.java.jinput:jinput-platform:2.0.5
+|    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- jline:jline:2.13
+|    \--- org.fusesource.jansi:jansi:1.11
++--- com.google.code.findbugs:jsr305:1.3.9 -> 2.0.1
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
+|    +--- org.scala-lang:scala-library:2.11.1
+|    \--- com.typesafe:config:1.2.1
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    +--- org.scala-lang:scala-actors:2.11.0
+|    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
+|         \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-compiler:2.11.1
+|    +--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang:scala-reflect:2.11.1
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
+|         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+|    +--- org.scala-lang:scala-compiler:2.11.1 (*)
+|    \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
++--- org.scala-lang:scala-reflect:2.11.1 (*)
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
+|    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- net.minecraftforge-loom:forge-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge
++--- loom.resolved:mappings:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
++--- com.mojang:netty:1.8.8
+|    +--- io.netty:netty-all:4.0.10.Final -> 4.0.23.Final
+|    +--- com.google.guava:guava:15.0 -> 17.0
+|    +--- org.apache.commons:commons-lang3:3.1 -> 3.3.2
+|    \--- commons-io:commons-io:2.4
++--- oshi-project:oshi-core:1.1
+|    +--- net.java.dev.jna:jna:3.4.0
+|    \--- net.java.dev.jna:platform:3.4.0
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:codecwav:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:libraryjavasound:20101123
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:librarylwjglopenal:20100824
+|    +--- com.paulscode:soundsystem:20120107
+|    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209 (*)
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5 (*)
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
+|    +--- com.google.guava:guava:17.0
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
+|    +--- commons-codec:commons-codec:1.9
+|    +--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- com.google.code.gson:gson:2.2.4
+|    +--- com.google.code.findbugs:jsr305:2.0.1
+|    \--- commons-io:commons-io:2.4
++--- com.mojang:realms:1.7.59
+|    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    +--- org.apache.httpcomponents:httpclient:4.3.3
+|    |    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    |    +--- commons-logging:commons-logging:1.1.3
+|    |    \--- commons-codec:commons-codec:1.6 -> 1.9
+|    +--- org.apache.commons:commons-compress:1.8.1
+|    \--- commons-logging:commons-logging:1.1.3
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3 (*)
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
+|    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- tv.twitch:twitch:6.5
+|    +--- tv.twitch:twitch-platform:6.5
+|    \--- tv.twitch:twitch-external-platform:4.5
+\--- net.minecraft:minecraft-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
+
+api - API dependencies for the 'main' feature. (n)
+No dependencies
+
+apiElements - API elements for the 'main' feature. (n)
+No dependencies
+
+compileClasspath - Compile classpath for source set 'main'.
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 3e46f0dd-d780-4c50-9e46-093668e79d3d. (DevOps Activity ID: 3E46F0DD-D780-4C50-9E46-093668E79D3D): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraftforge-loom/forge-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge/forge-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 3e46f0ed-d780-4c50-9e46-093668e79d3d. (DevOps Activity ID: 3E46F0ED-D780-4C50-9E46-093668E79D3D): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraft/minecraft-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/minecraft-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
++--- org.jetbrains:annotations:22.0.0
++--- net.minecraft:launchwrapper:1.12
+|    +--- org.ow2.asm:asm-debug-all:5.0.3
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9
+|    |    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- net.sf.jopt-simple:jopt-simple:4.5 -> 4.6
+|    +--- org.lwjgl.lwjgl:lwjgl:2.9.1 -> 2.9.4-nightly-20150209
+|    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
+|    |    \--- net.java.jinput:jinput:2.0.5
+|    |         \--- net.java.jutils:jutils:1.0.0
+|    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- jline:jline:2.13
+|    \--- org.fusesource.jansi:jansi:1.11
++--- com.google.code.findbugs:jsr305:1.3.9 -> 2.0.1
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
+|    +--- org.scala-lang:scala-library:2.11.1
+|    \--- com.typesafe:config:1.2.1
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    +--- org.scala-lang:scala-actors:2.11.0
+|    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
+|         \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-compiler:2.11.1
+|    +--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang:scala-reflect:2.11.1
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
+|         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+|    +--- org.scala-lang:scala-compiler:2.11.1 (*)
+|    \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
++--- org.scala-lang:scala-reflect:2.11.1 (*)
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
+|    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- net.minecraftforge-loom:forge-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge
++--- com.mojang:netty:1.8.8
++--- oshi-project:oshi-core:1.1
+|    +--- net.java.dev.jna:jna:3.4.0
+|    \--- net.java.dev.jna:platform:3.4.0
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:codecwav:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:libraryjavasound:20101123
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:librarylwjglopenal:20100824
+|    +--- com.paulscode:soundsystem:20120107
+|    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209 (*)
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5 (*)
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
+|    +--- com.google.guava:guava:17.0
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
+|    +--- commons-codec:commons-codec:1.9
+|    +--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- com.google.code.gson:gson:2.2.4
+|    +--- com.google.code.findbugs:jsr305:2.0.1
+|    \--- commons-io:commons-io:2.4
++--- com.mojang:realms:1.7.59
+|    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    +--- org.apache.httpcomponents:httpclient:4.3.3
+|    |    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    |    +--- commons-logging:commons-logging:1.1.3
+|    |    \--- commons-codec:commons-codec:1.6 -> 1.9
+|    +--- org.apache.commons:commons-compress:1.8.1
+|    \--- commons-logging:commons-logging:1.1.3
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3 (*)
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
+|    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- tv.twitch:twitch:6.5
+|    +--- tv.twitch:twitch-platform:6.5
+|    \--- tv.twitch:twitch-external-platform:4.5
++--- net.minecraft:minecraft-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
+\--- org.spongepowered:mixin:0.7.11-SNAPSHOT
+
+compileOnly - Compile-only dependencies for the 'main' feature. (n)
+\--- org.jetbrains:annotations:22.0.0 (n)
+
+compileOnlyApi - Compile-only API dependencies for the 'main' feature. (n)
+No dependencies
+
+default - Configuration for default artifacts. (n)
+No dependencies
+
+forge
+\--- net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9
+
+forgeDependencies
++--- net.minecraft:launchwrapper:1.12
+|    +--- org.ow2.asm:asm-debug-all:5.0.3
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9
+|    |    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- net.sf.jopt-simple:jopt-simple:4.5
+|    +--- org.lwjgl.lwjgl:lwjgl:2.9.1
+|    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.1
+|    |    \--- net.java.jinput:jinput:2.0.5
+|    |         +--- net.java.jutils:jutils:1.0.0
+|    |         \--- net.java.jinput:jinput-platform:2.0.5
+|    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- jline:jline:2.13
+|    \--- org.fusesource.jansi:jansi:1.11
++--- com.google.code.findbugs:jsr305:1.3.9
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
+|    +--- org.scala-lang:scala-library:2.11.1
+|    \--- com.typesafe:config:1.2.1
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    +--- org.scala-lang:scala-actors:2.11.0
+|    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
+|         \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-compiler:2.11.1
+|    +--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang:scala-reflect:2.11.1
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
+|         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+|    +--- org.scala-lang:scala-compiler:2.11.1 (*)
+|    \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
++--- org.scala-lang:scala-reflect:2.11.1 (*)
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
+|    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
+\--- net.sf.trove4j:trove4j:3.0.3
+
+forgeExtra
+No dependencies
+
+forgeInstaller
+\--- net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9
+
+forgeNamed
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 90541bb8-9840-4d02-a93e-920c2e412826. (DevOps Activity ID: 90541BB8-9840-4D02-A93E-920C2E412826): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraftforge-loom/forge-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge/forge-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge.pom)]
+\--- net.minecraftforge-loom:forge-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge
+
+forgeRuntimeLibrary
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 67993eb8-0f87-4da1-a962-97fe20b13a34. (DevOps Activity ID: 67993EB8-0F87-4DA1-A962-97FE20B13A34): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraftforge-loom/forge-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge/forge-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 67993eb7-0f87-4da1-a962-97fe20b13a34. (DevOps Activity ID: 67993EB7-0F87-4DA1-A962-97FE20B13A34): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraft/minecraft-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/minecraft-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
++--- net.minecraft:launchwrapper:1.12
+|    +--- org.ow2.asm:asm-debug-all:5.0.3
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9
+|    |    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- net.sf.jopt-simple:jopt-simple:4.5 -> 4.6
+|    +--- org.lwjgl.lwjgl:lwjgl:2.9.1 -> 2.9.4-nightly-20150209
+|    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
+|    |    \--- net.java.jinput:jinput:2.0.5
+|    |         +--- net.java.jutils:jutils:1.0.0
+|    |         \--- net.java.jinput:jinput-platform:2.0.5
+|    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- jline:jline:2.13
+|    \--- org.fusesource.jansi:jansi:1.11
++--- com.google.code.findbugs:jsr305:1.3.9 -> 2.0.1
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
+|    +--- org.scala-lang:scala-library:2.11.1
+|    \--- com.typesafe:config:1.2.1
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    +--- org.scala-lang:scala-actors:2.11.0
+|    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
+|         \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-compiler:2.11.1
+|    +--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang:scala-reflect:2.11.1
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
+|         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+|    +--- org.scala-lang:scala-compiler:2.11.1 (*)
+|    \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
++--- org.scala-lang:scala-reflect:2.11.1 (*)
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
+|    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- net.minecraftforge-loom:forge-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge
++--- com.mojang:netty:1.8.8
+|    +--- io.netty:netty-all:4.0.10.Final -> 4.0.23.Final
+|    +--- com.google.guava:guava:15.0 -> 17.0
+|    +--- org.apache.commons:commons-lang3:3.1 -> 3.3.2
+|    \--- commons-io:commons-io:2.4
++--- oshi-project:oshi-core:1.1
+|    +--- net.java.dev.jna:jna:3.4.0
+|    \--- net.java.dev.jna:platform:3.4.0
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:codecwav:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:libraryjavasound:20101123
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:librarylwjglopenal:20100824
+|    +--- com.paulscode:soundsystem:20120107
+|    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209 (*)
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5 (*)
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
+|    +--- com.google.guava:guava:17.0
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
+|    +--- commons-codec:commons-codec:1.9
+|    +--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- com.google.code.gson:gson:2.2.4
+|    +--- com.google.code.findbugs:jsr305:2.0.1
+|    \--- commons-io:commons-io:2.4
++--- com.mojang:realms:1.7.59
+|    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    +--- org.apache.httpcomponents:httpclient:4.3.3
+|    |    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    |    +--- commons-logging:commons-logging:1.1.3
+|    |    \--- commons-codec:commons-codec:1.6 -> 1.9
+|    +--- org.apache.commons:commons-compress:1.8.1
+|    \--- commons-logging:commons-logging:1.1.3
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3 (*)
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
+|    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- tv.twitch:twitch:6.5
+|    +--- tv.twitch:twitch-platform:6.5
+|    \--- tv.twitch:twitch-external-platform:4.5
+\--- net.minecraft:minecraft-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
+
+forgeUniversal
+\--- net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9
+
+forgeUserdev
+\--- net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9
+
+implementation - Implementation dependencies for the 'main' feature. (n)
+No dependencies
+
+loaderLibraries
++--- net.minecraft:launchwrapper:1.12
++--- jline:jline:2.13
++--- com.google.code.findbugs:jsr305:1.3.9
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
++--- org.scala-lang:scala-compiler:2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
++--- org.scala-lang:scala-reflect:2.11.1
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- com.mojang:netty:1.8.8
++--- oshi-project:oshi-core:1.1
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
++--- com.paulscode:codecwav:20101023
++--- com.paulscode:libraryjavasound:20101123
++--- com.paulscode:librarylwjglopenal:20100824
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
++--- com.mojang:realms:1.7.59
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- org.apache.logging.log4j:log4j-core:2.0-beta9
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209
+\--- tv.twitch:twitch:6.5
+
+localRuntime
+No dependencies
+
+loomDevelopmentDependencies
++--- net.fabricmc:dev-launch-injector:0.2.1+build.8
+\--- net.minecrell:terminalconsoleappender:1.2.0
+     +--- org.apache.logging.log4j:log4j-core:2.8.1
+     |    \--- org.apache.logging.log4j:log4j-api:2.8.1
+     \--- org.jline:jline-reader:3.12.1
+          \--- org.jline:jline-terminal:3.12.1
+
+mainSourceElements - List of source directories contained in the Main SourceSet. (n)
+No dependencies
+
+mappings
+\--- de.oceanlabs.mcp:mcp_stable:22-1.8.9
+
+mappingsConstants
+No dependencies
+
+mappingsFinal
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 36857237-a07a-4d5a-b8dc-9a54b3025b2d. (DevOps Activity ID: 36857237-A07A-4D5A-B8DC-9A54B3025B2D): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/loom/resolved/mappings/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/mappings-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
+\--- loom.resolved:mappings:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
+
+mcp
+\--- de.oceanlabs.mcp:mcp:1.8.9
+
+minecraft
+Resource missing. [HTTP GET: https://maven.fabricmc.net/com/mojang/minecraft/1.8.9/minecraft-1.8.9.pom]
+Resource missing. [HTTP GET: https://libraries.minecraft.net/com/mojang/minecraft/1.8.9/minecraft-1.8.9.pom]
+Resource missing. [HTTP GET: https://maven.minecraftforge.net/com/mojang/minecraft/1.8.9/minecraft-1.8.9.pom]
+Resource missing. [HTTP GET: https://repo.maven.apache.org/maven2/com/mojang/minecraft/1.8.9/minecraft-1.8.9.pom]
+Resource missing. [HTTP GET: https://repo.maven.apache.org/maven2/com/mojang/minecraft/1.8.9/minecraft-1.8.9.pom]
+Resource missing. [HTTP GET: https://repo.spongepowered.org/maven/com/mojang/minecraft/1.8.9/minecraft-1.8.9.pom]
+Resource missing. [HTTP GET: https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/com/mojang/minecraft/1.8.9/minecraft-1.8.9.pom]
+\--- com.mojang:minecraft:1.8.9 FAILED
+
+minecraftLibraries
++--- net.minecraft:launchwrapper:1.12
++--- jline:jline:2.13
++--- com.google.code.findbugs:jsr305:1.3.9
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
++--- org.scala-lang:scala-compiler:2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
++--- org.scala-lang:scala-reflect:2.11.1
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- com.mojang:netty:1.8.8
++--- oshi-project:oshi-core:1.1
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
++--- com.paulscode:codecwav:20101023
++--- com.paulscode:libraryjavasound:20101123
++--- com.paulscode:librarylwjglopenal:20100824
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
++--- com.mojang:realms:1.7.59
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- org.apache.logging.log4j:log4j-core:2.0-beta9
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209
+\--- tv.twitch:twitch:6.5
+
+minecraftNamed
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 67993e26-0f87-4da1-a962-97fe20b13a34. (DevOps Activity ID: 67993E26-0F87-4DA1-A962-97FE20B13A34): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraft/minecraft-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/minecraft-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
++--- net.minecraft:launchwrapper:1.12
++--- jline:jline:2.13
++--- com.google.code.findbugs:jsr305:1.3.9
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
++--- org.scala-lang:scala-compiler:2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
++--- org.scala-lang:scala-reflect:2.11.1
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- com.mojang:netty:1.8.8
++--- oshi-project:oshi-core:1.1
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
++--- com.paulscode:codecwav:20101023
++--- com.paulscode:libraryjavasound:20101123
++--- com.paulscode:librarylwjglopenal:20100824
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
++--- com.mojang:realms:1.7.59
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- org.apache.logging.log4j:log4j-core:2.0-beta9
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209
++--- tv.twitch:twitch:6.5
+\--- net.minecraft:minecraft-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
+
+modApi
+No dependencies
+
+modApiMapped
+No dependencies
+
+modCompileClasspath
+No dependencies
+
+modCompileClasspathMapped
+No dependencies
+
+modCompileOnly
+No dependencies
+
+modCompileOnlyApi
+No dependencies
+
+modCompileOnlyApiMapped
+No dependencies
+
+modCompileOnlyMapped
+No dependencies
+
+modImplementation
+No dependencies
+
+modImplementationMapped
+No dependencies
+
+modLocalRuntime
+No dependencies
+
+modLocalRuntimeMapped
+No dependencies
+
+modRuntime
+No dependencies
+
+modRuntimeMapped
+No dependencies
+
+modRuntimeOnly
+No dependencies
+
+modRuntimeOnlyMapped
+No dependencies
+
+namedElements (n)
+No dependencies
+
+runtimeClasspath - Runtime classpath of source set 'main'.
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: a5423d19-5709-43ee-a2da-120c01c10893. (DevOps Activity ID: A5423D19-5709-43EE-A2DA-120C01C10893): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraftforge-loom/forge-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge/forge-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: a5423df9-5709-43ee-a2da-120c01c10893. (DevOps Activity ID: A5423DF9-5709-43EE-A2DA-120C01C10893): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/loom/resolved/mappings/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/mappings-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: a5423de5-5709-43ee-a2da-120c01c10893. (DevOps Activity ID: A5423DE5-5709-43EE-A2DA-120C01C10893): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraft/minecraft-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/minecraft-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
++--- net.minecraft:launchwrapper:1.12
+|    +--- org.ow2.asm:asm-debug-all:5.0.3
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 -> 2.8.1
+|    |    \--- org.apache.logging.log4j:log4j-api:2.8.1
+|    +--- net.sf.jopt-simple:jopt-simple:4.5 -> 4.6
+|    +--- org.lwjgl.lwjgl:lwjgl:2.9.1 -> 2.9.4-nightly-20150209
+|    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
+|    |    \--- net.java.jinput:jinput:2.0.5
+|    |         +--- net.java.jutils:jutils:1.0.0
+|    |         \--- net.java.jinput:jinput-platform:2.0.5
+|    \--- org.apache.logging.log4j:log4j-api:2.0-beta9 -> 2.8.1
++--- jline:jline:2.13
+|    \--- org.fusesource.jansi:jansi:1.11
++--- com.google.code.findbugs:jsr305:1.3.9 -> 2.0.1
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
+|    +--- org.scala-lang:scala-library:2.11.1
+|    \--- com.typesafe:config:1.2.1
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    +--- org.scala-lang:scala-actors:2.11.0
+|    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
+|         \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-compiler:2.11.1
+|    +--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang:scala-reflect:2.11.1
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
+|         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+|    +--- org.scala-lang:scala-compiler:2.11.1 (*)
+|    \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
++--- org.scala-lang:scala-reflect:2.11.1 (*)
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
+|    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- net.minecraftforge-loom:forge-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge
++--- net.fabricmc:dev-launch-injector:0.2.1+build.8
++--- net.minecrell:terminalconsoleappender:1.2.0
+|    +--- org.apache.logging.log4j:log4j-core:2.8.1 (*)
+|    \--- org.jline:jline-reader:3.12.1
+|         \--- org.jline:jline-terminal:3.12.1
++--- loom.resolved:mappings:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
++--- com.mojang:netty:1.8.8
+|    +--- io.netty:netty-all:4.0.10.Final -> 4.0.23.Final
+|    +--- com.google.guava:guava:15.0 -> 17.0
+|    +--- org.apache.commons:commons-lang3:3.1 -> 3.3.2
+|    \--- commons-io:commons-io:2.4
++--- oshi-project:oshi-core:1.1
+|    +--- net.java.dev.jna:jna:3.4.0
+|    \--- net.java.dev.jna:platform:3.4.0
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:codecwav:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:libraryjavasound:20101123
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:librarylwjglopenal:20100824
+|    +--- com.paulscode:soundsystem:20120107
+|    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209 (*)
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5 (*)
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
+|    +--- com.google.guava:guava:17.0
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 -> 2.8.1 (*)
+|    +--- commons-codec:commons-codec:1.9
+|    +--- org.apache.logging.log4j:log4j-api:2.0-beta9 -> 2.8.1
+|    +--- com.google.code.gson:gson:2.2.4
+|    +--- com.google.code.findbugs:jsr305:2.0.1
+|    \--- commons-io:commons-io:2.4
++--- com.mojang:realms:1.7.59
+|    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    +--- org.apache.httpcomponents:httpclient:4.3.3
+|    |    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    |    +--- commons-logging:commons-logging:1.1.3
+|    |    \--- commons-codec:commons-codec:1.6 -> 1.9
+|    +--- org.apache.commons:commons-compress:1.8.1
+|    \--- commons-logging:commons-logging:1.1.3
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3 (*)
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9 -> 2.8.1
++--- org.apache.logging.log4j:log4j-core:2.0-beta9 -> 2.8.1 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
+|    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- tv.twitch:twitch:6.5
+|    +--- tv.twitch:twitch-platform:6.5
+|    \--- tv.twitch:twitch-external-platform:4.5
++--- net.minecraft:minecraft-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
++--- me.djtheredstoner:DevAuth-forge-legacy:1.2.1
+|    \--- me.djtheredstoner:DevAuth-common:1.2.1
+|         \--- com.electronwill.night-config:toml:3.6.5
+|              \--- com.electronwill.night-config:core:3.6.5
+\--- org.spongepowered:mixin:0.7.11-SNAPSHOT
+
+runtimeElements - Runtime elements for the 'main' feature. (n)
+No dependencies
+
+runtimeOnly - Runtime-only dependencies for the 'main' feature. (n)
+\--- me.djtheredstoner:DevAuth-forge-legacy:1.2.1 (n)
+
+shadow
+No dependencies
+
+shadowImpl
+\--- org.spongepowered:mixin:0.7.11-SNAPSHOT
+
+shadowRuntimeElements (n)
+No dependencies
+
+srg
+\--- de.oceanlabs.mcp:mcp:1.8.9
+
+testAnnotationProcessor - Annotation processors and their dependencies for source set 'test'.
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: a5423dee-5709-43ee-a2da-120c01c10893. (DevOps Activity ID: A5423DEE-5709-43EE-A2DA-120C01C10893): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraftforge-loom/forge-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge/forge-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: a5423dd5-5709-43ee-a2da-120c01c10893. (DevOps Activity ID: A5423DD5-5709-43EE-A2DA-120C01C10893): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/loom/resolved/mappings/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/mappings-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: a5423dd7-5709-43ee-a2da-120c01c10893. (DevOps Activity ID: A5423DD7-5709-43EE-A2DA-120C01C10893): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraft/minecraft-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/minecraft-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
++--- net.minecraft:launchwrapper:1.12
+|    +--- org.ow2.asm:asm-debug-all:5.0.3
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9
+|    |    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- net.sf.jopt-simple:jopt-simple:4.5 -> 4.6
+|    +--- org.lwjgl.lwjgl:lwjgl:2.9.1 -> 2.9.4-nightly-20150209
+|    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
+|    |    \--- net.java.jinput:jinput:2.0.5
+|    |         +--- net.java.jutils:jutils:1.0.0
+|    |         \--- net.java.jinput:jinput-platform:2.0.5
+|    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- jline:jline:2.13
+|    \--- org.fusesource.jansi:jansi:1.11
++--- com.google.code.findbugs:jsr305:1.3.9 -> 2.0.1
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
+|    +--- org.scala-lang:scala-library:2.11.1
+|    \--- com.typesafe:config:1.2.1
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    +--- org.scala-lang:scala-actors:2.11.0
+|    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
+|         \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-compiler:2.11.1
+|    +--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang:scala-reflect:2.11.1
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
+|         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+|    +--- org.scala-lang:scala-compiler:2.11.1 (*)
+|    \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
++--- org.scala-lang:scala-reflect:2.11.1 (*)
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
+|    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- net.minecraftforge-loom:forge-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge
++--- loom.resolved:mappings:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
++--- com.mojang:netty:1.8.8
+|    +--- io.netty:netty-all:4.0.10.Final -> 4.0.23.Final
+|    +--- com.google.guava:guava:15.0 -> 17.0
+|    +--- org.apache.commons:commons-lang3:3.1 -> 3.3.2
+|    \--- commons-io:commons-io:2.4
++--- oshi-project:oshi-core:1.1
+|    +--- net.java.dev.jna:jna:3.4.0
+|    \--- net.java.dev.jna:platform:3.4.0
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:codecwav:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:libraryjavasound:20101123
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:librarylwjglopenal:20100824
+|    +--- com.paulscode:soundsystem:20120107
+|    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209 (*)
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5 (*)
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
+|    +--- com.google.guava:guava:17.0
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
+|    +--- commons-codec:commons-codec:1.9
+|    +--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- com.google.code.gson:gson:2.2.4
+|    +--- com.google.code.findbugs:jsr305:2.0.1
+|    \--- commons-io:commons-io:2.4
++--- com.mojang:realms:1.7.59
+|    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    +--- org.apache.httpcomponents:httpclient:4.3.3
+|    |    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    |    +--- commons-logging:commons-logging:1.1.3
+|    |    \--- commons-codec:commons-codec:1.6 -> 1.9
+|    +--- org.apache.commons:commons-compress:1.8.1
+|    \--- commons-logging:commons-logging:1.1.3
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3 (*)
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
+|    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- tv.twitch:twitch:6.5
+|    +--- tv.twitch:twitch-platform:6.5
+|    \--- tv.twitch:twitch-external-platform:4.5
++--- net.minecraft:minecraft-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
+\--- net.fabricmc:fabric-mixin-compile-extensions:0.5.0
+     +--- net.fabricmc:mapping-io:0.2.1
+     |    \--- org.ow2.asm:asm:9.1 -> 9.3
+     +--- net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5
+     \--- org.ow2.asm:asm:9.3
+
+testCompileClasspath - Compile classpath for source set 'test'.
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 79f35ff3-aed3-4db7-b183-370ffdd6feca. (DevOps Activity ID: 79F35FF3-AED3-4DB7-B183-370FFDD6FECA): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraftforge-loom/forge-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge/forge-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 79f35f1d-aed3-4db7-b183-370ffdd6feca. (DevOps Activity ID: 79F35F1D-AED3-4DB7-B183-370FFDD6FECA): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraft/minecraft-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/minecraft-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
++--- net.minecraft:launchwrapper:1.12
+|    +--- org.ow2.asm:asm-debug-all:5.0.3
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9
+|    |    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- net.sf.jopt-simple:jopt-simple:4.5 -> 4.6
+|    +--- org.lwjgl.lwjgl:lwjgl:2.9.1 -> 2.9.4-nightly-20150209
+|    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
+|    |    \--- net.java.jinput:jinput:2.0.5
+|    |         \--- net.java.jutils:jutils:1.0.0
+|    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- jline:jline:2.13
+|    \--- org.fusesource.jansi:jansi:1.11
++--- com.google.code.findbugs:jsr305:1.3.9 -> 2.0.1
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
+|    +--- org.scala-lang:scala-library:2.11.1
+|    \--- com.typesafe:config:1.2.1
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    +--- org.scala-lang:scala-actors:2.11.0
+|    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
+|         \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-compiler:2.11.1
+|    +--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang:scala-reflect:2.11.1
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
+|         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+|    +--- org.scala-lang:scala-compiler:2.11.1 (*)
+|    \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
++--- org.scala-lang:scala-reflect:2.11.1 (*)
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
+|    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- net.minecraftforge-loom:forge-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge
++--- com.mojang:netty:1.8.8
++--- oshi-project:oshi-core:1.1
+|    +--- net.java.dev.jna:jna:3.4.0
+|    \--- net.java.dev.jna:platform:3.4.0
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:codecwav:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:libraryjavasound:20101123
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:librarylwjglopenal:20100824
+|    +--- com.paulscode:soundsystem:20120107
+|    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209 (*)
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5 (*)
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
+|    +--- com.google.guava:guava:17.0
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
+|    +--- commons-codec:commons-codec:1.9
+|    +--- org.apache.logging.log4j:log4j-api:2.0-beta9
+|    +--- com.google.code.gson:gson:2.2.4
+|    +--- com.google.code.findbugs:jsr305:2.0.1
+|    \--- commons-io:commons-io:2.4
++--- com.mojang:realms:1.7.59
+|    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    +--- org.apache.httpcomponents:httpclient:4.3.3
+|    |    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    |    +--- commons-logging:commons-logging:1.1.3
+|    |    \--- commons-codec:commons-codec:1.6 -> 1.9
+|    +--- org.apache.commons:commons-compress:1.8.1
+|    \--- commons-logging:commons-logging:1.1.3
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3 (*)
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9
++--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
+|    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- tv.twitch:twitch:6.5
+|    +--- tv.twitch:twitch-platform:6.5
+|    \--- tv.twitch:twitch-external-platform:4.5
++--- net.minecraft:minecraft-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
+\--- org.spongepowered:mixin:0.7.11-SNAPSHOT
+
+testCompileOnly - Compile only dependencies for source set 'test'. (n)
+No dependencies
+
+testImplementation - Implementation only dependencies for source set 'test'. (n)
+No dependencies
+
+testRuntimeClasspath - Runtime classpath of source set 'test'.
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 3e46edc3-d780-4c50-9e46-093668e79d3d. (DevOps Activity ID: 3E46EDC3-D780-4C50-9E46-093668E79D3D): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraftforge-loom/forge-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge/forge-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 3e46edd6-d780-4c50-9e46-093668e79d3d. (DevOps Activity ID: 3E46EDD6-D780-4C50-9E46-093668E79D3D): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/loom/resolved/mappings/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/mappings-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
+Failed to get resource: GET. [HTTP HTTP/1.1 400 Bad Request - TF400898: An Internal Error Occurred. Activity Id: 3e46ede1-d780-4c50-9e46-093668e79d3d. (DevOps Activity ID: 3E46EDE1-D780-4C50-9E46-093668E79D3D): https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1/net/minecraft/minecraft-mapped/1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/minecraft-mapped-1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9.pom)]
++--- net.minecraft:launchwrapper:1.12
+|    +--- org.ow2.asm:asm-debug-all:5.0.3
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 -> 2.8.1
+|    |    \--- org.apache.logging.log4j:log4j-api:2.8.1
+|    +--- net.sf.jopt-simple:jopt-simple:4.5 -> 4.6
+|    +--- org.lwjgl.lwjgl:lwjgl:2.9.1 -> 2.9.4-nightly-20150209
+|    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
+|    |    \--- net.java.jinput:jinput:2.0.5
+|    |         +--- net.java.jutils:jutils:1.0.0
+|    |         \--- net.java.jinput:jinput-platform:2.0.5
+|    \--- org.apache.logging.log4j:log4j-api:2.0-beta9 -> 2.8.1
++--- jline:jline:2.13
+|    \--- org.fusesource.jansi:jansi:1.11
++--- com.google.code.findbugs:jsr305:1.3.9 -> 2.0.1
++--- org.ow2.asm:asm-debug-all:5.0.3
++--- com.typesafe.akka:akka-actor_2.11:2.3.3
+|    +--- org.scala-lang:scala-library:2.11.1
+|    \--- com.typesafe:config:1.2.1
++--- com.typesafe:config:1.2.1
++--- org.scala-lang:scala-actors-migration_2.11:1.1.0
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    +--- org.scala-lang:scala-actors:2.11.0
+|    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
+|    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
+|         \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-compiler:2.11.1
+|    +--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang:scala-reflect:2.11.1
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
+|    |    \--- org.scala-lang:scala-library:2.11.1
+|    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
+|         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
++--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
+|    +--- org.scala-lang:scala-compiler:2.11.1 (*)
+|    \--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang:scala-library:2.11.1
++--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
++--- org.scala-lang:scala-reflect:2.11.1 (*)
++--- org.scala-lang.modules:scala-swing_2.11:1.0.1
+|    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
++--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
++--- lzma:lzma:0.0.1
++--- java3d:vecmath:1.5.2
++--- net.sf.trove4j:trove4j:3.0.3
++--- net.minecraftforge-loom:forge-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9/forge
++--- net.fabricmc:dev-launch-injector:0.2.1+build.8
++--- net.minecrell:terminalconsoleappender:1.2.0
+|    +--- org.apache.logging.log4j:log4j-core:2.8.1 (*)
+|    \--- org.jline:jline-reader:3.12.1
+|         \--- org.jline:jline-terminal:3.12.1
++--- loom.resolved:mappings:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
++--- com.mojang:netty:1.8.8
+|    +--- io.netty:netty-all:4.0.10.Final -> 4.0.23.Final
+|    +--- com.google.guava:guava:15.0 -> 17.0
+|    +--- org.apache.commons:commons-lang3:3.1 -> 3.3.2
+|    \--- commons-io:commons-io:2.4
++--- oshi-project:oshi-core:1.1
+|    +--- net.java.dev.jna:jna:3.4.0
+|    \--- net.java.dev.jna:platform:3.4.0
++--- net.java.dev.jna:jna:3.4.0
++--- net.java.dev.jna:platform:3.4.0
++--- com.ibm.icu:icu4j-core-mojang:51.2
++--- net.sf.jopt-simple:jopt-simple:4.6
++--- com.paulscode:codecjorbis:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:codecwav:20101023
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:libraryjavasound:20101123
+|    \--- com.paulscode:soundsystem:20120107
++--- com.paulscode:librarylwjglopenal:20100824
+|    +--- com.paulscode:soundsystem:20120107
+|    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209 (*)
++--- com.paulscode:soundsystem:20120107
++--- io.netty:netty-all:4.0.23.Final
++--- com.google.guava:guava:17.0
++--- org.apache.commons:commons-lang3:3.3.2
++--- commons-io:commons-io:2.4
++--- commons-codec:commons-codec:1.9
++--- net.java.jinput:jinput:2.0.5 (*)
++--- net.java.jutils:jutils:1.0.0
++--- com.google.code.gson:gson:2.2.4
++--- com.mojang:authlib:1.5.21
+|    +--- com.google.guava:guava:17.0
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 -> 2.8.1 (*)
+|    +--- commons-codec:commons-codec:1.9
+|    +--- org.apache.logging.log4j:log4j-api:2.0-beta9 -> 2.8.1
+|    +--- com.google.code.gson:gson:2.2.4
+|    +--- com.google.code.findbugs:jsr305:2.0.1
+|    \--- commons-io:commons-io:2.4
++--- com.mojang:realms:1.7.59
+|    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    +--- org.apache.httpcomponents:httpclient:4.3.3
+|    |    +--- org.apache.httpcomponents:httpcore:4.3.2
+|    |    +--- commons-logging:commons-logging:1.1.3
+|    |    \--- commons-codec:commons-codec:1.6 -> 1.9
+|    +--- org.apache.commons:commons-compress:1.8.1
+|    \--- commons-logging:commons-logging:1.1.3
++--- org.apache.commons:commons-compress:1.8.1
++--- org.apache.httpcomponents:httpclient:4.3.3 (*)
++--- commons-logging:commons-logging:1.1.3
++--- org.apache.httpcomponents:httpcore:4.3.2
++--- org.apache.logging.log4j:log4j-api:2.0-beta9 -> 2.8.1
++--- org.apache.logging.log4j:log4j-core:2.0-beta9 -> 2.8.1 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
+|    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- org.lwjgl.lwjgl:lwjgl_util:2.9.2-nightly-20140822 -> 2.9.4-nightly-20150209 (*)
++--- tv.twitch:twitch:6.5
+|    +--- tv.twitch:twitch-platform:6.5
+|    \--- tv.twitch:twitch-external-platform:4.5
++--- net.minecraft:minecraft-mapped:1.8.9/de.oceanlabs.mcp.mcp_stable.1_8_9.22-1.8.9-forge-1.8.9-11.15.1.2318-1.8.9
++--- me.djtheredstoner:DevAuth-forge-legacy:1.2.1
+|    \--- me.djtheredstoner:DevAuth-common:1.2.1
+|         \--- com.electronwill.night-config:toml:3.6.5
+|              \--- com.electronwill.night-config:core:3.6.5
+\--- org.spongepowered:mixin:0.7.11-SNAPSHOT
+
+testRuntimeOnly - Runtime only dependencies for source set 'test'. (n)
+No dependencies
+
+unpick
+No dependencies
+
+(*) - Indicates repeated occurrences of a transitive dependency subtree. Gradle expands transitive dependency subtrees only once per project; repeat occurrences only display the root of the subtree, followed by this annotation.
+
+(n) - A dependency or dependency configuration that cannot be resolved.
+
+A web-based, searchable dependency report is available by adding the --scan option.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 20s
+1 actionable task: 1 executed
+Watched directory hierarchies: [D:\OpenMyau-main]
