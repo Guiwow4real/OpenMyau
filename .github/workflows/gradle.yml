@@ -1,0 +1,48 @@
+name: Build Myau
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+
+    - name: Make gradlew executable
+      run: chmod +x gradlew
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper/
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          gradle-${{ runner.os }}-
+
+    - name: Build Mod
+      run: ./gradlew build
+
+    - name: Rename Mod JAR
+      run: mv build/libs/*.jar build/libs/Myau-250910.jar
+
+    - name: Upload Mod JAR
+      uses: actions/upload-artifact@v3
+      with:
+        name: Myau-250910
+        path: build/libs/Myau-250910.jar
