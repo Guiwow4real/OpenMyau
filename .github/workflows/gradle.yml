@@ -37,10 +37,7 @@ jobs:
 
     - name: Build Mod
       run: ./gradlew build
-
-    - name: Rename Mod JAR
-      run: mv build/libs/*.jar build/libs/Myau-250910.jar
-
+      
     - name: Upload Mod JAR
       uses: actions/upload-artifact@v4
       with:
