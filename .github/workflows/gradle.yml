@@ -42,7 +42,8 @@ jobs:
       run: mv build/libs/*.jar build/libs/Myau-250910.jar
 
     - name: Upload Mod JAR
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: Myau-250910
+        name: Myau-250910-${{ github.run_id }}
         path: build/libs/Myau-250910.jar
+        compression-level: 0
