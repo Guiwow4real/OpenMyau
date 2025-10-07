@@ -19,18 +19,20 @@ public class ClickGUI extends Module {
 
     @Override
     public void onEnabled() {
-        // 检查是否在世界中
+        // 如果不在世界中，只阻止打开GUI，不设置为禁用
         if (mc.theWorld == null || mc.thePlayer == null) {
-            // 如果不在世界中，禁止开启
+            // Do nothing (effectively preventing GUI from opening)
             this.setEnabled(false);
             return;
         }
-        
+
         if (mc.currentScreen instanceof ClickGuiScreen) {
             mc.displayGuiScreen(null);
             this.setEnabled(false);
         } else {
             mc.displayGuiScreen(new ClickGuiScreen());
+            // Set enabled to true when GUI is shown
+            this.setEnabled(true);
         }
     }
     
