@@ -1,7 +1,8 @@
 # Myau
 
-![screenshot](.\images\image1.png)
-![ClickGUIScreenshot](.\images\image2.png)
+![screenshot](images/image1.png)
+![ClickGUIScreenshot](images/image2.png)
+
 # 介绍
 
 此改版基于[OpenMyau](https://github.com/60124808866/OpenMyau)
