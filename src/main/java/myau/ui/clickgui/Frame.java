@@ -5,15 +5,18 @@ import myau.module.Category;
 import myau.module.Module;
 import myau.ui.clickgui.component.Component;
 import myau.ui.clickgui.component.ModuleButton;
+import myau.ui.clickgui.ClickGuiScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 
 import myau.util.RenderUtils; // Import RenderUtils
 import myau.util.RenderUtil; // Import RenderUtil
 
 import java.util.ArrayList;
 import java.awt.Color;
+import java.util.List;
 
 public class Frame {
 
@@ -23,16 +26,24 @@ public class Frame {
     private boolean open;
     private boolean opening; // 新增：标记正在打开
     private boolean closing; // 新增：标记正在关闭
+    
+    /**
+     * 检查Frame是否展开（用于导航栏显示）
+     */
+    public boolean isExtended() {
+        return open;
+    }
     private float animationProgress; // 新增：动画进度 (0.0 - 1.0)
     private long lastUpdateTime; // 新增：上次更新时间
     private final ArrayList<Component> components;
     
-    // 默认颜色值
-    private static final int SECONDARY_COLOR = new Color(30, 30, 30, 180).getRGB();
-    private static final int HOVER_COLOR = new Color(40, 40, 40, 180).getRGB();
-    private static final int TEXT_COLOR = new Color(220, 220, 220).getRGB();
-    private static final int BORDER_COLOR = new Color(40, 40, 40).getRGB();
-    private static final int CLICKGUI_BACKGROUND_COLOR = new Color(25, 25, 25, 180).getRGB();
+    // 新增：选中状态颜色
+    private static final int HEADER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
+    private static final int HEADER_HOVER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
+    private static final int HEADER_SELECTED_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SELECTED_COLOR);
+    private static final int HEADER_TEXT_COLOR = IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR);
+    private static final int BORDER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR);
+    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.BACKGROUND_COLOR);
 
     protected Minecraft mc = Minecraft.getMinecraft();
     protected FontRenderer fr = mc.fontRendererObj;
@@ -40,9 +51,9 @@ public class Frame {
     public Frame(Category category) {
         this.category = category;
         this.components = new ArrayList<>();
-        this.x = 20;
-        this.y = 20;
-        this.width = 100;
+        this.x = 5;
+        this.y = 5;
+        this.width = 140; // 默认宽度，将在ClickGuiScreen中动态调整
         this.height = 18; // Header height
         this.open = true;
         this.opening = false;
@@ -60,20 +71,21 @@ public class Frame {
 
     /**
      * 渲染 Frame（包括标题和所有组件）。
-     * 修复了原代码中组件位置计算的逻辑错误。
+     * IntelliJ IDEA风格布局实现
      */
     public void render(int mouseX, int mouseY) {
         // 更新动画状态
         updateAnimation();
         
-        // Fluent风格标题栏 - 检查鼠标悬停
+        // IntelliJ风格标题栏 - 检查鼠标悬停和选中状态
         boolean isMouseOverHeader = isMouseOnHeader(mouseX, mouseY);
-        int headerColor = isMouseOverHeader ? HOVER_COLOR : SECONDARY_COLOR;
+        boolean isSelected = ClickGuiScreen.getInstance() != null && ClickGuiScreen.getInstance().getSelectedFrame() == this;
+        int headerColor = isSelected ? HEADER_SELECTED_COLOR : (isMouseOverHeader ? HEADER_HOVER_COLOR : HEADER_COLOR);
         
-        // 获取圆角半径配置
-        double cornerRadius = 3.0; // 默认圆角半径
+        // 使用IntelliJ主题的圆角半径
+        double cornerRadius = IntelliJTheme.CORNER_RADIUS;
         
-        // 1. 绘制 Frame 标题栏 (Header) - Fluent风格带圆角
+        // 1. 绘制 Frame 标题栏 (Header) - IntelliJ风格带圆角
         if (cornerRadius > 0) {
             // 使用圆角矩形绘制标题栏
             RenderUtil.drawRoundedRect(this.x, this.y, this.width, this.height, cornerRadius, headerColor);
@@ -83,12 +95,22 @@ public class Frame {
             // 无圆角时使用原来的绘制方式
             Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, headerColor);
             
-            // Fluent风格边框效果
+            // IntelliJ风格边框效果
             Gui.drawRect(this.x, this.y, this.x + this.width, this.y + 1, BORDER_COLOR); // 顶部边框
             Gui.drawRect(this.x, this.y + this.height - 1, this.x + this.width, this.y + this.height, BORDER_COLOR); // 底部边框
         }
         
-        RenderUtils.drawWrappedString(fr, this.category.getName(), this.x + 2, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 4, TEXT_COLOR);
+        // IntelliJ风格文字渲染
+        String categoryName = this.category.getName();
+        int maxWidth = this.width - 16; // 左右各留8px边距
+        
+        // 如果文本宽度超过最大宽度，则截断并添加省略号
+        if (fr.getStringWidth(categoryName) > maxWidth) {
+            String truncated = fr.trimStringToWidth(categoryName, maxWidth - fr.getStringWidth("..."));
+            fr.drawString(truncated + "...", this.x + 8, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, HEADER_TEXT_COLOR);
+        } else {
+            fr.drawString(categoryName, this.x + 8, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, HEADER_TEXT_COLOR);
+        }
 
         // 计算动画高度
         int animatedHeight = (int) (getTotalComponentsHeight() * animationProgress);
@@ -110,17 +132,17 @@ public class Frame {
                 currentY += componentTotalHeight;
             }
 
-            // 3. 绘制组件背景 - Fluent风格带圆角
+            // 3. 绘制组件背景 - IntelliJ风格带圆角
             if (cornerRadius > 0) {
                 // 使用圆角矩形绘制组件背景
-                RenderUtil.drawRoundedRect(this.x, this.y + this.height, this.width, animatedHeight, cornerRadius, CLICKGUI_BACKGROUND_COLOR);
+                RenderUtil.drawRoundedRect(this.x, this.y + this.height, this.width, animatedHeight, cornerRadius, BACKGROUND_COLOR);
                 // 绘制圆角边框
                 RenderUtil.drawRoundedOutline(this.x, this.y + this.height, this.width, animatedHeight, cornerRadius, 1.0f, BORDER_COLOR);
             } else {
                 // 背景从标题栏底部开始，延伸到动画计算的高度
-                Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + animatedHeight, CLICKGUI_BACKGROUND_COLOR);
+                Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + animatedHeight, BACKGROUND_COLOR);
                 
-                // Fluent风格边框效果
+                // IntelliJ风格边框效果
                 Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + 1, BORDER_COLOR); // 组件区域顶部边框
                 Gui.drawRect(this.x, this.y + this.height + animatedHeight - 1, this.x + this.width, this.y + this.height + animatedHeight, BORDER_COLOR); // 组件区域底部边框
             }
@@ -136,7 +158,7 @@ public class Frame {
     private void renderComponentsWithAnimation(int mouseX, int mouseY, int availableHeight) {
         int currentY = this.y + this.height;
         int remainingHeight = availableHeight;
-        int screenHeight = mc.displayHeight; // 获取屏幕高度
+        int screenHeight = new ScaledResolution(mc).getScaledHeight(); // 获取屏幕高度
 
         for (Component component : this.components) {
             int componentTotalHeight = component.getHeight();
@@ -202,6 +224,11 @@ public class Frame {
     public Component mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (isMouseOnHeader(mouseX, mouseY)) {
             if (mouseButton == 0) {
+                // 设置此Frame为选中状态
+                ClickGuiScreen clickGui = ClickGuiScreen.getInstance();
+                if (clickGui != null) {
+                    clickGui.setSelectedFrame(this);
+                }
                 this.dragging = true;
                 this.dragX = mouseX - this.x;
                 this.dragY = mouseY - this.y;
@@ -226,7 +253,7 @@ public class Frame {
     /**
      * 切换打开/关闭状态以启动动画
      */
-    private void toggleOpenClose() {
+    public void toggleOpenClose() {
         // 重置动画时间
         lastUpdateTime = System.currentTimeMillis();
         
@@ -281,6 +308,10 @@ public class Frame {
     public int getWidth() {
         return width;
     }
+    
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
     public int getHeight() {
         return height;
@@ -292,5 +323,19 @@ public class Frame {
     
     public Category getCategory() {
         return category;
+    }
+    
+    /**
+     * 获取此Frame中的所有ModuleButton组件
+     * @return ModuleButton列表
+     */
+    public List<ModuleButton> getModuleButtons() {
+        List<ModuleButton> moduleButtons = new ArrayList<>();
+        for (Component component : components) {
+            if (component instanceof ModuleButton) {
+                moduleButtons.add((ModuleButton) component);
+            }
+        }
+        return moduleButtons;
     }
 }

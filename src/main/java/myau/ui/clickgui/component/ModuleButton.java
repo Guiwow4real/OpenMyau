@@ -17,7 +17,8 @@ import myau.ui.clickgui.component.impl.BindButton;
 import myau.ui.clickgui.component.impl.ModeSelector;
 import myau.ui.clickgui.component.impl.ColorPicker;
 import net.minecraft.client.gui.Gui;
-
+import net.minecraft.client.gui.ScaledResolution;
+import myau.ui.clickgui.IntelliJTheme;
 import myau.util.RenderUtils; // Import RenderUtils
 import java.awt.Color;
 
@@ -33,11 +34,12 @@ public class ModuleButton extends Component {
     private float animationProgress; // 新增：动画进度 (0.0 - 1.0)
     private long lastUpdateTime; // 新增：上次更新时间
     
-    // 默认颜色值
-    private static final int SECONDARY_COLOR = new Color(30, 30, 30, 180).getRGB();
-    private static final int PRIMARY_COLOR = new Color(30, 150, 250).getRGB();
-    private static final int TEXT_COLOR = new Color(220, 220, 220).getRGB();
-    private static final float DEFAULT_ANIMATION_SPEED = 3.0f; // 默认动画速度
+    // IntelliJ IDEA主题颜色
+    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
+    private static final int SELECTED_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SELECTED_COLOR);
+    private static final int HOVER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
+    private static final int MODULE_NAME_COLOR = IntelliJTheme.getRGB(IntelliJTheme.VARIABLE_NAME_COLOR);
+    private static final float DEFAULT_ANIMATION_SPEED = IntelliJTheme.ANIMATION_SPEED; // IntelliJ动画速度
 
     public ModuleButton(Module module, Frame parent, int yOffset) {
         super(parent, parent.getX(), parent.getY() + yOffset, parent.getWidth(), 16);
@@ -73,16 +75,26 @@ public class ModuleButton extends Component {
         // 更新动画状态
         updateAnimation();
         
-        // Use background color from GuiConfig
-        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, SECONDARY_COLOR);
+        // IntelliJ风格背景 - 检查鼠标悬停
+        boolean isMouseOver = isMouseOver(mouseX, mouseY);
+        int backgroundColor = isMouseOver ? HOVER_COLOR : BACKGROUND_COLOR;
+        
+        // 绘制IntelliJ风格背景
+        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, backgroundColor);
 
+        // IntelliJ风格选中指示器 - 模块启用时显示选中状态
         if (this.module.isEnabled()) {
-            // Use primary color from GuiConfig for enabled indicator
-            Gui.drawRect(this.x, this.y, this.x + 2, this.y + this.height, PRIMARY_COLOR);
+            Gui.drawRect(this.x, this.y, this.x + 3, this.y + this.height, SELECTED_COLOR);
         }
 
-        // Use text color from GuiConfig
-        RenderUtils.drawWrappedString(fr, this.module.getName(), this.x + 4, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 4, TEXT_COLOR);
+        // IntelliJ风格模块名称 - 使用变量名橙色
+        RenderUtils.drawWrappedString(fr, this.module.getName(), this.x + 8, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 12, MODULE_NAME_COLOR);
+        
+        // 绘制模块状态指示器（右侧小圆点）
+        int indicatorX = this.x + this.width - 10;
+        int indicatorY = this.y + (this.height - 4) / 2;
+        int indicatorColor = this.module.isEnabled() ? 0xFF00FF00 : 0xFFFF0000;
+        Gui.drawRect(indicatorX, indicatorY, indicatorX + 4, indicatorY + 4, indicatorColor);
 
         // 计算动画高度
         int animatedHeight = (int) (getSubComponentsHeight() * animationProgress);
@@ -90,21 +102,43 @@ public class ModuleButton extends Component {
         if (animatedHeight > 0 && !this.subComponents.isEmpty()) {
             int yOffset = this.y + this.height;
             int remainingHeight = animatedHeight;
-            int screenHeight = mc.displayHeight; // 获取屏幕高度
+            int screenHeight = new ScaledResolution(mc).getScaledHeight(); // 获取屏幕高度
             
+            // 计算每个子组件应该渲染的高度
+            int currentY = yOffset;
             for (Component comp : this.subComponents) {
-                // 检查是否有足够的空间渲染这个组件，并且不会超出屏幕高度
-                if (remainingHeight >= comp.getHeight() && yOffset + comp.getHeight() <= screenHeight) {
+                int compHeight = comp.getHeight();
+                
+                // 如果这个组件完全在动画高度内
+                if (remainingHeight >= compHeight) {
                     comp.x = this.x + 2;
-                    comp.y = yOffset;
+                    comp.y = currentY;
                     comp.width = this.width - 4;
                     comp.render(mouseX, mouseY);
                     
-                    int compHeight = comp.getHeight();
-                    yOffset += compHeight;
+                    currentY += compHeight;
                     remainingHeight -= compHeight;
+                } else if (remainingHeight > 0) {
+                    // 部分可见的组件 - 使用简单的透明度控制
+                    comp.x = this.x + 2;
+                    comp.y = currentY;
+                    comp.width = this.width - 4;
+                    
+                    // 保存原始颜色状态
+                    net.minecraft.client.renderer.GlStateManager.pushMatrix();
+                    
+                    // 根据可见比例设置透明度
+                    float alpha = remainingHeight / (float)compHeight;
+                    net.minecraft.client.renderer.GlStateManager.color(1.0f, 1.0f, 1.0f, alpha);
+                    
+                    comp.render(mouseX, mouseY);
+                    
+                    // 恢复颜色状态
+                    net.minecraft.client.renderer.GlStateManager.popMatrix();
+                    
+                    break; // 剩余组件不再渲染
                 } else {
-                    // 空间不足或超出屏幕高度，不再渲染更多组件
+                    // 没有剩余空间，停止渲染
                     break;
                 }
             }
@@ -202,5 +236,13 @@ public class ModuleButton extends Component {
             height += comp.getHeight();
         }
         return height;
+    }
+
+    public Module getModule() {
+        return module;
+    }
+    
+    public ArrayList<Component> getSubComponents() {
+        return subComponents;
     }
 }

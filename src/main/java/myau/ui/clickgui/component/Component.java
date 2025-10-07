@@ -36,6 +36,12 @@ public abstract class Component {
         // Default implementation: do nothing. Subclasses like Slider will override this.
     }
 
+    public void updatePosition(int mouseX, int mouseY) {
+        // Default implementation: update component position based on mouse drag
+        this.x = mouseX;
+        this.y = mouseY;
+    }
+
     public void keyTyped(char typedChar, int keyCode) {}
 
     public boolean isMouseOver(int mouseX, int mouseY) {
@@ -56,5 +62,9 @@ public abstract class Component {
 
     public int getHeight() {
         return height;
+    }
+    
+    public void setWidth(int width) {
+        this.width = width;
     }
 }

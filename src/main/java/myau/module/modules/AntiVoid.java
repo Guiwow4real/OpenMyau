@@ -38,7 +38,7 @@ public class AntiVoid extends Module {
     }
 
     public AntiVoid() {
-        super("AntiVoid", "Prevents you from falling into the void.", Category.MOVEMENT, 0, false, false);
+        super("AntiVoid", "Prevents you from falling into the void.", Category.COMBAT, 0, false, false);
     }
 
     @EventTarget(Priority.LOWEST)

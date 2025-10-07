@@ -6,14 +6,16 @@ import myau.ui.clickgui.component.Component;
 import net.minecraft.client.gui.Gui;
 import myau.util.RenderUtils;
 import java.awt.Color;
+import myau.ui.clickgui.IntelliJTheme;
 
 public class ModeSelector extends Component {
 
     private final ModeProperty modeProperty;
     
-    // 默认颜色值
-    private static final int SECONDARY_COLOR = new Color(30, 30, 30, 180).getRGB();
-    private static final int TEXT_COLOR = new Color(220, 220, 220).getRGB();
+    // IntelliJ IDEA主题颜色
+    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
+    private static final int TYPE_VALUE_COLOR = IntelliJTheme.getRGB(IntelliJTheme.TYPE_VALUE_COLOR);
+    private static final int HOVER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
 
     public ModeSelector(ModeProperty modeProperty, Frame parent, int x, int y, int width, int height) {
         super(parent, x, y, width, height);
@@ -22,9 +24,13 @@ public class ModeSelector extends Component {
 
     @Override
     public void render(int mouseX, int mouseY) {
-        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, SECONDARY_COLOR);
+        // IntelliJ风格背景 - 检查鼠标悬停
+        boolean isMouseOver = isMouseOver(mouseX, mouseY);
+        int backgroundColor = isMouseOver ? HOVER_COLOR : BACKGROUND_COLOR;
+        
+        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, backgroundColor);
         String displayText = this.modeProperty.getName() + ": " + this.modeProperty.getModeString();
-        RenderUtils.drawWrappedString(fr, displayText, this.x + 2, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 4, TEXT_COLOR);
+        RenderUtils.drawWrappedString(fr, displayText, this.x + 6, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 12, TYPE_VALUE_COLOR);
     }
 
     @Override

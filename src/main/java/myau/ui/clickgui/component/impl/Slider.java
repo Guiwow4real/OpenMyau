@@ -6,6 +6,8 @@ import myau.property.properties.IntProperty;
 import myau.property.properties.PercentProperty;
 import myau.ui.clickgui.Frame;
 import myau.ui.clickgui.component.Component;
+import myau.util.RenderUtils;
+import myau.ui.clickgui.IntelliJTheme;
 import net.minecraft.client.gui.Gui;
 
 import java.awt.Color;
@@ -20,10 +22,11 @@ public class Slider extends Component {
     private final Property property;
     private boolean dragging;
     
-    // 默认颜色值
-    private static final int SECONDARY_COLOR = new Color(30, 30, 30, 180).getRGB();
-    private static final int PRIMARY_COLOR = new Color(30, 150, 250).getRGB();
-    private static final int TEXT_COLOR = new Color(220, 220, 220).getRGB();
+    // IntelliJ IDEA主题颜色
+    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
+    private static final int SLIDER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SLIDER_COLOR);
+    private static final int TYPE_VALUE_COLOR = IntelliJTheme.getRGB(IntelliJTheme.TYPE_VALUE_COLOR);
+    private static final int HOVER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
 
     public Slider(@SuppressWarnings("rawtypes") Property property, Frame parent, int x, int y, int width, int height) {
         super(parent, x, y, width, height);
@@ -33,8 +36,12 @@ public class Slider extends Component {
 
     @Override
     public void render(int mouseX, int mouseY) {
-        // 使用默认背景色
-        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, SECONDARY_COLOR);
+        // IntelliJ风格背景 - 检查鼠标悬停
+        boolean isMouseOver = isMouseOver(mouseX, mouseY);
+        int backgroundColor = isMouseOver ? HOVER_COLOR : BACKGROUND_COLOR;
+        
+        // 使用IntelliJ背景色
+        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, backgroundColor);
 
         double min = 0, max = 0;
         double value = 0;
@@ -55,8 +62,8 @@ public class Slider extends Component {
         }
 
         double renderWidth = (this.width) * (value - min) / (max - min);
-        // 使用默认主色调
-        Gui.drawRect(this.x, this.y, this.x + (int) renderWidth, this.y + this.height, PRIMARY_COLOR);
+        // 使用IntelliJ滑块颜色
+        Gui.drawRect(this.x, this.y, this.x + (int) renderWidth, this.y + this.height, SLIDER_COLOR);
 
         String name = this.property.getName();
         String valStr = "" + round(value, 2);
@@ -64,9 +71,9 @@ public class Slider extends Component {
         if (this.property instanceof PercentProperty) {
             valStr = valStr + "%";
         }
-        // 使用默认文字颜色
-        fr.drawStringWithShadow(name, this.x + 2, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, TEXT_COLOR);
-        fr.drawStringWithShadow(valStr, this.x + this.width - fr.getStringWidth(valStr) - 2, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, TEXT_COLOR);
+        // IntelliJ风格文字渲染
+        RenderUtils.drawWrappedString(fr, name, this.x + 6, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 12, TYPE_VALUE_COLOR);
+        fr.drawStringWithShadow(valStr, this.x + this.width - fr.getStringWidth(valStr) - 6, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, TYPE_VALUE_COLOR);
 
         if (this.dragging) {
             updateValue(mouseX);

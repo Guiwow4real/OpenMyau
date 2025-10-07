@@ -2,6 +2,7 @@ package myau.ui.clickgui.component.impl;
 
 import myau.module.Module;
 import myau.ui.clickgui.Frame;
+import myau.ui.clickgui.IntelliJTheme;
 import myau.ui.clickgui.component.Component;
 import net.minecraft.client.gui.Gui;
 import myau.util.RenderUtils;
@@ -14,9 +15,10 @@ public class BindButton extends Component {
     private final Module module;
     private boolean listeningForKey;
     
-    // 默认颜色值
-    private static final int SECONDARY_COLOR = new Color(30, 30, 30, 180).getRGB();
-    private static final int TEXT_COLOR = new Color(220, 220, 220).getRGB();
+    // IntelliJ IDEA主题颜色
+    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
+    private static final int TYPE_VALUE_COLOR = IntelliJTheme.getRGB(IntelliJTheme.TYPE_VALUE_COLOR);
+    private static final int HOVER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
 
     public BindButton(Module module, Frame parent, int x, int y, int width, int height) {
         super(parent, x, y, width, height);
@@ -26,9 +28,13 @@ public class BindButton extends Component {
 
     @Override
     public void render(int mouseX, int mouseY) {
-        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, SECONDARY_COLOR);
+        // IntelliJ风格背景 - 检查鼠标悬停
+        boolean isMouseOver = isMouseOver(mouseX, mouseY);
+        int backgroundColor = isMouseOver ? HOVER_COLOR : BACKGROUND_COLOR;
+        
+        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, backgroundColor);
         String text = listeningForKey ? "Press a key..." : "Bind: " + Keyboard.getKeyName(module.getKey());
-        RenderUtils.drawWrappedString(fr, text, this.x + 2, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 4, TEXT_COLOR);
+        RenderUtils.drawWrappedString(fr, text, this.x + 6, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 12, TYPE_VALUE_COLOR);
     }
 
     @Override

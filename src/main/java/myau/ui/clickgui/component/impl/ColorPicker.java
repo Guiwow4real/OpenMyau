@@ -7,7 +7,7 @@ import net.minecraft.client.gui.Gui;
 import myau.util.RenderUtils;
 import myau.Myau;
 import myau.module.modules.HUD;
-
+import myau.ui.clickgui.IntelliJTheme;
 import java.awt.*;
 
 public class ColorPicker extends Component {
@@ -16,9 +16,10 @@ public class ColorPicker extends Component {
     private boolean isCustomMode = false;
     private boolean isSyncMode = false;
     
-    // 默认颜色值
-    private static final int SECONDARY_COLOR = new Color(30, 30, 30, 180).getRGB();
-    private static final int TEXT_COLOR = new Color(220, 220, 220).getRGB();
+    // IntelliJ IDEA主题颜色
+    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
+    private static final int TYPE_VALUE_COLOR = IntelliJTheme.getRGB(IntelliJTheme.TYPE_VALUE_COLOR);
+    private static final int HOVER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
 
     public ColorPicker(ColorProperty colorProperty, Frame parent, int x, int y, int width, int height) {
         super(parent, x, y, width, height);
@@ -32,7 +33,11 @@ public class ColorPicker extends Component {
 
     @Override
     public void render(int mouseX, int mouseY) {
-        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, SECONDARY_COLOR);
+        // IntelliJ风格背景 - 检查鼠标悬停
+        boolean isMouseOver = isMouseOver(mouseX, mouseY);
+        int backgroundColor = isMouseOver ? HOVER_COLOR : BACKGROUND_COLOR;
+        
+        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, backgroundColor);
         
         String displayText = this.colorProperty.getName() + ": ";
         
@@ -51,11 +56,11 @@ public class ColorPicker extends Component {
             displayText += this.colorProperty.formatValue();
         }
         
-        RenderUtils.drawWrappedString(fr, displayText, this.x + 2, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 4, TEXT_COLOR);
+        RenderUtils.drawWrappedString(fr, displayText, this.x + 6, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 12, TYPE_VALUE_COLOR);
         
-        // 绘制颜色预览框
-        int previewSize = 8;
-        int previewX = this.x + this.width - previewSize - 2;
+        // IntelliJ风格颜色预览框
+        int previewSize = 10;
+        int previewX = this.x + this.width - previewSize - 6;
         int previewY = this.y + this.height / 2 - previewSize / 2;
         Gui.drawRect(previewX, previewY, previewX + previewSize, previewY + previewSize, this.colorProperty.getValue());
         Gui.drawRect(previewX, previewY, previewX + previewSize, previewY + previewSize, 0xFF000000); // 黑色边框

@@ -36,18 +36,43 @@ public class Config {
             JsonObject jsonObject = parsed.getAsJsonObject();
             // Load GUI colors
             // GuiConfig.load(jsonObject); // <--- REMOVED THIS LINE
+            // Note: GuiConfig was removed, using GuiModule instead
             
-            // Load Frame positions if savePosition is enabled
-            if (myau.module.modules.GuiModule.savePosition.getValue() && jsonObject.has("framePositions")) {
-                JsonObject framePositions = jsonObject.getAsJsonObject("framePositions");
-                for (java.util.Map.Entry<String, JsonElement> entry : framePositions.entrySet()) {
-                    String categoryName = entry.getKey();
-                    JsonObject positionObj = entry.getValue().getAsJsonObject();
-                    int x = positionObj.get("x").getAsInt();
-                    int y = positionObj.get("y").getAsInt();
-                    
-                    // Store frame position for later use by ClickGuiScreen
-                    myau.ui.clickgui.ClickGuiScreen.framePositions.put(categoryName, new int[]{x, y});
+            // Load Frame positions if saveGuiState is enabled
+            myau.module.modules.GuiModule guiModule = (myau.module.modules.GuiModule) myau.Myau.moduleManager.modules.get(myau.module.modules.GuiModule.class);
+            if (guiModule != null && guiModule.saveGuiState.getValue()) {
+                // Load frame positions
+                if (jsonObject.has("framePositions")) {
+                    JsonObject framePositions = jsonObject.getAsJsonObject("framePositions");
+                    for (java.util.Map.Entry<String, JsonElement> entry : framePositions.entrySet()) {
+                        String categoryName = entry.getKey();
+                        JsonObject positionObj = entry.getValue().getAsJsonObject();
+                        int x = positionObj.get("x").getAsInt();
+                        int y = positionObj.get("y").getAsInt();
+                        
+                        // Store frame position for later use by ClickGuiScreen
+                        myau.ui.clickgui.ClickGuiScreen.framePositions.put(categoryName, new int[]{x, y});
+                    }
+                }
+                
+                // Load category expanded states
+                if (jsonObject.has("categoryExpandedStates")) {
+                    JsonObject expandedStates = jsonObject.getAsJsonObject("categoryExpandedStates");
+                    for (java.util.Map.Entry<String, JsonElement> entry : expandedStates.entrySet()) {
+                        String categoryName = entry.getKey();
+                        boolean isExpanded = entry.getValue().getAsBoolean();
+                        myau.ui.clickgui.ClickGuiScreen.categoryExpandedStates.put(categoryName, isExpanded);
+                    }
+                }
+                
+                // Load last selected category
+                if (jsonObject.has("lastSelectedCategory")) {
+                    myau.ui.clickgui.ClickGuiScreen.lastSelectedCategory = jsonObject.get("lastSelectedCategory").getAsString();
+                }
+                
+                // Load last selected module
+                if (jsonObject.has("lastSelectedModule")) {
+                    myau.ui.clickgui.ClickGuiScreen.lastSelectedModule = jsonObject.get("lastSelectedModule").getAsString();
                 }
             }
             
@@ -83,17 +108,41 @@ public class Config {
             JsonObject object = new JsonObject();
             // Save GUI colors
             // GuiConfig.save(object); // <--- REMOVED THIS LINE
+            // Note: GuiConfig was removed, using GuiModule instead
             
-            // Save Frame positions if savePosition is enabled
-            if (myau.module.modules.GuiModule.savePosition.getValue()) {
-                JsonObject framePositions = new JsonObject();
-                for (java.util.Map.Entry<String, int[]> entry : myau.ui.clickgui.ClickGuiScreen.framePositions.entrySet()) {
-                    JsonObject positionObj = new JsonObject();
-                    positionObj.addProperty("x", entry.getValue()[0]);
-                    positionObj.addProperty("y", entry.getValue()[1]);
-                    framePositions.add(entry.getKey(), positionObj);
+            // Save Frame positions if saveGuiState is enabled
+            myau.module.modules.GuiModule guiModule2 = (myau.module.modules.GuiModule) myau.Myau.moduleManager.modules.get(myau.module.modules.GuiModule.class);
+            if (guiModule2 != null && guiModule2.saveGuiState.getValue()) {
+                // Save frame positions
+                if (!myau.ui.clickgui.ClickGuiScreen.framePositions.isEmpty()) {
+                    JsonObject framePositions = new JsonObject();
+                    for (java.util.Map.Entry<String, int[]> entry : myau.ui.clickgui.ClickGuiScreen.framePositions.entrySet()) {
+                        JsonObject positionObj = new JsonObject();
+                        positionObj.addProperty("x", entry.getValue()[0]);
+                        positionObj.addProperty("y", entry.getValue()[1]);
+                        framePositions.add(entry.getKey(), positionObj);
+                    }
+                    object.add("framePositions", framePositions);
                 }
-                object.add("framePositions", framePositions);
+                
+                // Save category expanded states
+                if (!myau.ui.clickgui.ClickGuiScreen.categoryExpandedStates.isEmpty()) {
+                    JsonObject expandedStates = new JsonObject();
+                    for (java.util.Map.Entry<String, Boolean> entry : myau.ui.clickgui.ClickGuiScreen.categoryExpandedStates.entrySet()) {
+                        expandedStates.addProperty(entry.getKey(), entry.getValue());
+                    }
+                    object.add("categoryExpandedStates", expandedStates);
+                }
+                
+                // Save last selected category
+                if (myau.ui.clickgui.ClickGuiScreen.lastSelectedCategory != null) {
+                    object.addProperty("lastSelectedCategory", myau.ui.clickgui.ClickGuiScreen.lastSelectedCategory);
+                }
+                
+                // Save last selected module
+                if (myau.ui.clickgui.ClickGuiScreen.lastSelectedModule != null) {
+                    object.addProperty("lastSelectedModule", myau.ui.clickgui.ClickGuiScreen.lastSelectedModule);
+                }
             }
             
             for (Module module : Myau.moduleManager.modules.values()) {

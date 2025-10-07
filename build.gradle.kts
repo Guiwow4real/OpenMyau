@@ -4,7 +4,7 @@ plugins {
     java
     id("gg.essential.loom") version "0.10.0.+"
     id("dev.architectury.architectury-pack200") version "0.1.3"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 //Constants:
 val baseGroup: String by project
@@ -73,6 +73,12 @@ dependencies {
         isTransitive = false
     }
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
+    // Add dependencies for annotation processor
+    annotationProcessor("com.google.code.gson:gson:2.8.8")
+    annotationProcessor("com.google.guava:guava:30.1.1-jre")
+    annotationProcessor("org.ow2.asm:asm:9.3")
+    annotationProcessor("org.ow2.asm:asm-tree:9.3")
+    annotationProcessor("org.ow2.asm:asm-util:9.3")
     // If you don't want to log in with your real minecraft account, remove this line
     runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.2.1")
 }
