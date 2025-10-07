@@ -5,7 +5,6 @@
 
 # 介绍
 
-此改版基于[OpenMyau](https://github.com/60124808866/OpenMyau)
 这是一个魔改[OpenMyau](https://github.com/60124808866/OpenMyau)的项目。
 
 # 添加了什么？
