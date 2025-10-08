@@ -17,6 +17,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.*;
+import net.minecraft.init.Items;
 import net.minecraft.world.WorldSettings.GameType;
 import org.apache.commons.lang3.RandomUtils;
 import myau.module.Category;
@@ -33,7 +34,8 @@ public class ChestStealer extends Module {
     public final BooleanProperty autoClose = new BooleanProperty("auto-close", false);
     public final BooleanProperty nameCheck = new BooleanProperty("name-check", true);
     public final BooleanProperty skipTrash = new BooleanProperty("skip-trash", true);
-
+    public final BooleanProperty keepThrowables = new BooleanProperty("keep-throwables", false);
+    public final BooleanProperty keepBows = new BooleanProperty("keep-bows", false);
     private boolean isValidGameMode() {
         GameType gameType = mc.playerController.getCurrentGameType();
         return gameType == GameType.SURVIVAL || gameType == GameType.ADVENTURE;
@@ -173,7 +175,7 @@ public class ChestStealer extends Module {
                                 for (int i = 0; i < inventory.getSizeInventory(); i++) {
                                     if (container.getSlot(i).getHasStack()) {
                                         ItemStack stack = container.getSlot(i).getStack();
-                                        if (!(Boolean) this.skipTrash.getValue() || !ItemUtil.isNotSpecialItem(stack)) {
+                                        if (this.shouldTakeItem(stack)) {
                                             this.shiftClick(container.windowId, i);
                                             return;
                                         }
@@ -193,6 +195,27 @@ public class ChestStealer extends Module {
     @EventTarget
     public void onWindowClick(WindowClickEvent event) {
         this.clickDelay = RandomUtils.nextInt(this.minDelay.getValue() + 1, this.maxDelay.getValue() + 2);
+    }
+
+    private boolean shouldTakeItem(ItemStack stack){
+        if(stack == null) return false;
+        Item item = stack.getItem();
+        if(this.skipTrash.getValue()){
+            if(this.keepBows.getValue()){
+                if (item instanceof ItemBow || item == Items.arrow) return true;
+            }
+            if(this.keepThrowables.getValue()){
+                if (item instanceof ItemSnowball || 
+                    item instanceof ItemEgg || 
+                    item instanceof ItemEnderPearl || 
+                    item instanceof ItemFireball ||
+                    item == Items.fire_charge) {
+                    return true;
+                }
+            }
+            if(ItemUtil.isNotSpecialItem(stack)) return false;
+        }
+        return true;
     }
 
     @Override

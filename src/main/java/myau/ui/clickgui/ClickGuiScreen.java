@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.awt.Color;
 import org.lwjgl.input.Mouse;
+import net.minecraft.util.ChatAllowedCharacters;
 
 public class ClickGuiScreen extends GuiScreen {
     // 单例实例
@@ -43,6 +44,8 @@ public class ClickGuiScreen extends GuiScreen {
     public static String lastSelectedCategory = null;
     public static String lastSelectedModule = null;
     public static Map<String, Boolean> categoryExpandedStates = new HashMap<>();
+    public static int savedNavigationScrollOffset = 0; // 保存的导航栏滚动偏移
+    public static int savedPropertiesScrollOffset = 0; // 保存的属性区域滚动偏移
     
     // 滚动相关变量
     private int navigationScrollOffset = 0; // 左侧导航栏滚动偏移
@@ -65,15 +68,39 @@ public class ClickGuiScreen extends GuiScreen {
     
     // 当前选中的模块
     private ModuleButton selectedModule = null;
+    // 用于键盘导航选中的元素
+    private Object selectedNavigationElement = null; // 可以是 Frame 或 ModuleButton
+
+    // Tooltip management
+    private String tooltipText = null;
+    private int tooltipX = 0;
+    private int tooltipY = 0;
     
     // 窗口标题栏相关变量
     private boolean isDraggingWindow = false;
     private int windowDragX = 0;
     private int windowDragY = 0;
-    private int windowX = 200; // 窗口X位置
-    private int windowY = 80;  // 窗口Y位置
-    private int windowWidth = 650;  // 窗口宽度
-    private int windowHeight = 480; // 窗口高度
+    public int windowX = 200; // 窗口X位置
+    public int windowY = 80;  // 窗口Y位置
+    public int windowWidth = 650;  // 窗口宽度
+    public int windowHeight = 480; // 窗口高度
+    
+    // Double-click detection variables
+    private long lastClickTime = 0;
+    private ModuleButton lastClickedModuleButton = null;
+    private static final long DOUBLE_CLICK_TIME_MS = 200; // 200 milliseconds for double click
+    
+    // 搜索框相关变量
+    private String searchQuery = "";
+    private boolean isSearching = false;
+    private static final int SEARCH_BAR_HEIGHT = 20;
+    private static final int SEARCH_BAR_Y_OFFSET = 5;
+    
+    // 窗口大小调整相关变量
+    private boolean isResizingWindow = false;
+    private int resizeDirection = 0; // 1: right, 2: bottom, 3: right-bottom
+    private int resizeStartX, resizeStartY, initialWindowWidth, initialWindowHeight;
+    private static final int RESIZE_HANDLE_SIZE = 6;
     
     // 获取单例实例
     public static ClickGuiScreen getInstance() {
@@ -149,14 +176,27 @@ public class ClickGuiScreen extends GuiScreen {
         // 恢复选中的框架和模块
         restoreSelectedState();
         
+        // 恢复滚动偏移
+        this.navigationScrollOffset = savedNavigationScrollOffset;
+        this.propertiesScrollOffset = savedPropertiesScrollOffset;
+        
         // 如果没有恢复到选中的框架，默认选中第一个框架
         if (selectedFrame == null && !frames.isEmpty()) {
             selectedFrame = frames.get(0);
+        }
+        // 初始化键盘导航选中的元素
+        if (selectedModule != null) {
+            selectedNavigationElement = selectedModule;
+        } else if (selectedFrame != null) {
+            selectedNavigationElement = selectedFrame;
         }
     }
     
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        // Reset tooltip at the beginning of each frame
+        tooltipText = null;
+
         // 绘制背景（半透明遮罩）
         Gui.drawRect(0, 0, this.width, this.height, new Color(0, 0, 0, 100).getRGB());
         
@@ -174,13 +214,26 @@ public class ClickGuiScreen extends GuiScreen {
         // 绘制导航栏边框
         Gui.drawRect(NAVIGATION_WIDTH, contentY, NAVIGATION_WIDTH + BORDER_THICKNESS, this.height, 
                     IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
+
+        // 渲染搜索栏
+        renderSearchBar(mouseX, mouseY);
+
+        // Render navigation panel and collect tooltip
+        String navigationTooltip = renderNavigationPanel(mouseX, mouseY);
+        if (navigationTooltip != null) {
+            tooltipText = navigationTooltip;
+            tooltipX = mouseX;
+            tooltipY = mouseY;
+        }
         
-        // 渲染导航栏
-        renderNavigationPanel();
-        
-        // 渲染模块属性区域
-        renderModuleProperties(NAVIGATION_WIDTH + BORDER_THICKNESS, contentY, 
-                              this.width - NAVIGATION_WIDTH - BORDER_THICKNESS, contentHeight, mouseX, mouseY);
+        // Render module properties area and collect tooltip
+        String propertiesTooltip = renderModuleProperties(NAVIGATION_WIDTH + BORDER_THICKNESS, contentY, 
+                                      this.width - NAVIGATION_WIDTH - BORDER_THICKNESS, contentHeight, mouseX, mouseY);
+        if (propertiesTooltip != null) {
+            tooltipText = propertiesTooltip;
+            tooltipX = mouseX;
+            tooltipY = mouseY;
+        }
         
         // 更新拖拽组件位置
         if (this.draggingComponent != null) {
@@ -188,8 +241,107 @@ public class ClickGuiScreen extends GuiScreen {
         }
         
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        // 渲染窗口大小调整手柄
+        renderResizeHandles(mouseX, mouseY);
+
+        // Render tooltip last to ensure it's on top
+        if (tooltipText != null) {
+            renderTooltip(tooltipText, tooltipX, tooltipY);
+        }
     }
     
+    /**
+     * 渲染搜索栏
+     */
+    private void renderSearchBar(int mouseX, int mouseY) {
+        int searchBarX = BORDER_THICKNESS;
+        int searchBarY = TITLE_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET;
+        int searchBarWidth = NAVIGATION_WIDTH - BORDER_THICKNESS * 2;
+        int searchBarHeight = SEARCH_BAR_HEIGHT;
+
+        // 绘制搜索框背景
+        RenderUtil.drawRoundedRect(searchBarX, searchBarY, searchBarWidth, searchBarHeight, CORNER_RADIUS, IntelliJTheme.getRGB(IntelliJTheme.TEXT_FIELD_BG));
+
+        // 绘制搜索框边框
+        RenderUtil.drawRoundedRectOutline(searchBarX, searchBarY, searchBarWidth, searchBarHeight, CORNER_RADIUS, 1.0f, isSearching ? IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR) : IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
+
+        // 绘制搜索图标
+        mc.fontRendererObj.drawStringWithShadow("\uD83D\uDD0D", searchBarX + 5, searchBarY + searchBarHeight / 2 - mc.fontRendererObj.FONT_HEIGHT / 2, IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR_SECONDARY)); // Unicode search icon
+
+        // 绘制搜索文本
+        String displayText = searchQuery.isEmpty() && !isSearching ? "Search..." : searchQuery;
+        int textColor = searchQuery.isEmpty() && !isSearching ? IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR_SECONDARY) : IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR);
+        mc.fontRendererObj.drawStringWithShadow(displayText, searchBarX + 5 + mc.fontRendererObj.getStringWidth("\uD83D\uDD0D "), searchBarY + searchBarHeight / 2 - mc.fontRendererObj.FONT_HEIGHT / 2, textColor);
+
+        // 绘制输入光标
+        if (isSearching && System.currentTimeMillis() / 500 % 2 == 0) {
+            String currentText = searchQuery.isEmpty() ? "" : searchQuery;
+            int cursorX = searchBarX + 5 + mc.fontRendererObj.getStringWidth("\uD83D\uDD0D " + currentText);
+            Gui.drawRect(cursorX, searchBarY + searchBarHeight / 2 - mc.fontRendererObj.FONT_HEIGHT / 2 - 1, cursorX + 1, searchBarY + searchBarHeight / 2 + mc.fontRendererObj.FONT_HEIGHT / 2 + 1, IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR));
+        }
+    }
+    
+    /**
+     * 渲染窗口大小调整手柄
+     */
+    private void renderResizeHandles(int mouseX, int mouseY) {
+        // 右下角
+        int rightBottomX = windowX + windowWidth - RESIZE_HANDLE_SIZE;
+        int rightBottomY = windowY + windowHeight - RESIZE_HANDLE_SIZE;
+        boolean isHoveringRightBottom = mouseX >= rightBottomX && mouseX <= windowX + windowWidth &&
+                                        mouseY >= rightBottomY && mouseY <= windowY + windowHeight;
+        Gui.drawRect(rightBottomX, rightBottomY, windowX + windowWidth, windowY + windowHeight, 
+                     isHoveringRightBottom ? IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR) : IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
+
+        // 右边缘
+        int rightEdgeX1 = windowX + windowWidth - RESIZE_HANDLE_SIZE;
+        int rightEdgeY1 = windowY + RESIZE_HANDLE_SIZE;
+        int rightEdgeX2 = windowX + windowWidth;
+        int rightEdgeY2 = windowY + windowHeight - RESIZE_HANDLE_SIZE;
+        boolean isHoveringRightEdge = mouseX >= rightEdgeX1 && mouseX <= rightEdgeX2 &&
+                                      mouseY >= rightEdgeY1 && mouseY <= rightEdgeY2;
+        Gui.drawRect(rightEdgeX1, rightEdgeY1, rightEdgeX2, rightEdgeY2,
+                     isHoveringRightEdge ? IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR) : IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
+
+        // 下边缘
+        int bottomEdgeX1 = windowX + RESIZE_HANDLE_SIZE;
+        int bottomEdgeY1 = windowY + windowHeight - RESIZE_HANDLE_SIZE;
+        int bottomEdgeX2 = windowX + windowWidth - RESIZE_HANDLE_SIZE;
+        int bottomEdgeY2 = windowY + windowHeight;
+        boolean isHoveringBottomEdge = mouseX >= bottomEdgeX1 && mouseX <= bottomEdgeX2 &&
+                                       mouseY >= bottomEdgeY1 && mouseY <= bottomEdgeY2;
+        Gui.drawRect(bottomEdgeX1, bottomEdgeY1, bottomEdgeX2, bottomEdgeY2,
+                     isHoveringBottomEdge ? IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR) : IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
+    }
+
+    /**
+     * 渲染工具提示
+     */
+    private void renderTooltip(String text, int mouseX, int mouseY) {
+        if (text == null || text.isEmpty()) return;
+
+        FontRenderer fr = this.mc.fontRendererObj;
+        int textWidth = fr.getStringWidth(text);
+        int textHeight = fr.FONT_HEIGHT;
+
+        int padding = 3;
+        int tooltipX = mouseX + 10; // 偏移鼠标位置，避免遮挡
+        int tooltipY = mouseY - 5;  // 偏移鼠标位置
+
+        // 确保提示框不会超出屏幕右侧
+        if (tooltipX + textWidth + padding * 2 > this.width) {
+            tooltipX = this.width - textWidth - padding * 2; // 调整到屏幕边缘
+        }
+
+        // 绘制背景
+        Gui.drawRect(tooltipX, tooltipY, tooltipX + textWidth + padding * 2, tooltipY + textHeight + padding * 2, IntelliJTheme.getRGB(IntelliJTheme.TOOLTIP_BACKGROUND));
+        // 绘制边框
+        RenderUtil.drawRectOutline(tooltipX, tooltipY, textWidth + padding * 2, textHeight + padding * 2, 1.0f, IntelliJTheme.getRGB(IntelliJTheme.TOOLTIP_BORDER));
+        // 绘制文本
+        fr.drawStringWithShadow(text, tooltipX + padding, tooltipY + padding, IntelliJTheme.getRGB(IntelliJTheme.TOOLTIP_TEXT_COLOR));
+    }
+
     /**
      * 渲染窗口标题栏（模仿 IntelliJ IDEA 和 Windows 风格）
      */
@@ -279,13 +431,44 @@ public class ClickGuiScreen extends GuiScreen {
     
     /**
      * 渲染左侧导航栏，模仿IntelliJ IDEA项目结构（整体滚动）
+     * @return 返回需要显示的Tooltip文本，如果没有则返回null
      */
-    private void renderNavigationPanel() {
+    private String renderNavigationPanel(int mouseX, int mouseY) {
         FontRenderer fr = this.mc.fontRendererObj;
         int categoryHeight = 20; // 每个分类的高度
-        int startY = TITLE_BAR_HEIGHT + 5 - navigationScrollOffset; // 起始Y位置，整体受滚动影响
-        int currentY = startY;
+        int contentAreaY = TITLE_BAR_HEIGHT + SEARCH_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET * 2; // 内容区域的起始Y坐标
+        int contentAreaHeight = this.height - contentAreaY; // 内容区域的高度
+
+        String hoveredTooltip = null;
+
+        // 计算导航栏内容的总高度
+        int totalNavigationContentHeight = 0;
+        for (Frame frame : frames) {
+            totalNavigationContentHeight += categoryHeight; // 分类标题高度
+            if (frame.isExtended()) {
+                List<ModuleButton> moduleButtons = frame.getModuleButtons();
+                if (moduleButtons.isEmpty()) {
+                    totalNavigationContentHeight += 15; // 空提示文本高度
+                } else {
+                    totalNavigationContentHeight += moduleButtons.size() * 15; // 每个模块15像素高度
+                }
+            }
+        }
+
+        // 限制navigationScrollOffset的范围
+        int maxScrollOffset = Math.max(0, totalNavigationContentHeight - contentAreaHeight); // 计算最大滚动偏移量
+        navigationScrollOffset = Math.max(0, Math.min(maxScrollOffset, navigationScrollOffset)); // 限制滚动范围
+
+        // 渲染导航栏的滚动条
+        int navigationScrollbarX = NAVIGATION_WIDTH - 5; // 滚动条X位置
+        int navigationScrollbarWidth = 3; // 滚动条宽度
+        renderScrollbar(navigationScrollbarX, contentAreaY, navigationScrollbarWidth, contentAreaHeight, totalNavigationContentHeight, navigationScrollOffset, mouseX, mouseY);
+
+        // 设置裁剪区域，只绘制在导航栏内容区域内的内容
+        RenderUtil.scissor(5, contentAreaY, NAVIGATION_WIDTH - 10, contentAreaHeight);
         
+        int currentY = contentAreaY + 5 - navigationScrollOffset; // 绘制内容的起始Y位置，受滚动影响
+
         // 调试信息：检查frames列表
         if (frames.isEmpty()) {
             // 显示调试信息
@@ -295,7 +478,7 @@ public class ClickGuiScreen extends GuiScreen {
             }
             debugInfo += "Total modules: " + Myau.moduleManager.modules.size();
             
-            if (currentY >= TITLE_BAR_HEIGHT && currentY < this.height) {
+            if (currentY >= contentAreaY && currentY < contentAreaY + contentAreaHeight) {
                 fr.drawString(debugInfo, 15, currentY, 0xFFFFFF);
             }
             currentY += 12;
@@ -304,21 +487,35 @@ public class ClickGuiScreen extends GuiScreen {
             for (Category category : Category.values()) {
                 String categoryInfo = "Category: " + category.getName() + ", Modules: " + 
                     Myau.moduleManager.getModulesInCategory(category).size();
-                if (currentY >= TITLE_BAR_HEIGHT && currentY < this.height) {
+                if (currentY >= contentAreaY && currentY < contentAreaY + contentAreaHeight) {
                     fr.drawString(categoryInfo, 15, currentY, 0xFFFFFF);
                 }
                 currentY += 12;
             }
-            return;
+            RenderUtil.releaseScissor();
+            return null;
         }
         
         // 正常渲染frames - 整体滚动
         for (Frame frame : frames) {
             // 绘制分类标题
-            if (currentY + categoryHeight > TITLE_BAR_HEIGHT && currentY < this.height) {
+            if (currentY + categoryHeight > contentAreaY && currentY < contentAreaY + contentAreaHeight) {
                 // 绘制包背景
+                int categoryBgColor = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
+                boolean isCategoryHovered = mouseX >= 5 && mouseX <= NAVIGATION_WIDTH - 5 &&
+                                            mouseY >= currentY && mouseY <= currentY + categoryHeight;
+
+                if (isCategoryHovered) {
+                    categoryBgColor = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
+                }
                 if (frame == selectedFrame) {
-                    Gui.drawRect(5, currentY, NAVIGATION_WIDTH - 5, currentY + categoryHeight, SELECTED_BG_COLOR);
+                    categoryBgColor = IntelliJTheme.getRGB(IntelliJTheme.SELECTED_BG_COLOR); // 选中时覆盖悬停色
+                }
+                Gui.drawRect(5, currentY, NAVIGATION_WIDTH - 5, currentY + categoryHeight, categoryBgColor);
+                
+                // 绘制键盘导航选中高亮
+                if (frame == selectedNavigationElement) {
+                    RenderUtil.drawRectOutline(5, currentY, NAVIGATION_WIDTH - 10, categoryHeight, 1.0f, IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR));
                 }
                 
                 // 绘制包名称 - 使用包命名格式
@@ -339,19 +536,28 @@ public class ClickGuiScreen extends GuiScreen {
                 
                 if (moduleButtons.isEmpty()) {
                     // 如果该分类下没有模块，显示提示
-                    if (currentY >= TITLE_BAR_HEIGHT && currentY < this.height) {
+                    if (currentY >= contentAreaY && currentY < contentAreaY + contentAreaHeight) {
                         String noModulesText = "    // No modules in this category";
                         fr.drawString(noModulesText, 20, currentY + 4, IntelliJTheme.getRGB(IntelliJTheme.DISABLED_TEXT_COLOR));
                     }
                     currentY += 15;
                 } else {
                     for (ModuleButton moduleButton : moduleButtons) {
-                        // 检查是否在可见区域内
-                        if (currentY + 15 > TITLE_BAR_HEIGHT && currentY < this.height) {
+                        // 检查是否在可见区域内，并且是可见的模块
+                        if (moduleButton.isVisible() && currentY + 15 > contentAreaY && currentY < contentAreaY + contentAreaHeight) {
                             // 绘制类背景
-                            if (moduleButton == selectedModule) {
-                                Gui.drawRect(10, currentY, NAVIGATION_WIDTH - 5, currentY + 15, SELECTED_BG_COLOR);
+                            int moduleBgColor = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
+                            boolean isModuleHovered = mouseX >= 10 && mouseX <= NAVIGATION_WIDTH - 5 &&
+                                                      mouseY >= currentY && mouseY <= currentY + 15; // Corrected mouseY for hover detection
+
+                            if (isModuleHovered) {
+                                moduleBgColor = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
+                                hoveredTooltip = moduleButton.getModule().getDescription(); // Collect tooltip
                             }
+                            if (moduleButton == selectedModule) {
+                                moduleBgColor = IntelliJTheme.getRGB(IntelliJTheme.SELECTED_BG_COLOR); // 选中时覆盖悬停色
+                            }
+                            Gui.drawRect(10, currentY, NAVIGATION_WIDTH - 5, currentY + 15, moduleBgColor);
                             
                             // 绘制类名称 - 使用类命名格式
                             String moduleName = moduleButton.getModule().getName();
@@ -363,6 +569,11 @@ public class ClickGuiScreen extends GuiScreen {
                                 IntelliJTheme.getRGB(IntelliJTheme.DISABLED_TEXT_COLOR);   // 灰色表示禁用
                             
                             fr.drawString(className, 20, currentY + 4, textColor);
+
+                            // 绘制键盘导航选中高亮
+                            if (moduleButton == selectedNavigationElement) {
+                                RenderUtil.drawRectOutline(10, currentY, NAVIGATION_WIDTH - 15, 15, 1.0f, IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR));
+                            }
                         }
                         
                         currentY += 15;
@@ -370,13 +581,17 @@ public class ClickGuiScreen extends GuiScreen {
                 }
             }
         }
+        RenderUtil.releaseScissor();
+        return hoveredTooltip;
     }
     
     /**
      * 渲染模块属性 - IDE代码编辑器风格（支持滚动）
+     * @return 返回需要显示的Tooltip文本，如果没有则返回null
      */
-    private void renderModuleProperties(int x, int y, int width, int height, int mouseX, int mouseY) {
+    private String renderModuleProperties(int x, int y, int width, int height, int mouseX, int mouseY) {
         FontRenderer fr = this.mc.fontRendererObj;
+        String hoveredTooltip = null;
         
         // IDE代码编辑器风格背景
         Gui.drawRect(x, y, x + width, y + height, IntelliJTheme.getRGB(IntelliJTheme.BACKGROUND_COLOR));
@@ -390,6 +605,33 @@ public class ClickGuiScreen extends GuiScreen {
         
         // 绘制代码区域背景
         Gui.drawRect(x + lineNumberWidth + 1, y, x + width, y + height, IntelliJTheme.getRGB(IntelliJTheme.CODE_BG_COLOR));
+        
+        // 计算属性内容的总高度
+        int totalPropertiesContentHeight = 0;
+        int initialContentOffset = 10; // 初始偏移量
+        int linesBeforeProperties = 7; // 包声明、导入、类声明等前面的行数
+        totalPropertiesContentHeight += (linesBeforeProperties + 1) * 15; // 每行15像素高度
+
+        if (selectedModule != null) {
+            ArrayList<Component> subComponents = selectedModule.getSubComponents();
+            if (subComponents != null && !subComponents.isEmpty()) {
+                totalPropertiesContentHeight += subComponents.size() * 15; // 每个属性15像素高度
+            } else {
+                totalPropertiesContentHeight += 15; // "没有可配置的属性" 提示文本高度
+            }
+            totalPropertiesContentHeight += 15; // 类结束大括号
+        } else {
+            totalPropertiesContentHeight += 2 * 15; // 欢迎文本高度
+        }
+        totalPropertiesContentHeight += initialContentOffset * 2; // 上下边距
+
+        // 渲染属性区域的滚动条
+        int propertiesScrollbarX = x + width - 5; // 滚动条X位置
+        int propertiesScrollbarWidth = 3; // 滚动条宽度
+        renderScrollbar(propertiesScrollbarX, y, propertiesScrollbarWidth, height, totalPropertiesContentHeight, propertiesScrollOffset, mouseX, mouseY);
+
+        // 设置裁剪区域，只绘制在属性内容区域内的内容
+        RenderUtil.scissor(x + lineNumberWidth + 1, y, width - lineNumberWidth - 1, height);
         
         int contentY = y + 10 - propertiesScrollOffset; // 支持滚动
         int lineNumber = 1;
@@ -405,11 +647,7 @@ public class ClickGuiScreen extends GuiScreen {
             contentY += 15;
             
             // 绘制导入语句
-            String[] imports = {
-                "import myau.module.Module;",
-                "import myau.module.Category;",
-                "import myau.property.properties.*;"
-            };
+            String[] imports = {"import myau.module.Module;", "import myau.module.Category;", "import myau.property.properties.*;"};
             
             for (String importStmt : imports) {
                 fr.drawStringWithShadow(importStmt, x + lineNumberWidth + 10, contentY, IntelliJTheme.getRGB(IntelliJTheme.KEYWORD_COLOR));
@@ -483,6 +721,17 @@ public class ClickGuiScreen extends GuiScreen {
                         String propertyValue = "";
                         String propertyType = "";
                         String propertyDescription = "";
+
+                        // 检查是否悬停在属性行上
+                        int propertyLineY = contentY;
+                        int propertyLineHeight = 15; // 每行属性的高度
+                        boolean isPropertyLineHovered = mouseX >= x + lineNumberWidth + 1 && mouseX <= x + width &&
+                                                        mouseY >= propertyLineY && mouseY <= propertyLineY + propertyLineHeight;
+
+                        if (isPropertyLineHovered) {
+                            Gui.drawRect(x + lineNumberWidth + 1, propertyLineY, x + width, propertyLineY + propertyLineHeight, IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR));
+                            hoveredTooltip = propertyDescription; // Collect tooltip
+                        }
                         
                         // 根据属性类型获取信息
                         if (property instanceof myau.property.properties.BooleanProperty) {
@@ -573,7 +822,7 @@ public class ClickGuiScreen extends GuiScreen {
                             
                             // 属性描述 - 注释颜色（灰色）
                             fr.drawStringWithShadow("// " + propertyDescription, textX, contentY, IntelliJTheme.getRGB(IntelliJTheme.COMMENT_COLOR));
-                            
+
                             // 更新位置
                             contentY += 15;
                             
@@ -598,9 +847,7 @@ public class ClickGuiScreen extends GuiScreen {
             
         } else {
             // 如果没有选中模块，显示IDE风格的欢迎界面
-            String[] welcomeText = {
-                "// Welcum to OpenMyau"
-            };
+            String[] welcomeText = {"// Welcum to OpenMyau", "// u can click on modules and set settings."};
             
             for (String line : welcomeText) {
                 fr.drawStringWithShadow(line, x + lineNumberWidth + 10, contentY, IntelliJTheme.getRGB(IntelliJTheme.COMMENT_COLOR));
@@ -608,6 +855,8 @@ public class ClickGuiScreen extends GuiScreen {
                 contentY += 15;
             }
         }
+        RenderUtil.releaseScissor();
+        return hoveredTooltip;
     }
     
     @Override
@@ -680,6 +929,19 @@ public class ClickGuiScreen extends GuiScreen {
         }
 
         super.handleInput(); // Call super to handle GUI-specific input (like mouse clicks, escape key)
+
+        // 遍历所有Frame中的所有组件，进行键盘事件处理
+        for (Frame frame : this.frames) {
+            Component component = frame.handleInput((char) Keyboard.getEventCharacter(), Keyboard.getEventKey());
+            if (component != null) {
+                if (component instanceof BindButton && ((BindButton) component).isListeningForKey()) {
+                    this.listeningBindButton = (BindButton) component;
+                } else {
+                    this.draggingComponent = component;
+                }
+                return;
+            }
+        }
     }
     
     /**
@@ -763,7 +1025,7 @@ public class ClickGuiScreen extends GuiScreen {
             }
         }
         
-        int availableHeight = this.height - TITLE_BAR_HEIGHT - 10; // 可用显示高度
+        int availableHeight = this.height - (TITLE_BAR_HEIGHT + SEARCH_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET * 2 + 5); // 可用显示高度, 加上搜索栏和顶部的5px偏移
         return Math.max(0, totalHeight - availableHeight);
     }
     
@@ -849,6 +1111,35 @@ public class ClickGuiScreen extends GuiScreen {
             this.mc.displayGuiScreen(null);
             return;
         }
+
+        // 处理搜索栏输入
+        if (isSearching) {
+            if (keyCode == Keyboard.KEY_BACK) {
+                if (!searchQuery.isEmpty()) {
+                    searchQuery = searchQuery.substring(0, searchQuery.length() - 1);
+                }
+            } else if (keyCode == Keyboard.KEY_RETURN) {
+                isSearching = false;
+            } else if (ChatAllowedCharacters.isAllowedCharacter(typedChar)) {
+                searchQuery += typedChar;
+            }
+            filterModules();
+            return; // Consume the event if we are searching
+        }
+
+        // 处理键盘导航
+        if (selectedNavigationElement != null) {
+            if (keyCode == Keyboard.KEY_UP) {
+                navigateUp();
+                return;
+            } else if (keyCode == Keyboard.KEY_DOWN) {
+                navigateDown();
+                return;
+            } else if (keyCode == Keyboard.KEY_RETURN) {
+                activateSelectedElement();
+                return;
+            }
+        }
         super.keyTyped(typedChar, keyCode);
     }
         
@@ -858,78 +1149,191 @@ public class ClickGuiScreen extends GuiScreen {
             this.listeningBindButton.keyTyped((char) 0, Keyboard.KEY_NONE);
             this.listeningBindButton = null;
         }
-        
+
         // 检查窗口控制按钮点击
         if (handleWindowControlsClick(mouseX, mouseY, mouseButton)) {
             return;
         }
-        
-        // 调整鼠标坐标为相对内容的坐标
-        int relativeMouseY = mouseY - TITLE_BAR_HEIGHT;
 
-        if (mouseX <= NAVIGATION_WIDTH && relativeMouseY >= 0) {
-            // 计算整体滚动后的坐标
-            int startY = 5 - navigationScrollOffset; // 起始位置考虑滚动
+        // 处理搜索栏点击
+        int searchBarX = BORDER_THICKNESS;
+        int searchBarY = TITLE_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET;
+        int searchBarWidth = NAVIGATION_WIDTH - BORDER_THICKNESS * 2;
+        int searchBarHeight = SEARCH_BAR_HEIGHT;
+
+        if (mouseX >= searchBarX && mouseX <= searchBarX + searchBarWidth &&
+            mouseY >= searchBarY && mouseY <= searchBarY + searchBarHeight) {
+            isSearching = true;
+        } else {
+            isSearching = false;
+        }
+
+        // 处理窗口拖拽
+        if (mouseButton == 0 && mouseX >= windowX && mouseX <= windowX + windowWidth && mouseY >= windowY && mouseY <= windowY + TITLE_BAR_HEIGHT) {
+            this.isDraggingWindow = true;
+            this.windowDragX = mouseX - windowX;
+            this.windowDragY = mouseY - windowY;
+            return;
+        }
+
+        // 处理窗口大小调整的点击
+        int rightBottomX = windowX + windowWidth - RESIZE_HANDLE_SIZE;
+        int rightBottomY = windowY + windowHeight - RESIZE_HANDLE_SIZE;
+
+        // 检查右下角
+        if (mouseX >= rightBottomX && mouseX <= windowX + windowWidth &&
+            mouseY >= rightBottomY && mouseY <= windowY + windowHeight) {
+            isResizingWindow = true;
+            resizeDirection = 3; // Right-bottom
+            resizeStartX = mouseX;
+            resizeStartY = mouseY;
+            initialWindowWidth = windowWidth;
+            initialWindowHeight = windowHeight;
+            return;
+        }
+
+        // 检查右边缘
+        int rightEdgeX1 = windowX + windowWidth - RESIZE_HANDLE_SIZE;
+        int rightEdgeY1 = windowY + RESIZE_HANDLE_SIZE;
+        int rightEdgeX2 = windowX + windowWidth;
+        int rightEdgeY2 = windowY + windowHeight - RESIZE_HANDLE_SIZE;
+        if (mouseX >= rightEdgeX1 && mouseX <= rightEdgeX2 &&
+            mouseY >= rightEdgeY1 && mouseY <= rightEdgeY2) {
+            isResizingWindow = true;
+            resizeDirection = 1; // Right
+            resizeStartX = mouseX;
+            initialWindowWidth = windowWidth;
+            return;
+        }
+
+        // 检查下边缘
+        int bottomEdgeX1 = windowX + RESIZE_HANDLE_SIZE;
+        int bottomEdgeY1 = windowY + windowHeight - RESIZE_HANDLE_SIZE;
+        int bottomEdgeX2 = windowX + windowWidth - RESIZE_HANDLE_SIZE;
+        int bottomEdgeY2 = windowY + windowHeight;
+        if (mouseX >= bottomEdgeX1 && mouseX <= bottomEdgeX2 &&
+            mouseY >= bottomEdgeY1 && mouseY <= bottomEdgeY2) {
+            isResizingWindow = true;
+            resizeDirection = 2; // Bottom
+            resizeStartY = mouseY;
+            initialWindowHeight = windowHeight;
+            return;
+        }
+        
+        // Calculate content area Y and height for relative mouse coordinates
+        int contentAreaY = TITLE_BAR_HEIGHT + SEARCH_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET * 2;
+        int contentAreaHeight = this.height - contentAreaY;
+
+        // Adjust mouse Y to be relative to the content area for navigation panel and properties
+        int relativeMouseY = mouseY - contentAreaY;
+
+        // Handle clicks in the navigation panel (left side)
+        if (mouseX <= NAVIGATION_WIDTH && mouseY >= contentAreaY && mouseY <= contentAreaY + contentAreaHeight) {
+            int currentYInContent = 5 - navigationScrollOffset; // Initial Y position in content, affected by scroll
             int categoryHeight = 20;
-            int currentY = startY;
 
             for (Frame frame : this.frames) {
-                // 点击分类标题
+                // Click on category title
                 if (mouseX >= 5 && mouseX <= NAVIGATION_WIDTH - 5 &&
-                    relativeMouseY >= currentY && relativeMouseY <= currentY + categoryHeight &&
-                    currentY + categoryHeight > 0 && currentY < this.height - TITLE_BAR_HEIGHT) { // 可见区域检查
-
-                    if (mouseButton == 0) {
+                    relativeMouseY >= currentYInContent && relativeMouseY <= currentYInContent + categoryHeight) {
+                    
+                    if (mouseButton == 0) { // Left click
                         this.selectedFrame = frame;
                         this.selectedModule = null;
-                        return;
-                    } else if (mouseButton == 1) {
+                    } else if (mouseButton == 1) { // Right click
                         frame.toggleOpenClose();
-                        return;
                     }
+                    selectedNavigationElement = frame; // Update selected navigation element
+                    return; // Consume click event
                 }
+                currentYInContent += categoryHeight;
 
-                currentY += categoryHeight;
-
-                // 点击模块列表
+                // Click on module list
                 if (frame.isExtended()) {
                     for (ModuleButton moduleButton : frame.getModuleButtons()) {
-                        if (mouseX >= 10 && mouseX <= NAVIGATION_WIDTH - 5 &&
-                            relativeMouseY >= currentY && relativeMouseY <= currentY + 15 &&
-                            currentY + 15 > 0 && currentY < this.height - TITLE_BAR_HEIGHT) { // 可见区域检查
-
-                            if (mouseButton == 0) {
-                                this.selectedModule = moduleButton;
-                                this.selectedFrame = frame;
-                                return;
+                        if (moduleButton.isVisible()) {
+                            if (mouseX >= 10 && mouseX <= NAVIGATION_WIDTH - 5 &&
+                                relativeMouseY >= currentYInContent && relativeMouseY <= currentYInContent + 15) {
+                                
+                                if (mouseButton == 0) { // Left click
+                                    long currentTime = System.currentTimeMillis();
+                                    if (moduleButton == lastClickedModuleButton && (currentTime - lastClickTime) < DOUBLE_CLICK_TIME_MS) {
+                                        // Double-click detected, toggle module
+                                        moduleButton.getModule().toggle(); 
+                                        lastClickedModuleButton = null; // Reset double-click state
+                                    } else {
+                                        // Single click: Select module
+                                        this.selectedModule = moduleButton;
+                                        this.selectedFrame = frame;
+                                        // Removed module toggle here for single click
+                                    }
+                                    lastClickTime = currentTime;
+                                    lastClickedModuleButton = moduleButton;
+                                }
+                                selectedNavigationElement = moduleButton; // Update selected navigation element
+                                return; // Consume click event
                             }
+                            currentYInContent += 15; // Height of each module
                         }
-                        currentY += 15; // 每个模块高度
                     }
                 }
             }
-
-            // 点击框架内部组件
-            for (Frame frame : this.frames) {
-                Component clickedComponent = frame.mouseClicked(mouseX, mouseY, mouseButton);
-                if (clickedComponent != null) {
-                    if (clickedComponent instanceof BindButton && ((BindButton) clickedComponent).isListeningForKey()) {
-                        this.listeningBindButton = (BindButton) clickedComponent;
-                    } else {
-                        this.draggingComponent = clickedComponent;
-                    }
-                    return;
-                }
-            }
-
-        } else if (selectedFrame != null && relativeMouseY >= 0) {
-            // 右侧内容区域的点击交互 - 属性区域点击处理
+        } else if (selectedFrame != null && mouseX > NAVIGATION_WIDTH && mouseY >= contentAreaY && mouseY <= contentAreaY + contentAreaHeight) {
+            // Handle clicks in the properties area (right side)
             if (selectedModule != null) {
                 handlePropertyClick(mouseX, mouseY, mouseButton);
             }
         }
 
         super.mouseClicked(mouseX, mouseY, mouseButton);
+
+        // If a component was clicked and it's a draggable component, set it as the current dragging component
+        // This logic remains here if frames or their subcomponents can be dragged independently
+        for (Frame frame : this.frames) {
+            Component clickedComponent = frame.mouseClicked(mouseX, mouseY, mouseButton);
+            if (clickedComponent != null) {
+                if (clickedComponent instanceof BindButton && ((BindButton) clickedComponent).isListeningForKey()) {
+                    this.listeningBindButton = (BindButton) clickedComponent;
+                } else {
+                    this.draggingComponent = clickedComponent;
+                }
+                return;
+            }
+        }
+    }
+    
+    @Override
+    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+
+        // 处理窗口拖拽
+        if (this.isDraggingWindow && clickedMouseButton == 0) {
+            this.windowX = mouseX - this.windowDragX;
+            this.windowY = mouseY - this.windowDragY;
+
+            // 边界检查，防止窗口拖出屏幕
+            this.windowX = Math.max(0, Math.min(this.width - windowWidth, this.windowX));
+            this.windowY = Math.max(0, Math.min(this.height - windowHeight, this.windowY));
+        }
+
+        // 处理窗口大小调整
+        if (isResizingWindow) {
+            int deltaX = mouseX - resizeStartX;
+            int deltaY = mouseY - resizeStartY;
+
+            if (resizeDirection == 1 || resizeDirection == 3) { // Right or Right-bottom
+                windowWidth = Math.max(200, initialWindowWidth + deltaX); // 最小宽度200
+            }
+            if (resizeDirection == 2 || resizeDirection == 3) { // Bottom or Right-bottom
+                windowHeight = Math.max(150, initialWindowHeight + deltaY); // 最小高度150
+            }
+            // No need to set resizeStartX/Y again, as delta is calculated from initial
+        }
+
+        // 更新拖拽组件位置
+        if (this.draggingComponent != null) {
+            this.draggingComponent.updatePosition(mouseX, mouseY);
+        }
     }
     
     /**
@@ -976,6 +1380,8 @@ public class ClickGuiScreen extends GuiScreen {
             this.draggingComponent = null;
         }
 
+        this.isResizingWindow = false; // Reset resizing flag on mouse release
+
         for (Frame frame : this.frames) {
             frame.mouseReleased(mouseX, mouseY, state);
         }
@@ -1006,6 +1412,184 @@ public class ClickGuiScreen extends GuiScreen {
                 }
             }
         }
+        
+        // 如果没有恢复到模块但恢复了分类，尝试在其他分类中查找模块
+        if (lastSelectedModule != null && selectedModule == null) {
+            for (Frame frame : frames) {
+                List<ModuleButton> moduleButtons = frame.getModuleButtons();
+                for (ModuleButton moduleButton : moduleButtons) {
+                    if (moduleButton.getModule().getName().equals(lastSelectedModule)) {
+                        selectedModule = moduleButton;
+                        selectedFrame = frame; // 同时更新选中的分类
+                        break;
+                    }
+                }
+                if (selectedModule != null) {
+                    break;
+                }
+            }
+        }
+        
+        // 调试输出
+        System.out.println("[ClickGUI] State restored:");
+        System.out.println("  - Selected Category: " + (selectedFrame != null ? selectedFrame.getCategory().getName() : "None"));
+        System.out.println("  - Selected Module: " + (selectedModule != null ? selectedModule.getModule().getName() : "None"));
+        System.out.println("  - Navigation Scroll: " + savedNavigationScrollOffset);
+        System.out.println("  - Properties Scroll: " + savedPropertiesScrollOffset);
+    }
+
+    /**
+     * 向上导航选中的元素
+     */
+    private void navigateUp() {
+        if (frames.isEmpty()) return;
+
+        List<Object> navigableElements = new ArrayList<>();
+        for (Frame frame : frames) {
+            navigableElements.add(frame);
+            if (frame.isExtended()) {
+                for (ModuleButton moduleButton : frame.getModuleButtons()) {
+                    if (moduleButton.isVisible()) {
+                        navigableElements.add(moduleButton);
+                    }
+                }
+            }
+        }
+
+        if (navigableElements.isEmpty()) return;
+
+        int currentIndex = navigableElements.indexOf(selectedNavigationElement);
+        if (currentIndex == -1) {
+            selectedNavigationElement = navigableElements.get(0);
+            return;
+        }
+
+        int newIndex = currentIndex - 1;
+        if (newIndex < 0) {
+            newIndex = navigableElements.size() - 1; // 循环到最后一个元素
+        }
+        selectedNavigationElement = navigableElements.get(newIndex);
+        ensureVisible(selectedNavigationElement);
+    }
+
+    /**
+     * 向下导航选中的元素
+     */
+    private void navigateDown() {
+        if (frames.isEmpty()) return;
+
+        List<Object> navigableElements = new ArrayList<>();
+        for (Frame frame : frames) {
+            navigableElements.add(frame);
+            if (frame.isExtended()) {
+                for (ModuleButton moduleButton : frame.getModuleButtons()) {
+                    if (moduleButton.isVisible()) {
+                        navigableElements.add(moduleButton);
+                    }
+                }
+            }
+        }
+
+        if (navigableElements.isEmpty()) return;
+
+        int currentIndex = navigableElements.indexOf(selectedNavigationElement);
+        if (currentIndex == -1) {
+            selectedNavigationElement = navigableElements.get(0);
+            return;
+        }
+
+        int newIndex = currentIndex + 1;
+        if (newIndex >= navigableElements.size()) {
+            newIndex = 0; // 循环到第一个元素
+        }
+        selectedNavigationElement = navigableElements.get(newIndex);
+        ensureVisible(selectedNavigationElement);
+    }
+
+    /**
+     * 确保选中的元素在可见区域内
+     */
+    private void ensureVisible(Object element) {
+        int elementY = -1; // 元素的实际Y坐标
+        int elementHeight = 0;
+
+        int currentY = TITLE_BAR_HEIGHT + SEARCH_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET * 2 + 5 - navigationScrollOffset; // 绘制内容的起始Y位置
+        int categoryHeight = 20;
+        int contentAreaY = TITLE_BAR_HEIGHT + SEARCH_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET * 2; // 内容区域的起始Y坐标
+        int contentAreaHeight = this.height - contentAreaY; // 内容区域的高度
+
+        for (Frame frame : frames) {
+            if (frame == element) {
+                elementY = currentY;
+                elementHeight = categoryHeight;
+                break;
+            }
+            currentY += categoryHeight;
+            if (frame.isExtended()) {
+                for (ModuleButton moduleButton : frame.getModuleButtons()) {
+                    if (moduleButton.isVisible()) {
+                        if (moduleButton == element) {
+                            elementY = currentY;
+                            elementHeight = 15;
+                            break;
+                        }
+                        currentY += 15;
+                    }
+                }
+            }
+            if (elementY != -1) break;
+        }
+
+        if (elementY != -1) {
+            // 检查元素是否在可见区域上方
+            if (elementY < contentAreaY) {
+                navigationScrollOffset -= (contentAreaY - elementY); // 向上滚动
+            }
+            // 检查元素是否在可见区域下方
+            else if (elementY + elementHeight > contentAreaY + contentAreaHeight) {
+                navigationScrollOffset += (elementY + elementHeight - (contentAreaY + contentAreaHeight)); // 向下滚动
+            }
+            // 限制navigationScrollOffset的范围
+            int maxScrollOffset = calculateMaxNavigationContentHeight() - contentAreaHeight; // 可滚动内容的总高度
+            navigationScrollOffset = Math.max(0, Math.min(maxScrollOffset, navigationScrollOffset));
+        }
+    }
+
+    /**
+     * 激活选中的元素（切换分类或模块）
+     */
+    private void activateSelectedElement() {
+        if (selectedNavigationElement instanceof Frame) {
+            Frame frame = (Frame) selectedNavigationElement;
+            selectedFrame = frame; // 选中框架
+            selectedModule = null; // 取消模块选中
+            frame.toggleOpenClose(); // 切换展开/折叠状态
+        } else if (selectedNavigationElement instanceof ModuleButton) {
+            ModuleButton moduleButton = (ModuleButton) selectedNavigationElement;
+            selectedModule = moduleButton; // 选中模块
+            selectedFrame = moduleButton.getParentFrame(); // 选中模块所属的框架
+            moduleButton.getModule().toggle(); // 切换模块启用状态
+        }
+    }
+
+    /**
+     * 计算导航栏所有内容的总高度 (包括折叠/展开的模块)
+     */
+    private int calculateMaxNavigationContentHeight() {
+        int totalHeight = 0;
+        int categoryHeight = 20;
+        for (Frame frame : frames) {
+            totalHeight += categoryHeight; // 分类标题高度
+            if (frame.isExtended()) {
+                List<ModuleButton> moduleButtons = frame.getModuleButtons();
+                if (moduleButtons.isEmpty()) {
+                    totalHeight += 15; // 空提示文本高度
+                } else {
+                    totalHeight += moduleButtons.size() * 15; // 每个模块15像素高度
+                }
+            }
+        }
+        return totalHeight;
     }
     
     @Override
@@ -1013,30 +1597,52 @@ public class ClickGuiScreen extends GuiScreen {
         // Save GUI state if enabled
         GuiModule guiModule = (GuiModule) myau.Myau.moduleManager.getModule("GuiModule");
         if (guiModule != null && guiModule.saveGuiState.getValue()) {
+            System.out.println("[ClickGUI] Saving GUI state...");
+            
             // Save frame positions
             framePositions.clear();
             for (Frame frame : this.frames) {
                 String categoryName = frame.getCategory().getName();
                 int[] position = new int[]{frame.getX(), frame.getY()};
                 framePositions.put(categoryName, position);
+                System.out.println("  - Frame position saved: " + categoryName + " at (" + position[0] + ", " + position[1] + ")");
             }
             
             // Save category expanded states
             categoryExpandedStates.clear();
             for (Frame frame : this.frames) {
                 String categoryName = frame.getCategory().getName();
-                categoryExpandedStates.put(categoryName, frame.isExtended());
+                boolean isExpanded = frame.isExtended();
+                categoryExpandedStates.put(categoryName, isExpanded);
+                System.out.println("  - Category state saved: " + categoryName + " -> " + (isExpanded ? "Expanded" : "Collapsed"));
             }
             
             // Save selected category
             if (selectedFrame != null) {
                 lastSelectedCategory = selectedFrame.getCategory().getName();
+                System.out.println("  - Selected category saved: " + lastSelectedCategory);
+            } else {
+                lastSelectedCategory = null;
+                System.out.println("  - No selected category to save");
             }
             
             // Save selected module
             if (selectedModule != null) {
                 lastSelectedModule = selectedModule.getModule().getName();
+                System.out.println("  - Selected module saved: " + lastSelectedModule);
+            } else {
+                lastSelectedModule = null;
+                System.out.println("  - No selected module to save");
             }
+            
+            // Save scroll offsets
+            savedNavigationScrollOffset = this.navigationScrollOffset;
+            savedPropertiesScrollOffset = this.propertiesScrollOffset;
+            System.out.println("  - Scroll offsets saved: Navigation=" + savedNavigationScrollOffset + ", Properties=" + savedPropertiesScrollOffset);
+            
+            System.out.println("[ClickGUI] GUI state saved successfully!");
+        } else {
+            System.out.println("[ClickGUI] GUI state saving is disabled");
         }
         
         // Disable ClickGUI module when closing the screen
@@ -1047,5 +1653,60 @@ public class ClickGuiScreen extends GuiScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false;
+    }
+
+    /**
+     * 过滤模块列表以匹配搜索查询
+     */
+    private void filterModules() {
+        String lowerCaseQuery = searchQuery.toLowerCase();
+
+        for (Frame frame : frames) {
+            boolean categoryMatches = frame.getCategory().getName().toLowerCase().contains(lowerCaseQuery);
+            boolean hasVisibleModule = false;
+
+            for (ModuleButton moduleButton : frame.getModuleButtons()) {
+                boolean moduleMatches = moduleButton.getModule().getName().toLowerCase().contains(lowerCaseQuery);
+                if (searchQuery.isEmpty()) {
+                    // If no search query, all modules are visible
+                    moduleButton.setVisible(true);
+                    hasVisibleModule = true; // Mark that at least one module is visible
+                } else if (moduleMatches) {
+                    moduleButton.setVisible(true);
+                    hasVisibleModule = true;
+                } else {
+                    moduleButton.setVisible(false);
+                }
+            }
+
+            // Set category extended state based on search results
+            if (searchQuery.isEmpty()) {
+                frame.setExtended(true); // If no search query, all categories are extended
+            } else if (categoryMatches || hasVisibleModule) {
+                frame.setExtended(true); // If category matches or contains visible modules, extend it
+            } else {
+                frame.setExtended(false); // Otherwise, collapse it
+            }
+        }
+    }
+
+    /**
+     * 渲染自定义滚动条
+     */
+    private void renderScrollbar(int x, int y, int width, int height, int contentHeight, int scrollOffset, int mouseX, int mouseY) {
+        if (contentHeight <= height) return; // 内容未超出区域，无需滚动条
+
+        float scrollbarHeight = (float) height / contentHeight * height; // 滚动条高度
+        float scrollbarY = y + (float) scrollOffset / contentHeight * height; // 滚动条Y位置
+
+        // 绘制滚动条背景
+        Gui.drawRect(x, y, x + width, y + height, IntelliJTheme.getRGBWithAlpha(IntelliJTheme.BACKGROUND_COLOR, 100));
+
+        // 绘制滚动条滑块
+        int scrollbarColor = IntelliJTheme.getRGB(IntelliJTheme.SCROLLBAR_COLOR);
+        if (mouseX >= x && mouseX <= x + width && mouseY >= scrollbarY && mouseY <= scrollbarY + scrollbarHeight) {
+            scrollbarColor = IntelliJTheme.getRGB(IntelliJTheme.SCROLLBAR_HOVER_COLOR);
+        }
+        Gui.drawRect(x + 1, (int) scrollbarY, x + width - 1, (int) (scrollbarY + scrollbarHeight), scrollbarColor);
     }
 }

@@ -44,6 +44,16 @@ public abstract class Component {
 
     public void keyTyped(char typedChar, int keyCode) {}
 
+    /**
+     * 处理键盘输入事件
+     * @param typedChar 键入的字符
+     * @param keyCode 键码
+     * @return 如果组件处理了输入，则返回自身；否则返回null
+     */
+    public Component handleInput(char typedChar, int keyCode) {
+        return null; // 默认不处理键盘输入
+    }
+
     public boolean isMouseOver(int mouseX, int mouseY) {
         return mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height;
     }

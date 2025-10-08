@@ -33,6 +33,17 @@ public class Frame {
     public boolean isExtended() {
         return open;
     }
+
+    /**
+     * 设置Frame的展开状态
+     * @param extended true为展开，false为折叠
+     */
+    public void setExtended(boolean extended) {
+        this.open = extended;
+        this.animationProgress = extended ? 1.0f : 0.0f; // Immediately set animation progress
+        this.opening = false;
+        this.closing = false;
+    }
     private float animationProgress; // 新增：动画进度 (0.0 - 1.0)
     private long lastUpdateTime; // 新增：上次更新时间
     private final ArrayList<Component> components;
@@ -90,7 +101,7 @@ public class Frame {
             // 使用圆角矩形绘制标题栏
             RenderUtil.drawRoundedRect(this.x, this.y, this.width, this.height, cornerRadius, headerColor);
             // 绘制圆角边框
-            RenderUtil.drawRoundedOutline(this.x, this.y, this.width, this.height, cornerRadius, 1.0f, BORDER_COLOR);
+            RenderUtil.drawRoundedRectOutline(this.x, this.y, this.width, this.height, cornerRadius, 1.0f, BORDER_COLOR);
         } else {
             // 无圆角时使用原来的绘制方式
             Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, headerColor);
@@ -137,14 +148,14 @@ public class Frame {
                 // 使用圆角矩形绘制组件背景
                 RenderUtil.drawRoundedRect(this.x, this.y + this.height, this.width, animatedHeight, cornerRadius, BACKGROUND_COLOR);
                 // 绘制圆角边框
-                RenderUtil.drawRoundedOutline(this.x, this.y + this.height, this.width, animatedHeight, cornerRadius, 1.0f, BORDER_COLOR);
+                RenderUtil.drawRoundedRectOutline(this.x, this.y + this.height, this.width, animatedHeight, cornerRadius, 1.0f, BORDER_COLOR);
             } else {
                 // 背景从标题栏底部开始，延伸到动画计算的高度
                 Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + animatedHeight, BACKGROUND_COLOR);
                 
                 // IntelliJ风格边框效果
                 Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + 1, BORDER_COLOR); // 组件区域顶部边框
-                Gui.drawRect(this.x, this.y + this.height + animatedHeight - 1, this.x + this.width, this.y + this.height + animatedHeight, BORDER_COLOR); // 组件区域底部边框
+                Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + animatedHeight, BORDER_COLOR); // 组件区域底部边框
             }
 
             // 4. 渲染组件（根据动画进度决定渲染哪些组件）
@@ -337,5 +348,23 @@ public class Frame {
             }
         }
         return moduleButtons;
+    }
+
+    /**
+     * 处理键盘输入事件，并将其传递给子组件
+     * @param typedChar 键入的字符
+     * @param keyCode 键码
+     * @return 如果有组件处理了输入，则返回该组件；否则返回null
+     */
+    public Component handleInput(char typedChar, int keyCode) {
+        if (open && animationProgress >= 1.0f) {
+            for (Component component : components) {
+                Component handledComponent = component.handleInput(typedChar, keyCode);
+                if (handledComponent != null) {
+                    return handledComponent;
+                }
+            }
+        }
+        return null;
     }
 }

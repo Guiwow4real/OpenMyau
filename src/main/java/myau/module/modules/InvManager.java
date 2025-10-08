@@ -36,6 +36,12 @@ public class InvManager extends Module {
     public final IntProperty axeSlot = new IntProperty("axe-slot", 5, 0, 9);
     public final IntProperty blocksSlot = new IntProperty("blocks-slot", 2, 0, 9);
     public final IntProperty blocks = new IntProperty("blocks", 128, 64, 2304);
+    public final IntProperty bowSlot = new IntProperty("bow-slot", 8, 0, 9);
+    public final IntProperty throwablesSlot = new IntProperty("throwables-slot", 6, 0, 9);
+    public final IntProperty throwables = new IntProperty("throwables", 16, 1, 64);
+    public final IntProperty arrowsSlot = new IntProperty("arrows-slot", 7, 0, 9);
+    public final IntProperty arrows = new IntProperty("arrows", 64, 1, 256);
+    public final BooleanProperty keepArrowsInInventory = new BooleanProperty("keep-arrows-inventory", true);
 
     private boolean isValidGameMode() {
         GameType gameType = mc.playerController.getCurrentGameType();
@@ -61,6 +67,97 @@ public class InvManager extends Module {
             ItemStack stack = mc.thePlayer.inventory.getStackInSlot(slot);
             return stack != null ? stack.stackSize : 0;
         }
+    }
+
+    private int findThrowablesSlot(int startSlot) {
+        int bestSlot = -1;
+        int maxStackSize = 0;
+        for (int i = 0; i < 36; ++i) {
+            int currentSlot = ((startSlot + i) % 36 + 36) % 36;
+            ItemStack itemStack = mc.thePlayer.inventory.getStackInSlot(currentSlot);
+            if (itemStack == null) continue;
+            if (!this.isThrowableItem(itemStack)) continue;
+            if (maxStackSize >= itemStack.stackSize) continue;
+            bestSlot = currentSlot;
+            maxStackSize = itemStack.stackSize;
+        }
+        return bestSlot;
+    }
+
+    private int findArrowsSlot(int startSlot) {
+        int bestSlot = -1;
+        int maxStackSize = 0;
+        for (int i = 0; i < 36; ++i) {
+            int currentSlot = ((startSlot + i) % 36 + 36) % 36;
+            ItemStack itemStack = mc.thePlayer.inventory.getStackInSlot(currentSlot);
+            if (itemStack == null) continue;
+            if (!this.isArrowItem(itemStack)) continue;
+            if (maxStackSize >= itemStack.stackSize) continue;
+            bestSlot = currentSlot;
+            maxStackSize = itemStack.stackSize;
+        }
+        return bestSlot;
+    }
+
+    private boolean isThrowableItem(ItemStack stack) {
+        if (stack == null) return false;
+        net.minecraft.item.Item item = stack.getItem();
+        return item instanceof net.minecraft.item.ItemSnowball ||
+               item instanceof net.minecraft.item.ItemEgg ||
+               item instanceof net.minecraft.item.ItemEnderPearl ||
+               item instanceof net.minecraft.item.ItemFireball ||
+               item == net.minecraft.init.Items.fire_charge;
+    }
+
+    private boolean isArrowItem(ItemStack stack) {
+        if (stack == null) return false;
+        return stack.getItem() == net.minecraft.init.Items.arrow;
+    }
+
+    private int findBowSlot(int startSlot) {
+        int bestSlot = -1;
+        for (int i = 0; i < 36; ++i) {
+            int currentSlot = ((startSlot + i) % 36 + 36) % 36;
+            ItemStack itemStack = mc.thePlayer.inventory.getStackInSlot(currentSlot);
+            if (itemStack == null) continue;
+            if (!this.isBowItem(itemStack)) continue;
+            // 选择第一个找到的弓
+            if (bestSlot == -1) {
+                bestSlot = currentSlot;
+            }
+        }
+        return bestSlot;
+    }
+
+    private boolean isBowItem(ItemStack stack) {
+        if (stack == null) return false;
+        return stack.getItem() instanceof net.minecraft.item.ItemBow;
+    }
+
+    private int findArrowsInventorySlot() {
+        // 在背包区域（槽位9-35）寻找箭
+        int bestSlot = -1;
+        int maxStackSize = 0;
+        for (int i = 9; i < 36; ++i) {
+            ItemStack itemStack = mc.thePlayer.inventory.getStackInSlot(i);
+            if (itemStack == null) continue;
+            if (!this.isArrowItem(itemStack)) continue;
+            if (maxStackSize >= itemStack.stackSize) continue;
+            bestSlot = i;
+            maxStackSize = itemStack.stackSize;
+        }
+        return bestSlot;
+    }
+
+    private int getTotalArrowsInInventory() {
+        int totalArrows = 0;
+        for (int i = 9; i < 36; ++i) {
+            ItemStack itemStack = mc.thePlayer.inventory.getStackInSlot(i);
+            if (itemStack != null && this.isArrowItem(itemStack)) {
+                totalArrows += itemStack.stackSize;
+            }
+        }
+        return totalArrows;
     }
 
     public InvManager() {
@@ -107,6 +204,12 @@ public class InvManager extends Module {
                         int inventoryAxeSlot = ItemUtil.findInventorySlot("axe", preferredAxeHotbarSlot, false);
                         int preferredBlocksHotbarSlot = this.blocksSlot.getValue() - 1;
                         int inventoryBlocksSlot = ItemUtil.findInventorySlot(preferredBlocksHotbarSlot);
+                        int preferredBowHotbarSlot = this.bowSlot.getValue() - 1;
+                        int inventoryBowSlot = this.findBowSlot(preferredBowHotbarSlot);
+                        int preferredThrowablesHotbarSlot = this.throwablesSlot.getValue() - 1;
+                        int inventoryThrowablesSlot = this.findThrowablesSlot(preferredThrowablesHotbarSlot);
+                        int preferredArrowsHotbarSlot = this.arrowsSlot.getValue() - 1;
+                        int inventoryArrowsSlot = this.keepArrowsInInventory.getValue() ? this.findArrowsInventorySlot() : this.findArrowsSlot(preferredArrowsHotbarSlot);
                         if (this.autoArmor.getValue()) {
                             for (int i = 0; i < 4; i++) {
                                 int equippedSlot = equippedArmorSlots.get(i);
@@ -169,8 +272,32 @@ public class InvManager extends Module {
                                 return;
                             }
                         }
+                        if (preferredBowHotbarSlot >= 0 && preferredBowHotbarSlot <= 8 && !usedHotbarSlots.contains(preferredBowHotbarSlot) && inventoryBowSlot != -1) {
+                            usedHotbarSlots.add(preferredBowHotbarSlot);
+                            if (inventoryBowSlot != preferredBowHotbarSlot) {
+                                this.clickSlot(mc.thePlayer.inventoryContainer.windowId, this.convertSlotIndex(inventoryBowSlot), preferredBowHotbarSlot, 2);
+                                return;
+                            }
+                        }
+                        if (preferredThrowablesHotbarSlot >= 0 && preferredThrowablesHotbarSlot <= 8 && !usedHotbarSlots.contains(preferredThrowablesHotbarSlot) && inventoryThrowablesSlot != -1) {
+                            usedHotbarSlots.add(preferredThrowablesHotbarSlot);
+                            if (inventoryThrowablesSlot != preferredThrowablesHotbarSlot) {
+                                this.clickSlot(mc.thePlayer.inventoryContainer.windowId, this.convertSlotIndex(inventoryThrowablesSlot), preferredThrowablesHotbarSlot, 2);
+                                return;
+                            }
+                        }
+                        // 箭保存在背包中，不需要移动到热键栏
+                        if (!this.keepArrowsInInventory.getValue() && preferredArrowsHotbarSlot >= 0 && preferredArrowsHotbarSlot <= 8 && !usedHotbarSlots.contains(preferredArrowsHotbarSlot) && inventoryArrowsSlot != -1) {
+                            usedHotbarSlots.add(preferredArrowsHotbarSlot);
+                            if (inventoryArrowsSlot != preferredArrowsHotbarSlot) {
+                                this.clickSlot(mc.thePlayer.inventoryContainer.windowId, this.convertSlotIndex(inventoryArrowsSlot), preferredArrowsHotbarSlot, 2);
+                                return;
+                            }
+                        }
                         if (this.dropTrash.getValue()) {
                             int currentBlockCount = this.getStackSize(inventoryBlocksSlot);
+                            int currentThrowablesCount = this.getStackSize(inventoryThrowablesSlot);
+                            int currentArrowsCount = this.keepArrowsInInventory.getValue() ? this.getTotalArrowsInInventory() : this.getStackSize(inventoryArrowsSlot);
                             for (int i = 0; i < 36; i++) {
                                 if (!equippedArmorSlots.contains(i)
                                         && !inventoryArmorSlots.contains(i)
@@ -182,16 +309,32 @@ public class InvManager extends Module {
                                         && inventoryShovelSlot != i
                                         && equippedAxeSlot != i
                                         && inventoryAxeSlot != i
-                                        && inventoryBlocksSlot != i) {
+                                        && inventoryBlocksSlot != i
+                                        && inventoryBowSlot != i
+                                        && inventoryThrowablesSlot != i
+                                        && inventoryArrowsSlot != i) {
                                     ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
                                     if (stack != null) {
                                         boolean isBlock = ItemUtil.isBlock(stack);
-                                        if (ItemUtil.isNotSpecialItem(stack) || isBlock && currentBlockCount >= this.blocks.getValue()) {
+                                        boolean isThrowable = this.isThrowableItem(stack);
+                                        boolean isArrow = this.isArrowItem(stack);
+                                        boolean isBow = this.isBowItem(stack);
+                                        
+                                        if (ItemUtil.isNotSpecialItem(stack) || 
+                                            (isBlock && currentBlockCount >= this.blocks.getValue()) ||
+                                            (isThrowable && currentThrowablesCount >= this.throwables.getValue()) ||
+                                            (isArrow && currentArrowsCount >= this.arrows.getValue()) ||
+                                            (isBow && inventoryBowSlot != -1)) { // 只保留一把弓
                                             this.clickSlot(mc.thePlayer.inventoryContainer.windowId, this.convertSlotIndex(i), 1, 4);
                                             return;
                                         }
+                                        
                                         if (isBlock) {
                                             currentBlockCount += stack.stackSize;
+                                        } else if (isThrowable) {
+                                            currentThrowablesCount += stack.stackSize;
+                                        } else if (isArrow) {
+                                            currentArrowsCount += stack.stackSize;
                                         }
                                     }
                                 }

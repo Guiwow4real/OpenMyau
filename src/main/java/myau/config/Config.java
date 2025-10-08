@@ -74,6 +74,14 @@ public class Config {
                 if (jsonObject.has("lastSelectedModule")) {
                     myau.ui.clickgui.ClickGuiScreen.lastSelectedModule = jsonObject.get("lastSelectedModule").getAsString();
                 }
+                
+                // Load scroll offsets
+                if (jsonObject.has("navigationScrollOffset")) {
+                    myau.ui.clickgui.ClickGuiScreen.savedNavigationScrollOffset = jsonObject.get("navigationScrollOffset").getAsInt();
+                }
+                if (jsonObject.has("propertiesScrollOffset")) {
+                    myau.ui.clickgui.ClickGuiScreen.savedPropertiesScrollOffset = jsonObject.get("propertiesScrollOffset").getAsInt();
+                }
             }
             
             for (Module module : Myau.moduleManager.modules.values()) {
@@ -143,6 +151,10 @@ public class Config {
                 if (myau.ui.clickgui.ClickGuiScreen.lastSelectedModule != null) {
                     object.addProperty("lastSelectedModule", myau.ui.clickgui.ClickGuiScreen.lastSelectedModule);
                 }
+                
+                // Save scroll offsets
+                object.addProperty("navigationScrollOffset", myau.ui.clickgui.ClickGuiScreen.savedNavigationScrollOffset);
+                object.addProperty("propertiesScrollOffset", myau.ui.clickgui.ClickGuiScreen.savedPropertiesScrollOffset);
             }
             
             for (Module module : Myau.moduleManager.modules.values()) {

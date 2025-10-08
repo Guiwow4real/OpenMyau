@@ -18,17 +18,29 @@ public class IntelliJTheme {
     public static final Color BOOLEAN_COLOR = new Color(86, 156, 214); // 蓝色 - 布尔值
     public static final Color TEXT_COLOR = new Color(187, 187, 187); // 浅灰色 - 普通文本
     public static final Color DISABLED_TEXT_COLOR = new Color(128, 128, 128); // 灰色 - 禁用文本
+    public static final Color TEXT_COLOR_SECONDARY = new Color(150, 150, 150); // 次级文本颜色，用于提示等
     
     // 交互状态颜色
     public static final Color SELECTED_COLOR = new Color(62, 93, 126); // 选中高亮 - 浅蓝色
     public static final Color SELECTED_BG_COLOR = new Color(62, 93, 126); // 选中背景色 - 与SELECTED_COLOR相同
     public static final Color HOVER_COLOR = new Color(75, 110, 145); // 悬停颜色
     public static final Color ACTIVE_COLOR = new Color(64, 128, 214); // 激活状态颜色
+    public static final Color ACTIVE_BORDER_COLOR = new Color(86, 156, 214); // 激活边框颜色
     
     // 组件颜色
     public static final Color CHECKBOX_COLOR = new Color(86, 156, 214); // 复选框颜色
     public static final Color SLIDER_COLOR = new Color(86, 156, 214); // 滑块颜色
     public static final Color BUTTON_COLOR = new Color(78, 148, 206); // 按钮颜色
+    public static final Color TEXT_FIELD_BG = new Color(55, 57, 59); // 文本输入框背景
+    
+    // 工具提示颜色
+    public static final Color TOOLTIP_BACKGROUND = new Color(70, 70, 70, 200); // 工具提示背景色
+    public static final Color TOOLTIP_BORDER = new Color(100, 100, 100); // 工具提示边框色
+    public static final Color TOOLTIP_TEXT_COLOR = new Color(200, 200, 200); // 工具提示文本颜色
+
+    // 滚动条颜色
+    public static final Color SCROLLBAR_COLOR = new Color(120, 120, 120, 150); // 滚动条颜色 (半透明)
+    public static final Color SCROLLBAR_HOVER_COLOR = new Color(150, 150, 150, 200); // 滚动条悬停颜色 (半透明)
     
     // IDE代码编辑器风格颜色 - 更真实的IntelliJ配色
     public static final Color LINE_NUMBER_BG_COLOR = new Color(43, 43, 43); // 行号区域背景色
@@ -42,7 +54,9 @@ public class IntelliJTheme {
     public static final Color COMMENT_COLOR = new Color(98, 102, 108); // 注释颜色 - 灰色
     public static final Color LITERAL_COLOR = new Color(104, 151, 187); // 字面量颜色 - 蓝色 (true, false)
     public static final Color ANNOTATION_COLOR = new Color(187, 181, 41); // 注解颜色 - 黄色
-    
+    public static final Color RUN_BUTTON_COLOR = new Color(85, 170, 85); // 运行按钮颜色 (绿色)
+    public static final Color PAUSE_BUTTON_COLOR = new Color(170, 85, 85); // 暂停按钮颜色 (红色)
+
     // 圆角半径
     public static final int CORNER_RADIUS = 4; // 圆角半径
     

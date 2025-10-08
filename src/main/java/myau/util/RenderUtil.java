@@ -326,14 +326,6 @@ public class RenderUtil {
         worldRenderer.pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ).color(red, green, blue, 63).endVertex();
         worldRenderer.pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ).color(red, green, blue, 63).endVertex();
         worldRenderer.pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ).color(red, green, blue, 63).endVertex();
-        worldRenderer.pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ).color(red, green, blue, 63).endVertex();
-        worldRenderer.pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ).color(red, green, blue, 63).endVertex();
-        worldRenderer.pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ).color(red, green, blue, 63).endVertex();
-        worldRenderer.pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ).color(red, green, blue, 63).endVertex();
-        worldRenderer.pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ).color(red, green, blue, 63).endVertex();
-        worldRenderer.pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ).color(red, green, blue, 63).endVertex();
-        worldRenderer.pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ).color(red, green, blue, 63).endVertex();
-        worldRenderer.pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ).color(red, green, blue, 63).endVertex();
         tessellator.draw();
     }
 
@@ -539,7 +531,7 @@ public class RenderUtil {
      * @param lineWidth 边框宽度
      * @param color 颜色
      */
-    public static void drawRoundedOutline(double x, double y, double width, double height, double radius, float lineWidth, int color) {
+    public static void drawRoundedRectOutline(double x, double y, double width, double height, double radius, float lineWidth, int color) {
         RenderUtil.enableRenderState();
         RenderUtil.setColor(color);
         GL11.glLineWidth(lineWidth);
@@ -588,5 +580,53 @@ public class RenderUtil {
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
         GL11.glLineWidth(2.0f);
         RenderUtil.disableRenderState();
+    }
+
+    /**
+     * 绘制矩形边框
+     * @param x 左上角x坐标
+     * @param y 左上角y坐标
+     * @param width 宽度
+     * @param height 高度
+     * @param lineWidth 边框宽度
+     * @param color 颜色
+     */
+    public static void drawRectOutline(double x, double y, double width, double height, float lineWidth, int color) {
+        RenderUtil.enableRenderState();
+        RenderUtil.setColor(color);
+        GL11.glLineWidth(lineWidth);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+        
+        GL11.glBegin(GL11.GL_LINE_LOOP);
+        GL11.glVertex2d(x, y);
+        GL11.glVertex2d(x + width, y);
+        GL11.glVertex2d(x + width, y + height);
+        GL11.glVertex2d(x, y + height);
+        GL11.glEnd();
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GL11.glLineWidth(2.0f);
+        RenderUtil.disableRenderState();
+    }
+
+    /**
+     * 设置裁剪区域
+     * @param x 起始x坐标
+     * @param y 起始y坐标
+     * @param width 宽度
+     * @param height 高度
+     */
+    public static void scissor(double x, double y, double width, double height) {
+        ScaledResolution sr = new ScaledResolution(mc);
+        double scale = sr.getScaleFactor();
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor((int) (x * scale), (int) ((sr.getScaledHeight() - (y + height)) * scale), (int) (width * scale), (int) (height * scale));
+    }
+
+    /**
+     * 释放裁剪区域
+     */
+    public static void releaseScissor() {
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 }
