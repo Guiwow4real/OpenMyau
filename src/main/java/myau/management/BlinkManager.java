@@ -54,9 +54,10 @@ public class BlinkManager {
                 return true;
             }
             for (Packet<?> blinkedPacket : blinkedPackets) {
-                PacketUtil.sendPacket(blinkedPacket);
+                PacketUtil.sendPacketNoEvent(blinkedPacket);
             }
-            blinkedPackets.clear();
+            this.blinkedPackets.clear();
+            this.blinkModule = BlinkModules.NONE;
         }
         return true;
     }
