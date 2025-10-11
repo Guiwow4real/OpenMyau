@@ -36,7 +36,7 @@ public class NoSlow extends Module {
     public final BooleanProperty bowSprint = new BooleanProperty("bow-sprint", true, () -> this.bowMode.getValue() != 0);
 
     public NoSlow() {
-        super("NoSlow", "Prevents slowdown when using items.", Category.MOVEMENT, 0, false, false);
+        super("NoSlow", "Allows you to move faster.", Category.MOVEMENT, 0, false, false);
     }
 
     public boolean isSwordActive() {

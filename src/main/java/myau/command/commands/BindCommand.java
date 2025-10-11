@@ -35,36 +35,58 @@ public class BindCommand extends Command {
             } else {
                 ChatUtil.sendFormatted(
                         String.format(
-                                "%sUsage: .%s <&omodule&r> <&okey&r>&r | .%s &olist&r",
+                                "%sUsage: .%s <&omodule&r> <&okey&r>&r | .%s <&omodule&r> &onone&r | .%s &olist&r",
                                 Myau.clientName,
+                                args.get(0).toLowerCase(Locale.ROOT),
                                 args.get(0).toLowerCase(Locale.ROOT),
                                 args.get(0).toLowerCase(Locale.ROOT)
                         )
                 );
             }
         } else {
-            int keyIndex = Keyboard.getKeyIndex(args.get(2).toUpperCase());
-            if (keyIndex != 0) {
-                int buttonIndex = Mouse.getButtonIndex(args.get(2).toUpperCase());
-                if (buttonIndex != -1) {
-                    keyIndex = buttonIndex - 100;
+            String keyInput = args.get(2).toUpperCase();
+            int keyIndex = 0;
+
+            if (keyInput.equalsIgnoreCase("NONE") || keyInput.equalsIgnoreCase("NULL") || keyInput.equalsIgnoreCase("0")) {
+                keyIndex = 0;
+            } else {
+                keyIndex = Keyboard.getKeyIndex(keyInput);
+
+                if (keyIndex == 0) {
+                    int buttonIndex = Mouse.getButtonIndex(keyInput);
+                    if (buttonIndex != -1) {
+                        keyIndex = buttonIndex - 100;
+                    }
                 }
-                if (!args.get(1).equals("*")) {
-                    Module module = Myau.moduleManager.getModule(args.get(1));
-                    if (module == null) {
-                        ChatUtil.sendFormatted(String.format("%sModule not found (&o%s&r)&r", Myau.clientName, args.get(1)));
+            }
+
+            if (!args.get(1).equals("*")) {
+                Module module = Myau.moduleManager.getModule(args.get(1));
+                if (module == null) {
+                    ChatUtil.sendFormatted(String.format("%sModule not found (&o%s&r)&r", Myau.clientName, args.get(1)));
+                } else {
+                    module.setKey(keyIndex);
+                    if (keyIndex == 0) {
+                        ChatUtil.sendFormatted(
+                                String.format("%sUnbind &o%s&r", Myau.clientName, module.getName())
+                        );
                     } else {
-                        module.setKey(keyIndex);
                         ChatUtil.sendFormatted(
                                 String.format("%sBound &o%s&r to &l[%s]&r", Myau.clientName, module.getName(), KeyBindUtil.getKeyName(keyIndex))
                         );
                     }
-                } else {
-                    for (Module module : Myau.moduleManager.modules.values()) {
-                        module.setKey(keyIndex);
-                    }
+                }
+            } else {
+                for (Module module : Myau.moduleManager.modules.values()) {
+                    module.setKey(keyIndex);
+                }
+                if (keyIndex == 0) {
                     ChatUtil.sendFormatted(
-                            String.format("%sBound all modules to &l[%s]&r", Myau.clientName, KeyBindUtil.getKeyName(keyIndex))
+                            String.format("%sUnbind all modules&r", Myau.clientName)
+                    );
+                } else {
+                    ChatUtil.sendFormatted(
+                            String.format("%sBind all modules to &l[%s]&r", Myau.clientName, KeyBindUtil.getKeyName(keyIndex))
                     );
                 }
             }

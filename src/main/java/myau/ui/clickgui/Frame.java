@@ -7,6 +7,7 @@ import myau.ui.clickgui.component.Component;
 import myau.ui.clickgui.component.ModuleButton;
 import myau.ui.clickgui.ClickGuiScreen;
 import net.minecraft.client.Minecraft;
+import myau.module.modules.GuiModule;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -18,14 +19,15 @@ import java.util.ArrayList;
 import java.awt.Color;
 import java.util.List;
 
-public class Frame {
+public class Frame extends Component {
 
-    private int x, y, width, height, dragX, dragY;
+    private int dragX, dragY;
     private final Category category;
     private boolean dragging;
     private boolean open;
     private boolean opening; // 新增：标记正在打开
     private boolean closing; // 新增：标记正在关闭
+    private double frameCornerRadius; // 新增：圆角半径
     
     /**
      * 检查Frame是否展开（用于导航栏显示）
@@ -59,18 +61,24 @@ public class Frame {
     protected Minecraft mc = Minecraft.getMinecraft();
     protected FontRenderer fr = mc.fontRendererObj;
 
-    public Frame(Category category) {
+    public Frame(Category category, int x, int y, int width, int height) {
+        super(null, x, y, width, height); // parent frame is null for top-level frames
         this.category = category;
         this.components = new ArrayList<>();
-        this.x = 5;
-        this.y = 5;
-        this.width = 140; // 默认宽度，将在ClickGuiScreen中动态调整
-        this.height = 18; // Header height
         this.open = true;
         this.opening = false;
         this.closing = false;
         this.animationProgress = 1.0f; // 默认完全展开
         this.lastUpdateTime = System.currentTimeMillis();
+
+        // 获取GuiModule实例并初始化圆角半径
+        GuiModule guiModule = (GuiModule) Myau.moduleManager.getModule("GuiSettings");
+        if (guiModule != null) {
+            this.frameCornerRadius = guiModule.cornerRadius.getValue();
+        } else {
+            this.frameCornerRadius = IntelliJTheme.CORNER_RADIUS; // 默认值
+        }
+
         this.dragging = false;
 
         // 初始化组件列表。组件的实际 Y 坐标将在 render 方法中动态计算。
@@ -94,7 +102,7 @@ public class Frame {
         int headerColor = isSelected ? HEADER_SELECTED_COLOR : (isMouseOverHeader ? HEADER_HOVER_COLOR : HEADER_COLOR);
         
         // 使用IntelliJ主题的圆角半径
-        double cornerRadius = IntelliJTheme.CORNER_RADIUS;
+        double cornerRadius = this.frameCornerRadius;
         
         // 1. 绘制 Frame 标题栏 (Header) - IntelliJ风格带圆角
         if (cornerRadius > 0) {
@@ -243,22 +251,26 @@ public class Frame {
                 this.dragging = true;
                 this.dragX = mouseX - this.x;
                 this.dragY = mouseY - this.y;
+                return this; // 返回当前Frame实例，表示Frame被拖动
             } else if (mouseButton == 1) {
                 toggleOpenClose();
             }
-            return null; // Frame header click, no component drag initiated
+            return null; // Frame header click, but not initiating a component drag
         }
 
         // 只有在完全打开时才能与组件交互
         if (this.open && animationProgress >= 1.0f) {
             for (Component component : this.components) {
+                // 将点击事件传递给子组件
                 Component clickedComponent = component.mouseClicked(mouseX, mouseY, mouseButton);
                 if (clickedComponent != null) {
-                    return clickedComponent; // A component initiated a drag
+                    // 如果子组件处理了点击（例如BindButton），则返回它。
+                    // 对于可交互的属性组件（Checkbox, Slider, ModeSelector），它们的mouseClicked方法会直接处理交互，不需要返回。
+                    return clickedComponent; 
                 }
             }
         }
-        return null; // No component drag initiated
+        return null; // 没有组件被点击或拖动
     }
 
     /**

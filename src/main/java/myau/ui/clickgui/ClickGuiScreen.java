@@ -34,6 +34,7 @@ public class ClickGuiScreen extends GuiScreen {
 
     private ArrayList<Frame> frames;
     private Component draggingComponent = null; // New field to track dragging component
+    private Frame draggingFrame = null; // New field to track dragging frame
     private BindButton listeningBindButton = null;
     private Frame selectedFrame = null; // 当前选中的框架
     
@@ -51,15 +52,6 @@ public class ClickGuiScreen extends GuiScreen {
     private int navigationScrollOffset = 0; // 左侧导航栏滚动偏移
     private int propertiesScrollOffset = 0; // 右侧属性区域滚动偏移
     private final int SCROLL_SPEED = 10; // 滚动速度
-    
-    // IntelliJ IDEA主题颜色
-    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.BACKGROUND_COLOR);
-    private static final int BORDER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR);
-    private static final int NAVIGATION_BG_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
-    private static final int HEADER_TEXT_COLOR = IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR);
-    private static final int SELECTED_BG_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SELECTED_BG_COLOR);
-    private static final boolean ENABLE_TRANSPARENT_BACKGROUND = false; // 禁用透明背景，使用IntelliJ风格的背景
-    private static final double CORNER_RADIUS = IntelliJTheme.CORNER_RADIUS;
     
     // 布局常量
     private static final int NAVIGATION_WIDTH = 150; // 左侧导航栏宽度
@@ -102,6 +94,10 @@ public class ClickGuiScreen extends GuiScreen {
     private int resizeStartX, resizeStartY, initialWindowWidth, initialWindowHeight;
     private static final int RESIZE_HANDLE_SIZE = 6;
     
+    private boolean enableTransparentBackground; // 禁用透明背景，使用IntelliJ风格的背景
+    
+    private double cornerRadius; // 圆角半径
+    
     // 获取单例实例
     public static ClickGuiScreen getInstance() {
         return instance;
@@ -120,6 +116,17 @@ public class ClickGuiScreen extends GuiScreen {
     public ClickGuiScreen() {
         instance = this; // 设置单例实例
         this.frames = new ArrayList<>();
+        
+        // 获取GuiModule实例并初始化GUI设置
+        GuiModule guiModule = (GuiModule) Myau.moduleManager.getModule("GuiSettings");
+        if (guiModule != null) {
+            this.enableTransparentBackground = guiModule.enableTransparentBackground.getValue();
+            this.cornerRadius = guiModule.cornerRadius.getValue();
+        } else {
+            // 如果GuiModule不存在，使用默认值
+            this.enableTransparentBackground = false;
+            this.cornerRadius = IntelliJTheme.CORNER_RADIUS;
+        }
         
         // 调试信息：检查Myau.moduleManager是否为空
         if (Myau.moduleManager == null) {
@@ -141,37 +148,35 @@ public class ClickGuiScreen extends GuiScreen {
             System.out.println("Modules in " + category.getName() + ": " + modulesInCategory.size());
             
             // 创建Frame
-            Frame frame = new Frame(category);
-            frame.setX(5);
-            frame.setY(frameY);
+            int frameX = 5;
+            int frameWidth = NAVIGATION_WIDTH - 10;
+            int frameHeight = 18; // Header height
+            Frame frame = new Frame(category, frameX, frameY, frameWidth, frameHeight);
             
             // 动态计算Frame宽度以适应导航栏
-            int frameWidth = NAVIGATION_WIDTH - 10;
             frame.setWidth(frameWidth);
-            
-            // Load saved position if available
-            if (framePositions.containsKey(category.getName())) {
-                int[] position = framePositions.get(category.getName());
-                frame.setX(position[0]);
-                frame.setY(position[1]);
-            }
-            
-            // 恢复分类的展开状态
-            if (categoryExpandedStates.containsKey(category.getName())) {
-                boolean wasExpanded = categoryExpandedStates.get(category.getName());
-                if (!wasExpanded && frame.isExtended()) {
-                    frame.toggleOpenClose();
-                } else if (wasExpanded && !frame.isExtended()) {
-                    frame.toggleOpenClose();
-                }
-            }
             
             this.frames.add(frame);
             frameY += 20; // 每个Frame之间的间距
         }
         
-        // 调试信息：检查创建的frames数量
-        System.out.println("Total frames created: " + frames.size());
+        // 在所有Frame创建后，应用保存的Frame位置和展开状态
+        if (guiModule != null && guiModule.saveGuiState.getValue()) {
+            for (Frame frame : this.frames) {
+                String categoryName = frame.getCategory().getName();
+                // 恢复帧位置
+                if (framePositions.containsKey(categoryName)) {
+                    int[] position = framePositions.get(categoryName);
+                    frame.setX(position[0]);
+                    frame.setY(position[1]);
+                }
+                // 恢复分类的展开状态
+                if (categoryExpandedStates.containsKey(categoryName)) {
+                    boolean wasExpanded = categoryExpandedStates.get(categoryName);
+                    frame.setExtended(wasExpanded); // 直接设置展开状态
+                }
+            }
+        }
         
         // 恢复选中的框架和模块
         restoreSelectedState();
@@ -198,21 +203,27 @@ public class ClickGuiScreen extends GuiScreen {
         tooltipText = null;
 
         // 绘制背景（半透明遮罩）
-        Gui.drawRect(0, 0, this.width, this.height, new Color(0, 0, 0, 100).getRGB());
+        if (this.enableTransparentBackground) {
+            Gui.drawRect(this.windowX, this.windowY, this.windowX + this.windowWidth, this.windowY + this.windowHeight, new Color(0, 0, 0, 100).getRGB());
+        } else {
+            // this.drawDefaultBackground(); // 使用Minecraft默认的暗色背景
+        }
         
         // 绘制标题栏
         renderTitleBar(mouseX, mouseY);
         
         // 绘制主内容区域（在标题栏下方）
-        int contentY = TITLE_BAR_HEIGHT;
-        int contentHeight = this.height - TITLE_BAR_HEIGHT;
+        int contentX = this.windowX;
+        int contentY = this.windowY + TITLE_BAR_HEIGHT;
+        int contentWidth = this.windowWidth;
+        int contentHeight = this.windowHeight - TITLE_BAR_HEIGHT;
         
         // 绘制左侧导航栏背景
-        Gui.drawRect(0, contentY, NAVIGATION_WIDTH, this.height, 
+        Gui.drawRect(contentX, contentY, contentX + NAVIGATION_WIDTH, contentY + contentHeight, 
                     IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND));
         
         // 绘制导航栏边框
-        Gui.drawRect(NAVIGATION_WIDTH, contentY, NAVIGATION_WIDTH + BORDER_THICKNESS, this.height, 
+        Gui.drawRect(contentX + NAVIGATION_WIDTH, contentY, contentX + NAVIGATION_WIDTH + BORDER_THICKNESS, contentY + contentHeight, 
                     IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
 
         // 渲染搜索栏
@@ -227,8 +238,8 @@ public class ClickGuiScreen extends GuiScreen {
         }
         
         // Render module properties area and collect tooltip
-        String propertiesTooltip = renderModuleProperties(NAVIGATION_WIDTH + BORDER_THICKNESS, contentY, 
-                                      this.width - NAVIGATION_WIDTH - BORDER_THICKNESS, contentHeight, mouseX, mouseY);
+        String propertiesTooltip = renderModuleProperties(contentX + NAVIGATION_WIDTH + BORDER_THICKNESS, contentY, 
+                                      contentWidth - NAVIGATION_WIDTH - BORDER_THICKNESS, contentHeight, mouseX, mouseY);
         if (propertiesTooltip != null) {
             tooltipText = propertiesTooltip;
             tooltipX = mouseX;
@@ -255,16 +266,16 @@ public class ClickGuiScreen extends GuiScreen {
      * 渲染搜索栏
      */
     private void renderSearchBar(int mouseX, int mouseY) {
-        int searchBarX = BORDER_THICKNESS;
-        int searchBarY = TITLE_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET;
+        int searchBarX = this.windowX + BORDER_THICKNESS;
+        int searchBarY = this.windowY + TITLE_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET;
         int searchBarWidth = NAVIGATION_WIDTH - BORDER_THICKNESS * 2;
         int searchBarHeight = SEARCH_BAR_HEIGHT;
 
         // 绘制搜索框背景
-        RenderUtil.drawRoundedRect(searchBarX, searchBarY, searchBarWidth, searchBarHeight, CORNER_RADIUS, IntelliJTheme.getRGB(IntelliJTheme.TEXT_FIELD_BG));
+        RenderUtil.drawRoundedRect(searchBarX, searchBarY, searchBarWidth, searchBarHeight, (float) this.cornerRadius, IntelliJTheme.getRGB(IntelliJTheme.TEXT_FIELD_BG));
 
         // 绘制搜索框边框
-        RenderUtil.drawRoundedRectOutline(searchBarX, searchBarY, searchBarWidth, searchBarHeight, CORNER_RADIUS, 1.0f, isSearching ? IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR) : IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
+        RenderUtil.drawRoundedRectOutline(searchBarX, searchBarY, searchBarWidth, searchBarHeight, (float) this.cornerRadius, 1.0f, isSearching ? IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR) : IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
 
         // 绘制搜索图标
         mc.fontRendererObj.drawStringWithShadow("\uD83D\uDD0D", searchBarX + 5, searchBarY + searchBarHeight / 2 - mc.fontRendererObj.FONT_HEIGHT / 2, IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR_SECONDARY)); // Unicode search icon
@@ -349,22 +360,23 @@ public class ClickGuiScreen extends GuiScreen {
         FontRenderer fr = this.mc.fontRendererObj;
         
         // 检查是否悬停在标题栏上
-        boolean isHoveringTitleBar = mouseY >= 0 && mouseY <= TITLE_BAR_HEIGHT;
+        boolean isHoveringTitleBar = mouseX >= this.windowX && mouseX <= this.windowX + this.windowWidth && 
+                                     mouseY >= this.windowY && mouseY <= this.windowY + TITLE_BAR_HEIGHT;
         
         // 绘制标题栏背景（根据悬停状态改变颜色）
         int titleBarColor = isHoveringTitleBar ? 
             IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR) : 
             IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
         
-        Gui.drawRect(0, 0, this.width, TITLE_BAR_HEIGHT, titleBarColor);
+        Gui.drawRect(this.windowX, this.windowY, this.windowX + this.windowWidth, this.windowY + TITLE_BAR_HEIGHT, titleBarColor);
         
         // 绘制标题栏底部分隔线
-        Gui.drawRect(0, TITLE_BAR_HEIGHT - 1, this.width, TITLE_BAR_HEIGHT, 
+        Gui.drawRect(this.windowX, this.windowY + TITLE_BAR_HEIGHT - 1, this.windowX + this.windowWidth, this.windowY + TITLE_BAR_HEIGHT, 
                     IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
         
         // 绘制窗口图标（模仿 IDEA 风格）
-        int iconX = 8;
-        int iconY = (TITLE_BAR_HEIGHT - 16) / 2;
+        int iconX = this.windowX + 8;
+        int iconY = this.windowY + (TITLE_BAR_HEIGHT - 16) / 2;
         
         // 绘制简单的正方形图标（代表 IDEA 风格）
         Gui.drawRect(iconX, iconY, iconX + 16, iconY + 16, IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_COLOR));
@@ -376,7 +388,7 @@ public class ClickGuiScreen extends GuiScreen {
         // 绘制窗口标题
         String title = "OpenMyau - ClickGUI Configuration";
         int titleX = iconX + 20;
-        int titleY = (TITLE_BAR_HEIGHT - fr.FONT_HEIGHT) / 2;
+        int titleY = this.windowY + (TITLE_BAR_HEIGHT - fr.FONT_HEIGHT) / 2;
         fr.drawString(title, titleX, titleY, IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR));
         
         // 绘制窗口控制按钮（最小化、最大化、关闭）
@@ -390,10 +402,10 @@ public class ClickGuiScreen extends GuiScreen {
         FontRenderer fr = this.mc.fontRendererObj;
         
         int buttonSize = 20;
-        int buttonY = (TITLE_BAR_HEIGHT - buttonSize) / 2;
+        int buttonY = this.windowY + (TITLE_BAR_HEIGHT - buttonSize) / 2;
         
         // 关闭按钮（红色）
-        int closeX = this.width - buttonSize - 5;
+        int closeX = this.windowX + this.windowWidth - buttonSize - 5;
         boolean isHoveringClose = mouseX >= closeX && mouseX <= closeX + buttonSize && 
                                  mouseY >= buttonY && mouseY <= buttonY + buttonSize;
         
@@ -436,8 +448,10 @@ public class ClickGuiScreen extends GuiScreen {
     private String renderNavigationPanel(int mouseX, int mouseY) {
         FontRenderer fr = this.mc.fontRendererObj;
         int categoryHeight = 20; // 每个分类的高度
-        int contentAreaY = TITLE_BAR_HEIGHT + SEARCH_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET * 2; // 内容区域的起始Y坐标
-        int contentAreaHeight = this.height - contentAreaY; // 内容区域的高度
+        int contentAreaX = this.windowX;
+        int contentAreaY = this.windowY + TITLE_BAR_HEIGHT + SEARCH_BAR_HEIGHT + SEARCH_BAR_Y_OFFSET * 2; // 内容区域的起始Y坐标
+        int contentAreaWidth = NAVIGATION_WIDTH;
+        int contentAreaHeight = this.windowHeight - TITLE_BAR_HEIGHT - SEARCH_BAR_HEIGHT - SEARCH_BAR_Y_OFFSET * 2; // 内容区域的高度
 
         String hoveredTooltip = null;
 
@@ -447,10 +461,10 @@ public class ClickGuiScreen extends GuiScreen {
             totalNavigationContentHeight += categoryHeight; // 分类标题高度
             if (frame.isExtended()) {
                 List<ModuleButton> moduleButtons = frame.getModuleButtons();
-                if (moduleButtons.isEmpty()) {
-                    totalNavigationContentHeight += 15; // 空提示文本高度
-                } else {
-                    totalNavigationContentHeight += moduleButtons.size() * 15; // 每个模块15像素高度
+                for (ModuleButton moduleButton : moduleButtons) {
+                    if (moduleButton.isVisible()) {
+                        totalNavigationContentHeight += 15; // 每个可见模块15像素高度
+                    }
                 }
             }
         }
@@ -460,12 +474,12 @@ public class ClickGuiScreen extends GuiScreen {
         navigationScrollOffset = Math.max(0, Math.min(maxScrollOffset, navigationScrollOffset)); // 限制滚动范围
 
         // 渲染导航栏的滚动条
-        int navigationScrollbarX = NAVIGATION_WIDTH - 5; // 滚动条X位置
+        int navigationScrollbarX = contentAreaX + NAVIGATION_WIDTH - 5; // 滚动条X位置
         int navigationScrollbarWidth = 3; // 滚动条宽度
         renderScrollbar(navigationScrollbarX, contentAreaY, navigationScrollbarWidth, contentAreaHeight, totalNavigationContentHeight, navigationScrollOffset, mouseX, mouseY);
 
         // 设置裁剪区域，只绘制在导航栏内容区域内的内容
-        RenderUtil.scissor(5, contentAreaY, NAVIGATION_WIDTH - 10, contentAreaHeight);
+        RenderUtil.scissor(contentAreaX + 5, contentAreaY, NAVIGATION_WIDTH - 10, contentAreaHeight);
         
         int currentY = contentAreaY + 5 - navigationScrollOffset; // 绘制内容的起始Y位置，受滚动影响
 
@@ -479,7 +493,7 @@ public class ClickGuiScreen extends GuiScreen {
             debugInfo += "Total modules: " + Myau.moduleManager.modules.size();
             
             if (currentY >= contentAreaY && currentY < contentAreaY + contentAreaHeight) {
-                fr.drawString(debugInfo, 15, currentY, 0xFFFFFF);
+                fr.drawString(debugInfo, contentAreaX + 15, currentY, 0xFFFFFF);
             }
             currentY += 12;
             
@@ -488,7 +502,7 @@ public class ClickGuiScreen extends GuiScreen {
                 String categoryInfo = "Category: " + category.getName() + ", Modules: " + 
                     Myau.moduleManager.getModulesInCategory(category).size();
                 if (currentY >= contentAreaY && currentY < contentAreaY + contentAreaHeight) {
-                    fr.drawString(categoryInfo, 15, currentY, 0xFFFFFF);
+                    fr.drawString(categoryInfo, contentAreaX + 15, currentY, 0xFFFFFF);
                 }
                 currentY += 12;
             }
@@ -502,7 +516,7 @@ public class ClickGuiScreen extends GuiScreen {
             if (currentY + categoryHeight > contentAreaY && currentY < contentAreaY + contentAreaHeight) {
                 // 绘制包背景
                 int categoryBgColor = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
-                boolean isCategoryHovered = mouseX >= 5 && mouseX <= NAVIGATION_WIDTH - 5 &&
+                boolean isCategoryHovered = mouseX >= contentAreaX + 5 && mouseX <= contentAreaX + NAVIGATION_WIDTH - 5 &&
                                             mouseY >= currentY && mouseY <= currentY + categoryHeight;
 
                 if (isCategoryHovered) {
@@ -511,21 +525,21 @@ public class ClickGuiScreen extends GuiScreen {
                 if (frame == selectedFrame) {
                     categoryBgColor = IntelliJTheme.getRGB(IntelliJTheme.SELECTED_BG_COLOR); // 选中时覆盖悬停色
                 }
-                Gui.drawRect(5, currentY, NAVIGATION_WIDTH - 5, currentY + categoryHeight, categoryBgColor);
+                Gui.drawRect(contentAreaX + 5, currentY, contentAreaX + NAVIGATION_WIDTH - 5, currentY + categoryHeight, categoryBgColor);
                 
                 // 绘制键盘导航选中高亮
                 if (frame == selectedNavigationElement) {
-                    RenderUtil.drawRectOutline(5, currentY, NAVIGATION_WIDTH - 10, categoryHeight, 1.0f, IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR));
+                    RenderUtil.drawRectOutline(contentAreaX + 5, currentY, NAVIGATION_WIDTH - 10, categoryHeight, 1.0f, IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR));
                 }
                 
                 // 绘制包名称 - 使用包命名格式
                 String categoryName = frame.getCategory().getName();
                 String packageName = "myau.modules." + categoryName.toLowerCase();
-                fr.drawString(packageName, 15, currentY + 6, IntelliJTheme.getRGB(IntelliJTheme.TYPE_VALUE_COLOR));
+                fr.drawString(packageName, contentAreaX + 15, currentY + 6, IntelliJTheme.getRGB(IntelliJTheme.TYPE_VALUE_COLOR));
                 
                 // 绘制展开/折叠指示器
                 String indicator = frame.isExtended() ? "▼" : "▶";
-                fr.drawString(indicator, NAVIGATION_WIDTH - 15, currentY + 6, HEADER_TEXT_COLOR);
+                fr.drawString(indicator, contentAreaX + NAVIGATION_WIDTH - 15, currentY + 6, IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR));
             }
             
             currentY += categoryHeight;
@@ -534,20 +548,13 @@ public class ClickGuiScreen extends GuiScreen {
             if (frame.isExtended()) {
                 List<ModuleButton> moduleButtons = frame.getModuleButtons();
                 
-                if (moduleButtons.isEmpty()) {
-                    // 如果该分类下没有模块，显示提示
-                    if (currentY >= contentAreaY && currentY < contentAreaY + contentAreaHeight) {
-                        String noModulesText = "    // No modules in this category";
-                        fr.drawString(noModulesText, 20, currentY + 4, IntelliJTheme.getRGB(IntelliJTheme.DISABLED_TEXT_COLOR));
-                    }
-                    currentY += 15;
-                } else {
+                if (!moduleButtons.isEmpty()) {
                     for (ModuleButton moduleButton : moduleButtons) {
                         // 检查是否在可见区域内，并且是可见的模块
                         if (moduleButton.isVisible() && currentY + 15 > contentAreaY && currentY < contentAreaY + contentAreaHeight) {
                             // 绘制类背景
                             int moduleBgColor = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
-                            boolean isModuleHovered = mouseX >= 10 && mouseX <= NAVIGATION_WIDTH - 5 &&
+                            boolean isModuleHovered = mouseX >= contentAreaX + 10 && mouseX <= contentAreaX + NAVIGATION_WIDTH - 5 &&
                                                       mouseY >= currentY && mouseY <= currentY + 15; // Corrected mouseY for hover detection
 
                             if (isModuleHovered) {
@@ -557,7 +564,7 @@ public class ClickGuiScreen extends GuiScreen {
                             if (moduleButton == selectedModule) {
                                 moduleBgColor = IntelliJTheme.getRGB(IntelliJTheme.SELECTED_BG_COLOR); // 选中时覆盖悬停色
                             }
-                            Gui.drawRect(10, currentY, NAVIGATION_WIDTH - 5, currentY + 15, moduleBgColor);
+                            Gui.drawRect(contentAreaX + 10, currentY, contentAreaX + NAVIGATION_WIDTH - 5, currentY + 15, moduleBgColor);
                             
                             // 绘制类名称 - 使用类命名格式
                             String moduleName = moduleButton.getModule().getName();
@@ -568,11 +575,11 @@ public class ClickGuiScreen extends GuiScreen {
                                 IntelliJTheme.getRGB(IntelliJTheme.VARIABLE_NAME_COLOR) : // 紫色表示启用
                                 IntelliJTheme.getRGB(IntelliJTheme.DISABLED_TEXT_COLOR);   // 灰色表示禁用
                             
-                            fr.drawString(className, 20, currentY + 4, textColor);
+                            fr.drawString(className, contentAreaX + 20, currentY + 4, textColor);
 
                             // 绘制键盘导航选中高亮
                             if (moduleButton == selectedNavigationElement) {
-                                RenderUtil.drawRectOutline(10, currentY, NAVIGATION_WIDTH - 15, 15, 1.0f, IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR));
+                                RenderUtil.drawRectOutline(contentAreaX + 10, currentY, NAVIGATION_WIDTH - 15, 15, 1.0f, IntelliJTheme.getRGB(IntelliJTheme.ACTIVE_BORDER_COLOR));
                             }
                         }
                         
@@ -1017,10 +1024,10 @@ public class ClickGuiScreen extends GuiScreen {
             
             if (frame.isExtended()) {
                 List<ModuleButton> moduleButtons = frame.getModuleButtons();
-                if (moduleButtons.isEmpty()) {
-                    totalHeight += 15; // 空提示文本高度
-                } else {
-                    totalHeight += moduleButtons.size() * 15; // 每个模块15像素高度
+                for (ModuleButton moduleButton : moduleButtons) {
+                    if (moduleButton.isVisible()) {
+                        totalHeight += 15; // 每个可见模块15像素高度
+                    }
                 }
             }
         }
@@ -1287,15 +1294,16 @@ public class ClickGuiScreen extends GuiScreen {
 
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        // If a component was clicked and it's a draggable component, set it as the current dragging component
-        // This logic remains here if frames or their subcomponents can be dragged independently
+        // If a component or frame was clicked and it's draggable, set it as the current dragging entity
         for (Frame frame : this.frames) {
-            Component clickedComponent = frame.mouseClicked(mouseX, mouseY, mouseButton);
-            if (clickedComponent != null) {
-                if (clickedComponent instanceof BindButton && ((BindButton) clickedComponent).isListeningForKey()) {
-                    this.listeningBindButton = (BindButton) clickedComponent;
+            Component clickedEntity = frame.mouseClicked(mouseX, mouseY, mouseButton);
+            if (clickedEntity != null) {
+                if (clickedEntity instanceof Frame) {
+                    this.draggingFrame = (Frame) clickedEntity;
+                } else if (clickedEntity instanceof BindButton && ((BindButton) clickedEntity).isListeningForKey()) {
+                    this.listeningBindButton = (BindButton) clickedEntity;
                 } else {
-                    this.draggingComponent = clickedComponent;
+                    this.draggingComponent = clickedEntity;
                 }
                 return;
             }
@@ -1330,8 +1338,10 @@ public class ClickGuiScreen extends GuiScreen {
             // No need to set resizeStartX/Y again, as delta is calculated from initial
         }
 
-        // 更新拖拽组件位置
-        if (this.draggingComponent != null) {
+        // 更新拖拽组件或框架位置
+        if (this.draggingFrame != null) {
+            this.draggingFrame.updatePosition(mouseX, mouseY);
+        } else if (this.draggingComponent != null) {
             this.draggingComponent.updatePosition(mouseX, mouseY);
         }
     }
@@ -1378,6 +1388,10 @@ public class ClickGuiScreen extends GuiScreen {
         if (this.draggingComponent != null) {
             this.draggingComponent.onMouseReleased(mouseX, mouseY, state);
             this.draggingComponent = null;
+        }
+        if (this.draggingFrame != null) {
+            this.draggingFrame.mouseReleased(mouseX, mouseY, state);
+            this.draggingFrame = null;
         }
 
         this.isResizingWindow = false; // Reset resizing flag on mouse release
@@ -1582,10 +1596,10 @@ public class ClickGuiScreen extends GuiScreen {
             totalHeight += categoryHeight; // 分类标题高度
             if (frame.isExtended()) {
                 List<ModuleButton> moduleButtons = frame.getModuleButtons();
-                if (moduleButtons.isEmpty()) {
-                    totalHeight += 15; // 空提示文本高度
-                } else {
-                    totalHeight += moduleButtons.size() * 15; // 每个模块15像素高度
+                for (ModuleButton moduleButton : moduleButtons) {
+                    if (moduleButton.isVisible()) {
+                        totalHeight += 15; // 每个可见模块15像素高度
+                    }
                 }
             }
         }
@@ -1595,7 +1609,7 @@ public class ClickGuiScreen extends GuiScreen {
     @Override
     public void onGuiClosed() {
         // Save GUI state if enabled
-        GuiModule guiModule = (GuiModule) myau.Myau.moduleManager.getModule("GuiModule");
+        GuiModule guiModule = (GuiModule) myau.Myau.moduleManager.getModule("GuiSettings");
         if (guiModule != null && guiModule.saveGuiState.getValue()) {
             System.out.println("[ClickGUI] Saving GUI state...");
             
