@@ -44,6 +44,14 @@ public abstract class Component {
 
     public void keyTyped(char typedChar, int keyCode) {}
 
+    public boolean isVisible() {
+        return true; // Default implementation: component is always visible
+    }
+
+    public boolean mouseScrolled(int mouseX, int mouseY, int wheel) {
+        return false; // Default implementation: component does not handle scroll
+    }
+
     /**
      * 处理键盘输入事件
      * @param typedChar 键入的字符

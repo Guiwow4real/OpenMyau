@@ -10,6 +10,7 @@ public class PacketUtil {
         mc.getNetHandler().getNetworkManager().sendPacket(packet);
     }
 
+    @SuppressWarnings("unchecked")
     public static void sendPacketNoEvent(Packet<?> packet) {
         mc.getNetHandler().getNetworkManager().sendPacket(packet, null);
     }

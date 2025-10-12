@@ -28,15 +28,11 @@ public final class EventManager {
     private EventManager() {
     }
 
-    /**
-     * Registers all the methods marked with the EventTarget annotation in the class of the given Object.
-     *
-     * @param object Object that you want to register.
-     */
-    public static void register(Object object) {
-        for (final Method method : object.getClass().getDeclaredMethods()) {
+    @SuppressWarnings("unchecked")
+    public static void register(Object listener) {
+        for (Method method : listener.getClass().getMethods()) {
             if (!isMethodBad(method)) {
-                register(method, object);
+                register(method, listener);
             }
         }
     }
@@ -99,6 +95,7 @@ public final class EventManager {
      * @param method Method to register to the HashMap.
      * @param object Source object of the method.
      */
+    @SuppressWarnings("unchecked")
     private static void register(Method method, Object object) {
         Class<? extends Event> indexClass = (Class<? extends Event>) method.getParameterTypes()[0];
         //New MethodData from the Method we are registering.

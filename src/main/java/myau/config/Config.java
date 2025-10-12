@@ -51,7 +51,7 @@ public class Config {
                         int y = positionObj.get("y").getAsInt();
                         
                         // Store frame position for later use by ClickGuiScreen
-                        myau.ui.clickgui.ClickGuiScreen.framePositions.put(categoryName, new int[]{x, y});
+                        myau.ui.clickgui.ClickGuiScreen.framePos.put(categoryName, new int[]{x, y});
                     }
                 }
                 
@@ -61,26 +61,26 @@ public class Config {
                     for (java.util.Map.Entry<String, JsonElement> entry : expandedStates.entrySet()) {
                         String categoryName = entry.getKey();
                         boolean isExpanded = entry.getValue().getAsBoolean();
-                        myau.ui.clickgui.ClickGuiScreen.categoryExpandedStates.put(categoryName, isExpanded);
+                        myau.ui.clickgui.ClickGuiScreen.catExpandStates.put(categoryName, isExpanded);
                     }
                 }
                 
                 // Load last selected category
                 if (jsonObject.has("lastSelectedCategory")) {
-                    myau.ui.clickgui.ClickGuiScreen.lastSelectedCategory = jsonObject.get("lastSelectedCategory").getAsString();
+                    myau.ui.clickgui.ClickGuiScreen.lastSelCat = jsonObject.get("lastSelectedCategory").getAsString();
                 }
                 
                 // Load last selected module
                 if (jsonObject.has("lastSelectedModule")) {
-                    myau.ui.clickgui.ClickGuiScreen.lastSelectedModule = jsonObject.get("lastSelectedModule").getAsString();
+                    myau.ui.clickgui.ClickGuiScreen.lastSelMod = jsonObject.get("lastSelectedModule").getAsString();
                 }
                 
                 // Load scroll offsets
                 if (jsonObject.has("navigationScrollOffset")) {
-                    myau.ui.clickgui.ClickGuiScreen.savedNavigationScrollOffset = jsonObject.get("navigationScrollOffset").getAsInt();
+                    myau.ui.clickgui.ClickGuiScreen.savedNavScroll = jsonObject.get("navigationScrollOffset").getAsInt();
                 }
                 if (jsonObject.has("propertiesScrollOffset")) {
-                    myau.ui.clickgui.ClickGuiScreen.savedPropertiesScrollOffset = jsonObject.get("propertiesScrollOffset").getAsInt();
+                    myau.ui.clickgui.ClickGuiScreen.savedPropScroll = jsonObject.get("propertiesScrollOffset").getAsInt();
                 }
             }
             
@@ -122,9 +122,9 @@ public class Config {
             myau.module.modules.GuiModule guiModule2 = (myau.module.modules.GuiModule) myau.Myau.moduleManager.modules.get(myau.module.modules.GuiModule.class);
             if (guiModule2 != null && guiModule2.saveGuiState.getValue()) {
                 // Save frame positions
-                if (!myau.ui.clickgui.ClickGuiScreen.framePositions.isEmpty()) {
+                if (!myau.ui.clickgui.ClickGuiScreen.framePos.isEmpty()) {
                     JsonObject framePositions = new JsonObject();
-                    for (java.util.Map.Entry<String, int[]> entry : myau.ui.clickgui.ClickGuiScreen.framePositions.entrySet()) {
+                    for (java.util.Map.Entry<String, int[]> entry : myau.ui.clickgui.ClickGuiScreen.framePos.entrySet()) {
                         JsonObject positionObj = new JsonObject();
                         positionObj.addProperty("x", entry.getValue()[0]);
                         positionObj.addProperty("y", entry.getValue()[1]);
@@ -134,27 +134,27 @@ public class Config {
                 }
                 
                 // Save category expanded states
-                if (!myau.ui.clickgui.ClickGuiScreen.categoryExpandedStates.isEmpty()) {
+                if (!myau.ui.clickgui.ClickGuiScreen.catExpandStates.isEmpty()) {
                     JsonObject expandedStates = new JsonObject();
-                    for (java.util.Map.Entry<String, Boolean> entry : myau.ui.clickgui.ClickGuiScreen.categoryExpandedStates.entrySet()) {
+                    for (java.util.Map.Entry<String, Boolean> entry : myau.ui.clickgui.ClickGuiScreen.catExpandStates.entrySet()) {
                         expandedStates.addProperty(entry.getKey(), entry.getValue());
                     }
                     object.add("categoryExpandedStates", expandedStates);
                 }
                 
                 // Save last selected category
-                if (myau.ui.clickgui.ClickGuiScreen.lastSelectedCategory != null) {
-                    object.addProperty("lastSelectedCategory", myau.ui.clickgui.ClickGuiScreen.lastSelectedCategory);
+                if (myau.ui.clickgui.ClickGuiScreen.lastSelCat != null) {
+                    object.addProperty("lastSelectedCategory", myau.ui.clickgui.ClickGuiScreen.lastSelCat);
                 }
                 
                 // Save last selected module
-                if (myau.ui.clickgui.ClickGuiScreen.lastSelectedModule != null) {
-                    object.addProperty("lastSelectedModule", myau.ui.clickgui.ClickGuiScreen.lastSelectedModule);
+                if (myau.ui.clickgui.ClickGuiScreen.lastSelMod != null) {
+                    object.addProperty("lastSelectedModule", myau.ui.clickgui.ClickGuiScreen.lastSelMod);
                 }
                 
                 // Save scroll offsets
-                object.addProperty("navigationScrollOffset", myau.ui.clickgui.ClickGuiScreen.savedNavigationScrollOffset);
-                object.addProperty("propertiesScrollOffset", myau.ui.clickgui.ClickGuiScreen.savedPropertiesScrollOffset);
+                object.addProperty("navigationScrollOffset", myau.ui.clickgui.ClickGuiScreen.savedNavScroll);
+                object.addProperty("propertiesScrollOffset", myau.ui.clickgui.ClickGuiScreen.savedPropScroll);
             }
             
             for (Module module : Myau.moduleManager.modules.values()) {

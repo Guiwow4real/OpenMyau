@@ -85,6 +85,7 @@ dependencies {
 // Tasks:
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
+    options.compilerArgs.add("-Xlint:unchecked")
 }
 tasks.withType(org.gradle.jvm.tasks.Jar::class) {
     archiveBaseName.set(jarName)

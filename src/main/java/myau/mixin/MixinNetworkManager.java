@@ -9,6 +9,7 @@ import myau.events.PacketEvent;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,6 +27,7 @@ public abstract class MixinNetworkManager {
             at = {@At("HEAD")},
             cancellable = true
     )
+    @SuppressWarnings("unchecked")
     private void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet, CallbackInfo callbackInfo) {
         if (!packet.getClass().getName().startsWith("net.minecraft.network.play.client")) {
             if (Myau.delayManager != null && Myau.delayManager.shouldDelay((Packet<INetHandlerPlayClient>) packet)) {

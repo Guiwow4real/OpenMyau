@@ -6,6 +6,7 @@ import myau.module.Module;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
+@SuppressWarnings("unchecked")
 public abstract class Property<T> {
     private final String name;
     private final T type;
