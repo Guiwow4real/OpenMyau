@@ -53,7 +53,10 @@ public class ClickGuiScreen extends GuiScreen {
     private static final int NAV_WIDTH = 150;
     private static final int BORDER_THICK = 1;
     private static final int TITLE_HEIGHT = 30;
-    
+
+    private static final int MIN_WINDOW_WIDTH = 600; // 最小窗口宽度
+    private static final int MIN_WINDOW_HEIGHT = 400; // 最小窗口高度
+
     private ModuleButton selMod = null;
     private Object selNavElem = null;
 
@@ -90,16 +93,6 @@ public class ClickGuiScreen extends GuiScreen {
         return instance;
     }
 
-    // 辅助方法：将原始鼠标X坐标转换为GUI内部坐标
-    private int transformMouseX(int mouseX) {
-        return (int) (mouseX * (this.width / (float) this.mc.displayWidth));
-    }
-
-    // 辅助方法：将原始鼠标Y坐标转换为GUI内部坐标
-    private int transformMouseY(int mouseY) {
-        return this.height - (int) (mouseY * (this.height / (float) this.mc.displayHeight)) - 1;
-    }
-    
     public Frame getSelectedFrame() {
         return selFrame;
     }
@@ -180,55 +173,52 @@ public class ClickGuiScreen extends GuiScreen {
     
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        int transformedMouseX = transformMouseX(mouseX);
-        int transformedMouseY = transformMouseY(mouseY);
-
         tooltipTxt = null;
 
         if (this.enableTransBg) {
             Gui.drawRect(this.winX, this.winY, this.winX + this.winWidth, this.winY + this.winHeight, new Color(0, 0, 0, 100).getRGB());
         }
-        
-        renderTitleBar(transformedMouseX, transformedMouseY);
-        
+
+        renderTitleBar(mouseX, mouseY);
+
         int contentX = this.winX;
         int contentY = this.winY + TITLE_HEIGHT;
         int contentWidth = this.winWidth;
         int contentHeight = this.winHeight - TITLE_HEIGHT;
-        
-        Gui.drawRect(contentX, contentY, contentX + NAV_WIDTH, contentY + contentHeight, 
+
+        Gui.drawRect(contentX, contentY, contentX + NAV_WIDTH, contentY + contentHeight,
                     IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND));
-        
-        Gui.drawRect(contentX + NAV_WIDTH, contentY, contentX + NAV_WIDTH + BORDER_THICK, contentY + contentHeight, 
+
+        Gui.drawRect(contentX + NAV_WIDTH, contentY, contentX + NAV_WIDTH + BORDER_THICK, contentY + contentHeight,
                     IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR));
 
-        renderSearchBar(transformedMouseX, transformedMouseY);
+        renderSearchBar(mouseX, mouseY);
 
-        String navTooltip = renderNavigationPanel(transformedMouseX, transformedMouseY);
+        String navTooltip = renderNavigationPanel(mouseX, mouseY);
         if (navTooltip != null) {
             tooltipTxt = navTooltip;
-            tooltipX = transformedMouseX;
-            tooltipY = transformedMouseY;
+            tooltipX = mouseX;
+            tooltipY = mouseY;
         }
-        
-        String propTooltip = renderModuleProperties(contentX + NAV_WIDTH + BORDER_THICK, contentY, 
-                                      contentWidth - NAV_WIDTH - BORDER_THICK, contentHeight, transformedMouseX, transformedMouseY);
+
+        String propTooltip = renderModuleProperties(contentX + NAV_WIDTH + BORDER_THICK, contentY,
+                                      contentWidth - NAV_WIDTH - BORDER_THICK, contentHeight, mouseX, mouseY);
         if (propTooltip != null) {
             tooltipTxt = propTooltip;
-            tooltipX = transformedMouseX;
-            tooltipY = transformedMouseY;
+            tooltipX = mouseX;
+            tooltipY = mouseY;
         }
-        
-        if (this.dragComp != null) {
-            this.dragComp.updatePosition(transformedMouseX, transformedMouseY);
-        }
-        
-        super.drawScreen(transformedMouseX, transformedMouseY, partialTicks);
 
-        renderResizeHandles(transformedMouseX, transformedMouseY);
+        if (this.dragComp != null) {
+            this.dragComp.updatePosition(mouseX, mouseY);
+        }
+
+        super.drawScreen(mouseX, mouseY, partialTicks);
+
+        renderResizeHandles(mouseX, mouseY);
 
         if (tooltipTxt != null) {
-            renderTooltip(tooltipTxt, transformedMouseX, transformedMouseY);
+            renderTooltip(tooltipTxt, tooltipX, tooltipY);
         }
     }
     
@@ -717,16 +707,13 @@ public class ClickGuiScreen extends GuiScreen {
         int mouseX = Mouse.getEventX();
         int mouseY = Mouse.getEventY();
 
-        int transformedMouseX = transformMouseX(mouseX);
-        int transformedMouseY = transformMouseY(mouseY);
-
         int wheel = Mouse.getEventDWheel();
 
         if (wheel != 0) {
             int scrollAmount = wheel > 0 ? -SCROLL_SPD : SCROLL_SPD;
 
-            boolean isInNavigation = transformedMouseX >= this.winX && transformedMouseX <= this.winX + NAV_WIDTH &&
-                                   transformedMouseY >= this.winY + TITLE_HEIGHT && transformedMouseY <= this.winY + this.winHeight;
+            boolean isInNavigation = mouseX >= this.winX && mouseX <= this.winX + NAV_WIDTH &&
+                                   mouseY >= this.winY + TITLE_HEIGHT && mouseY <= this.winY + this.winHeight;
 
             if (isInNavigation) {
                 int maxScrollOffset = calculateMaxNavigationScrollOffset();
@@ -734,7 +721,7 @@ public class ClickGuiScreen extends GuiScreen {
                 this.navScroll = Math.max(0, Math.min(maxScrollOffset, this.navScroll));
             } else {
                 if (this.selMod != null) {
-                    handlePropertyScrollAdjustment(transformedMouseX, transformedMouseY, wheel);
+                    handlePropertyScrollAdjustment(mouseX, mouseY, wheel);
                 } else {
                     this.propScroll += scrollAmount;
                     this.propScroll = Math.max(0, this.propScroll);
@@ -828,7 +815,8 @@ public class ClickGuiScreen extends GuiScreen {
         if (!propertyAdjusted) {
             int scrollAmount = wheel > 0 ? -SCROLL_SPD : SCROLL_SPD;
             this.propScroll += scrollAmount;
-            this.propScroll = Math.max(0, this.propScroll);
+            int maxScrollOffset = calculateMaxPropertiesScrollOffset();
+            this.propScroll = Math.max(0, Math.min(maxScrollOffset, this.propScroll));
         }
     }
     
@@ -911,7 +899,22 @@ public class ClickGuiScreen extends GuiScreen {
         int availableHeight = winHeight - (TITLE_HEIGHT + SEARCH_HEIGHT + SEARCH_Y_OFF * 2 + 5);
         return Math.max(0, totalHeight - availableHeight);
     }
-    
+
+    private int calculateMaxPropertiesScrollOffset() {
+        if (this.selMod == null) return 0;
+
+        int totalHeight = 15 * 7; // Account for module name and description lines
+        ArrayList<Component> subComponents = this.selMod.getSubComponents();
+        if (subComponents != null) {
+            for (Component component : subComponents) {
+                totalHeight += component.getHeight();
+            }
+        }
+
+        int availableHeight = this.winHeight - (TITLE_HEIGHT + SEARCH_HEIGHT + SEARCH_Y_OFF * 2 + 5);
+        return Math.max(0, totalHeight - availableHeight);
+    }
+
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (this.listenBindBtn != null) {
@@ -950,9 +953,7 @@ public class ClickGuiScreen extends GuiScreen {
         
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        int transformedMouseX = transformMouseX(mouseX);
-        int transformedMouseY = transformMouseY(mouseY);
-        super.mouseClicked(transformedMouseX, transformedMouseY, mouseButton);
+        super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if (this.listenBindBtn != null) {
             this.listenBindBtn.keyTyped((char) 0, Keyboard.KEY_NONE);
@@ -960,7 +961,7 @@ public class ClickGuiScreen extends GuiScreen {
         }
 
         for (Frame frame : this.frames) {
-            Component clickedEntity = frame.mouseClicked(transformedMouseX, transformedMouseY, mouseButton);
+            Component clickedEntity = frame.mouseClicked(mouseX, mouseY, mouseButton);
             if (clickedEntity != null) {
                 if (clickedEntity instanceof Frame) {
                     this.dragFrame = (Frame) clickedEntity;
@@ -979,19 +980,19 @@ public class ClickGuiScreen extends GuiScreen {
         int searchBarWidth = NAV_WIDTH - BORDER_THICK * 2;
         int searchBarHeight = SEARCH_HEIGHT;
 
-        if (transformedMouseX >= searchBarX && transformedMouseX <= searchBarX + searchBarWidth &&
-            transformedMouseY >= searchBarY && transformedMouseY <= searchBarY + searchBarHeight) {
+        if (mouseX >= searchBarX && mouseX <= searchBarX + searchBarWidth &&
+            mouseY >= searchBarY && mouseY <= searchBarY + searchBarHeight) {
             this.searching = true;
         } else {
             this.searching = false;
         }
 
         if (mouseButton == 0 &&
-            transformedMouseX >= this.winX && transformedMouseX <= this.winX + this.winWidth &&
-            transformedMouseY >= this.winY && transformedMouseY <= this.winY + TITLE_HEIGHT) {
+            mouseX >= this.winX && mouseX <= this.winX + this.winWidth &&
+            mouseY >= this.winY && mouseY <= this.winY + TITLE_HEIGHT) {
             this.dragWin = true;
-            this.winDragX = transformedMouseX - this.winX;
-            this.winDragY = transformedMouseY - this.winY;
+            this.winDragX = mouseX - this.winX;
+            this.winDragY = mouseY - this.winY;
             return;
         }
 
@@ -999,12 +1000,12 @@ public class ClickGuiScreen extends GuiScreen {
 
         int rbX = this.winX + this.winWidth - RESIZE_SIZE;
         int rbY = this.winY + this.winHeight - RESIZE_SIZE;
-        if (transformedMouseX >= rbX && transformedMouseX <= this.winX + this.winWidth &&
-            transformedMouseY >= rbY && transformedMouseY <= this.winY + this.winHeight) {
+        if (mouseX >= rbX && mouseX <= this.winX + this.winWidth &&
+            mouseY >= rbY && mouseY <= this.winY + this.winHeight) {
             this.resizing = true;
             this.resizeDir = 3;
-            this.resizeStartX = transformedMouseX;
-            this.resizeStartY = transformedMouseY;
+            this.resizeStartX = mouseX;
+            this.resizeStartY = mouseY;
             this.initWidth = this.winWidth;
             this.initHeight = this.winHeight;
             return; // Return true as resize event is handled
@@ -1014,11 +1015,11 @@ public class ClickGuiScreen extends GuiScreen {
         int rY1 = this.winY + RESIZE_SIZE;
         int rX2 = this.winX + this.winWidth;
         int rY2 = this.winY + this.winHeight - RESIZE_SIZE;
-        if (transformedMouseX >= rX1 && transformedMouseX <= rX2 &&
-            transformedMouseY >= rY1 && transformedMouseY <= rY2) {
+        if (mouseX >= rX1 && mouseX <= rX2 &&
+            mouseY >= rY1 && mouseY <= rY2) {
             this.resizing = true;
             this.resizeDir = 1;
-            this.resizeStartX = transformedMouseX;
+            this.resizeStartX = mouseX;
             this.initWidth = this.winWidth;
             return; // Return true as resize event is handled
         }
@@ -1027,25 +1028,25 @@ public class ClickGuiScreen extends GuiScreen {
         int bY1 = this.winY + this.winHeight - RESIZE_SIZE;
         int bX2 = this.winX + this.winWidth - RESIZE_SIZE;
         int bY2 = this.winY + this.winHeight;
-        if (transformedMouseX >= bX1 && transformedMouseX <= bX2 &&
-            transformedMouseY >= bY1 && transformedMouseY <= bY2) {
+        if (mouseX >= bX1 && mouseX <= bX2 &&
+            mouseY >= bY1 && mouseY <= bY2) {
             this.resizing = true;
             this.resizeDir = 2;
-            this.resizeStartY = transformedMouseY;
+            this.resizeStartY = mouseY;
             this.initHeight = this.winHeight;
             return; // Return true as resize event is handled
         }
 
-        if (handleNavigationPanelClick(transformedMouseX, transformedMouseY, mouseButton)) return;
-        if (handlePropertiesPanelClick(transformedMouseX, transformedMouseY, mouseButton)) return;
+        if (handleNavigationPanelClick(mouseX, mouseY, mouseButton)) return;
+        if (handlePropertiesPanelClick(mouseX, mouseY, mouseButton)) return;
 
         // Handle window close, maximize, minimize buttons
         int buttonSize = 20;
         int buttonY = this.winY + (TITLE_HEIGHT - buttonSize) / 2;
 
         int closeX = this.winX + this.winWidth - buttonSize - 5;
-        if (transformedMouseX >= closeX && transformedMouseX <= closeX + buttonSize &&
-            transformedMouseY >= buttonY && transformedMouseY <= buttonY + buttonSize) {
+        if (mouseX >= closeX && mouseX <= closeX + buttonSize &&
+            mouseY >= buttonY && mouseY <= buttonY + buttonSize) {
             // Close button clicked
             this.mc.displayGuiScreen(null);
             if (this.mc.currentScreen == null) {
@@ -1055,8 +1056,8 @@ public class ClickGuiScreen extends GuiScreen {
         }
 
         int maximizeX = closeX - buttonSize - 2;
-        if (transformedMouseX >= maximizeX && transformedMouseX <= maximizeX + buttonSize &&
-            transformedMouseY >= buttonY && transformedMouseY <= buttonY + buttonSize) {
+        if (mouseX >= maximizeX && mouseX <= maximizeX + buttonSize &&
+            mouseY >= buttonY && mouseY <= buttonY + buttonSize) {
             // Maximize button clicked (Toggle fullscreen or restore)
             // For now, let's just resize to a default large size or restore original
             if (this.winWidth == 1920 && this.winHeight == 1080) { // Assuming 1920x1080 is max
@@ -1074,8 +1075,8 @@ public class ClickGuiScreen extends GuiScreen {
         }
 
         int minimizeX = maximizeX - buttonSize - 2;
-        if (transformedMouseX >= minimizeX && transformedMouseX <= minimizeX + buttonSize &&
-            transformedMouseY >= buttonY && transformedMouseY <= buttonY + buttonSize) {
+        if (mouseX >= minimizeX && mouseX <= minimizeX + buttonSize &&
+            mouseY >= buttonY && mouseY <= buttonY + buttonSize) {
             // Minimize button clicked (Minimize to taskbar or hide)
             // For Minecraft GUI, usually just close the GUI
             this.mc.displayGuiScreen(null);
@@ -1227,45 +1228,17 @@ public class ClickGuiScreen extends GuiScreen {
                     mouseX >= propertiesX + 5 && mouseX <= propertiesX + propertiesWidth - 5 &&
                     mouseY >= currentY && mouseY <= currentY + component.getHeight()) {
 
-                    Component clickedEntity = component.mouseClicked(mouseX, mouseY, mouseButton);
-                    if (clickedEntity != null) {
-                        if (clickedEntity instanceof BindButton && ((BindButton) clickedEntity).isListeningForKey()) {
-                            this.listenBindBtn = (BindButton) clickedEntity;
-                        } else {
-                            this.dragComp = clickedEntity;
-                        }
-                        return true;
+                    if (mouseButton == 0) {
+                        adjustPropertyValue(component, true);
+                    } else if (mouseButton == 1) {
+                        adjustPropertyValue(component, false);
                     }
+                    return true;
                 }
                 currentY += component.getHeight();
             }
         }
         return false;
-    }
-    
-    private void handlePropertyAreaClick(int mouseX, int mouseY, int mouseButton) {
-        if (this.selMod == null) return;
-        
-        ArrayList<Component> subComponents = this.selMod.getSubComponents();
-        if (subComponents == null || subComponents.isEmpty()) return;
-        
-        int propertiesX = winX + NAV_WIDTH + BORDER_THICK;
-        int propertiesY = winY + TITLE_HEIGHT;
-        
-        int contentStartY = propertiesY + 10 - this.propScroll;
-        int currentY = contentStartY + 15 * 7;
-        
-        for (Component component : subComponents) {
-            if (mouseY >= currentY && mouseY <= currentY + 15) {
-                if (mouseButton == 0) {
-                    adjustPropertyValue(component, true);
-                } else if (mouseButton == 1) {
-                    adjustPropertyValue(component, false);
-                }
-                break;
-            }
-            currentY += 15;
-        }
     }
     
     private boolean handleWindowControlsClick(int mouseX, int mouseY, int mouseButton) {
@@ -1300,49 +1273,48 @@ public class ClickGuiScreen extends GuiScreen {
     
     @Override
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-        int transformedMouseX = transformMouseX(mouseX);
-        int transformedMouseY = transformMouseY(mouseY);
-        super.mouseClickMove(transformedMouseX, transformedMouseY, clickedMouseButton, timeSinceLastClick);
+        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 
         if (this.dragWin && clickedMouseButton == 0) {
-            int newX = transformedMouseX - this.winDragX;
-            int newY = transformedMouseY - this.winDragY;
+            int newX = mouseX - this.winDragX;
+            int newY = mouseY - this.winDragY;
 
             this.winX = Math.max(0, Math.min(this.width - this.winWidth, newX));
             this.winY = Math.max(0, Math.min(this.height - this.winHeight, newY));
         }
 
         if (this.resizing) {
-            int deltaX = transformedMouseX - this.resizeStartX;
-            int deltaY = transformedMouseY - this.resizeStartY;
+            int deltaX = mouseX - this.resizeStartX;
+            int deltaY = mouseY - this.resizeStartY;
 
             if (this.resizeDir == 1 || this.resizeDir == 3) {
-                this.winWidth = Math.max(NAV_WIDTH + 200, Math.min(this.width - this.winX, this.initWidth + deltaX));
+                this.winWidth = Math.max(MIN_WINDOW_WIDTH, Math.min(this.width - this.winX, this.initWidth + deltaX));
+                this.winWidth = Math.min(this.winWidth, this.width - this.winX); // Limit max width
             }
             if (this.resizeDir == 2 || this.resizeDir == 3) {
-                this.winHeight = Math.max(TITLE_HEIGHT + 200, Math.min(this.height - this.winY, this.initHeight + deltaY));
+                this.winHeight = Math.max(MIN_WINDOW_HEIGHT, Math.min(this.height - this.winY, this.initHeight + deltaY));
+                this.winHeight = Math.min(this.winHeight, this.height - this.winY); // Limit max height
             }
         }
 
         if (this.dragFrame != null) {
-            this.dragFrame.updatePosition(transformedMouseX, transformedMouseY);
+            this.dragFrame.updatePosition(mouseX, mouseY);
         } else if (this.dragComp != null) {
-            this.dragComp.updatePosition(transformedMouseX, transformedMouseY);
+            this.dragComp.updatePosition(mouseX, mouseY);
         }
     }
     
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        int transformedMouseX = transformMouseX(mouseX);
-        int transformedMouseY = transformMouseY(mouseY);
-        super.mouseReleased(transformedMouseX, transformedMouseY, state);
+        super.mouseReleased(mouseX, mouseY, state);
 
         if (this.dragComp != null) {
-            this.dragComp.onMouseReleased(transformedMouseX, transformedMouseY, state);
+            this.dragComp.onMouseReleased(mouseX, mouseY, state);
             this.dragComp = null;
         }
+
         if (this.dragFrame != null) {
-            this.dragFrame.mouseReleased(transformedMouseX, transformedMouseY, state);
+            this.dragFrame.mouseReleased(mouseX, mouseY, state);
             this.dragFrame = null;
         }
 
