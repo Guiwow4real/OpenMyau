@@ -11,7 +11,8 @@
 
 相对于原本Myau，添加了以下功能：
 
-1. IDEA-like ClickGUI
+1. Material Desgin 3 Style ClickGUI
+2. some cool bypass
 
 # Build
 
@@ -24,4 +25,3 @@
 1. 把Myau.jar放到Minecraft的mods文件夹中
 2. 运行Minecraft
 3. enjoy
-
