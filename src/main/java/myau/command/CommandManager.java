@@ -11,12 +11,18 @@ import net.minecraft.network.play.client.C01PacketChatMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import myau.command.commands.BindCommand;
+import myau.command.commands.ConfigCommand;
+import myau.command.commands.ClickGuiCommand;
 
 public class CommandManager {
     public ArrayList<Command> commands;
 
     public CommandManager() {
         this.commands = new ArrayList<>();
+        this.commands.add(new BindCommand());
+        this.commands.add(new ConfigCommand());
+        this.commands.add(new ClickGuiCommand());
     }
 
     public void handleCommand(String string) {

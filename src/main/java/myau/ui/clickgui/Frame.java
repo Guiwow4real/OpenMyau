@@ -4,19 +4,13 @@ import myau.Myau;
 import myau.module.Category;
 import myau.module.Module;
 import myau.ui.clickgui.component.Component;
-import myau.ui.clickgui.component.ModuleButton;
-import myau.ui.clickgui.ClickGuiScreen;
+import myau.ui.clickgui.component.ModuleEntry;
+import myau.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import myau.module.modules.GuiModule;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
-
-import myau.util.RenderUtils; // Import RenderUtils
-import myau.util.RenderUtil; // Import RenderUtil
-
-import java.util.ArrayList;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Frame extends Component {
@@ -24,279 +18,94 @@ public class Frame extends Component {
     private int dragX, dragY;
     private final Category category;
     private boolean dragging;
-    private boolean open;
-    private boolean opening; // 新增：标记正在打开
-    private boolean closing; // 新增：标记正在关闭
-    private double frameCornerRadius; // 新增：圆角半径
-    
-    /**
-     * 检查Frame是否展开（用于导航栏显示）
-     */
-    public boolean isExtended() {
-        return open;
-    }
-
-    /**
-     * 设置Frame的展开状态
-     * @param extended true为展开，false为折叠
-     */
-    public void setExtended(boolean extended) {
-        this.open = extended;
-        this.animationProgress = extended ? 1.0f : 0.0f; // Immediately set animation progress
-        this.opening = false;
-        this.closing = false;
-    }
-    private float animationProgress; // 新增：动画进度 (0.0 - 1.0)
-    private long lastUpdateTime; // 新增：上次更新时间
-    private final ArrayList<Component> components;
-    
-    // 新增：选中状态颜色
-    private static final int HEADER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
-    private static final int HEADER_HOVER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
-    private static final int HEADER_SELECTED_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SELECTED_COLOR);
-    private static final int HEADER_TEXT_COLOR = IntelliJTheme.getRGB(IntelliJTheme.TEXT_COLOR);
-    private static final int BORDER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.BORDER_COLOR);
-    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.BACKGROUND_COLOR);
-
-    protected Minecraft mc = Minecraft.getMinecraft();
-    protected FontRenderer fr = mc.fontRendererObj;
+    private boolean expanded;
+    private final ArrayList<ModuleEntry> moduleEntries;
 
     public Frame(Category category, int x, int y, int width, int height) {
-        super(null, x, y, width, height); // parent frame is null for top-level frames
+        super(x, y, width, height);
         this.category = category;
-        this.components = new ArrayList<>();
-        this.open = true;
-        this.opening = false;
-        this.closing = false;
-        this.animationProgress = 1.0f; // 默认完全展开
-        this.lastUpdateTime = System.currentTimeMillis();
-
-        // 获取GuiModule实例并初始化圆角半径
-        GuiModule guiModule = (GuiModule) Myau.moduleManager.getModule("GuiSettings");
-        if (guiModule != null) {
-            this.frameCornerRadius = guiModule.cornerRadius.getValue();
-        } else {
-            this.frameCornerRadius = IntelliJTheme.CORNER_RADIUS; // 默认值
-        }
-
         this.dragging = false;
+        this.expanded = true; // By default, categories are expanded
+        this.moduleEntries = new ArrayList<>();
 
-        // 初始化组件列表。组件的实际 Y 坐标将在 render 方法中动态计算。
-        for (Module module : Myau.moduleManager.getModulesInCategory(this.category)) {
-            // 初始 yOffset 设为 0 或其他占位值，render 方法会覆盖它
-            this.components.add(new ModuleButton(module, this, 0));
-        }
-    }
-
-    /**
-     * 渲染 Frame（包括标题和所有组件）。
-     * IntelliJ IDEA风格布局实现
-     */
-    public void render(int mouseX, int mouseY) {
-        // 更新动画状态
-        updateAnimation();
-        
-        // IntelliJ风格标题栏 - 检查鼠标悬停和选中状态
-        boolean isMouseOverHeader = isMouseOnHeader(mouseX, mouseY);
-        boolean isSelected = ClickGuiScreen.getInstance() != null && ClickGuiScreen.getInstance().getSelectedFrame() == this;
-        int headerColor = isSelected ? HEADER_SELECTED_COLOR : (isMouseOverHeader ? HEADER_HOVER_COLOR : HEADER_COLOR);
-        
-        // 使用IntelliJ主题的圆角半径
-        double cornerRadius = this.frameCornerRadius;
-        
-        // 1. 绘制 Frame 标题栏 (Header) - IntelliJ风格带圆角
-        if (cornerRadius > 0) {
-            // 使用圆角矩形绘制标题栏
-            RenderUtil.drawRoundedRect(this.x, this.y, this.width, this.height, cornerRadius, headerColor);
-            // 绘制圆角边框
-            RenderUtil.drawRoundedRectOutline(this.x, this.y, this.width, this.height, cornerRadius, 1.0f, BORDER_COLOR);
-        } else {
-            // 无圆角时使用原来的绘制方式
-            Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, headerColor);
-            
-            // IntelliJ风格边框效果
-            Gui.drawRect(this.x, this.y, this.x + this.width, this.y + 1, BORDER_COLOR); // 顶部边框
-            Gui.drawRect(this.x, this.y + this.height - 1, this.x + this.width, this.y + this.height, BORDER_COLOR); // 底部边框
-        }
-        
-        // IntelliJ风格文字渲染
-        String categoryName = this.category.getName();
-        int maxWidth = this.width - 16; // 左右各留8px边距
-        
-        // 如果文本宽度超过最大宽度，则截断并添加省略号
-        if (fr.getStringWidth(categoryName) > maxWidth) {
-            String truncated = fr.trimStringToWidth(categoryName, maxWidth - fr.getStringWidth("..."));
-            fr.drawString(truncated + "...", this.x + 8, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, HEADER_TEXT_COLOR);
-        } else {
-            fr.drawString(categoryName, this.x + 8, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, HEADER_TEXT_COLOR);
-        }
-
-        // 计算动画高度
-        int animatedHeight = (int) (getTotalComponentsHeight() * animationProgress);
-
-        if (animatedHeight > 0) {
-            int currentY = this.y + this.height; // 组件起始 Y 坐标，在标题栏下方
-
-            // 2. 第一次遍历：更新组件位置
-            for (Component component : this.components) {
-                // 设置当前组件的位置
-                component.y = currentY;
-                component.x = this.x;
-
-                // 更新下一组件的起始 Y 坐标
-                int componentTotalHeight = component.getHeight();
-                if (component instanceof ModuleButton && ((ModuleButton) component).isOpen()) {
-                    componentTotalHeight += ((ModuleButton) component).getSubComponentsHeight();
-                }
-                currentY += componentTotalHeight;
-            }
-
-            // 3. 绘制组件背景 - IntelliJ风格带圆角
-            if (cornerRadius > 0) {
-                // 使用圆角矩形绘制组件背景
-                RenderUtil.drawRoundedRect(this.x, this.y + this.height, this.width, animatedHeight, cornerRadius, BACKGROUND_COLOR);
-                // 绘制圆角边框
-                RenderUtil.drawRoundedRectOutline(this.x, this.y + this.height, this.width, animatedHeight, cornerRadius, 1.0f, BORDER_COLOR);
-            } else {
-                // 背景从标题栏底部开始，延伸到动画计算的高度
-                Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + animatedHeight, BACKGROUND_COLOR);
-                
-                // IntelliJ风格边框效果
-                Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + 1, BORDER_COLOR); // 组件区域顶部边框
-                Gui.drawRect(this.x, this.y + this.height, this.x + this.width, this.y + this.height + animatedHeight, BORDER_COLOR); // 组件区域底部边框
-            }
-
-            // 4. 渲染组件（根据动画进度决定渲染哪些组件）
-            renderComponentsWithAnimation(mouseX, mouseY, animatedHeight);
-        }
-    }
-
-    /**
-     * 根据动画进度渲染组件
-     */
-    private void renderComponentsWithAnimation(int mouseX, int mouseY, int availableHeight) {
-        int currentY = this.y + this.height;
-        int remainingHeight = availableHeight;
-        int screenHeight = new ScaledResolution(mc).getScaledHeight(); // 获取屏幕高度
-
-        for (Component component : this.components) {
-            int componentTotalHeight = component.getHeight();
-            if (component instanceof ModuleButton && ((ModuleButton) component).isOpen()) {
-                componentTotalHeight += ((ModuleButton) component).getSubComponentsHeight();
-            }
-
-            // 检查是否有足够的空间渲染这个组件，并且不会超出屏幕高度
-            if (remainingHeight >= component.getHeight() && currentY + component.getHeight() <= screenHeight) {
-                component.render(mouseX, mouseY);
-                
-                // 更新剩余高度
-                remainingHeight -= componentTotalHeight;
-                currentY += componentTotalHeight;
-            } else {
-                // 空间不足或超出屏幕高度，不再渲染更多组件
-                break;
+        // Populate module entries
+        if (Myau.moduleManager != null) {
+            for (Module module : Myau.moduleManager.getModulesInCategory(this.category)) {
+                this.moduleEntries.add(new ModuleEntry(module, x, 0, width, 20)); // Y will be set during render
             }
         }
     }
 
-    /**
-     * 获取所有组件的总高度
-     */
-    private int getTotalComponentsHeight() {
-        int totalHeight = 0;
-        for (Component component : this.components) {
-            int componentTotalHeight = component.getHeight();
-            if (component instanceof ModuleButton && ((ModuleButton) component).isOpen()) {
-                componentTotalHeight += ((ModuleButton) component).getSubComponentsHeight();
-            }
-            totalHeight += componentTotalHeight;
-        }
-        return totalHeight;
-    }
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        // Render Frame header (category name)
+        boolean hovered = isMouseOver(mouseX, mouseY);
+        Color headerColor = hovered ? MaterialTheme.PRIMARY_CONTAINER_COLOR.brighter() : MaterialTheme.PRIMARY_CONTAINER_COLOR;
 
-    /**
-     * 更新动画状态
-     */
-    private void updateAnimation() {
-        long currentTime = System.currentTimeMillis();
-        float deltaTime = (currentTime - lastUpdateTime) / 1000.0f; // 转换为秒
-        lastUpdateTime = currentTime;
+        // Draw Frame header with top-left and top-right rounded corners
+        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(headerColor), true, true, false, false);
+        fr.drawStringWithShadow(category.getName(), x + 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR));
 
-        // 默认动画速度（转换为每秒完成的比例）
-        float animationSpeed = 2.0f; // 默认值，范围 0.5 - 5.5
+        // Draw expansion arrow
+        String arrow = expanded ? "\u25B2" : "\u25BC";
+        fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR));
 
-        if (opening) {
-            animationProgress += deltaTime * animationSpeed;
-            if (animationProgress >= 1.0f) {
-                animationProgress = 1.0f;
-                opening = false;
-            }
-        } else if (closing) {
-            animationProgress -= deltaTime * animationSpeed;
-            if (animationProgress <= 0.0f) {
-                animationProgress = 0.0f;
-                closing = false;
+        if (expanded) {
+            int currentY = y + height;
+            for (int i = 0; i < moduleEntries.size(); i++) {
+                ModuleEntry entry = moduleEntries.get(i);
+                entry.setX(x);
+                entry.setY(currentY);
+                entry.setWidth(width);
+                // Determine if this is the last entry in the frame to apply bottom rounded corners
+                boolean isLastEntry = (i == moduleEntries.size() - 1);
+                entry.render(mouseX, mouseY, partialTicks, isLastEntry); // Pass flag to ModuleEntry
+                currentY += entry.getTotalHeight();
             }
         }
     }
 
-    public Component mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (isMouseOnHeader(mouseX, mouseY)) {
-            if (mouseButton == 0) {
-                // 设置此Frame为选中状态
-                ClickGuiScreen clickGui = ClickGuiScreen.getInstance();
-                if (clickGui != null) {
-                    clickGui.setSelectedFrame(this);
-                }
+    @Override
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        if (isMouseOver(mouseX, mouseY)) {
+            if (mouseButton == 0) { // Left click: drag frame or interact with modules
                 this.dragging = true;
                 this.dragX = mouseX - this.x;
                 this.dragY = mouseY - this.y;
-                return this; // 返回当前Frame实例，表示Frame被拖动
-            } else if (mouseButton == 1) {
-                toggleOpenClose();
+                return true;
+            } else if (mouseButton == 1) { // Right click: toggle expansion
+                expanded = !expanded;
+                return true;
             }
-            return null; // Frame header click, but not initiating a component drag
         }
 
-        // 只有在完全打开时才能与组件交互
-        if (this.open && animationProgress >= 1.0f) {
-            for (Component component : this.components) {
-                // 将点击事件传递给子组件
-                Component clickedComponent = component.mouseClicked(mouseX, mouseY, mouseButton);
-                if (clickedComponent != null) {
-                    // 如果子组件处理了点击（例如BindButton），则返回它。
-                    // 对于可交互的属性组件（Checkbox, Slider, ModeSelector），它们的mouseClicked方法会直接处理交互，不需要返回。
-                    return clickedComponent; 
+        if (expanded) {
+            for (ModuleEntry entry : moduleEntries) {
+                if (entry.mouseClicked(mouseX, mouseY, mouseButton)) {
+                    return true;
                 }
             }
         }
-        return null; // 没有组件被点击或拖动
+        return false;
     }
 
-    /**
-     * 切换打开/关闭状态以启动动画
-     */
-    public void toggleOpenClose() {
-        // 重置动画时间
-        lastUpdateTime = System.currentTimeMillis();
-        
-        if (open) {
-            // 正在打开，现在要关闭
-            opening = false;
-            closing = true;
-            open = false;
-        } else {
-            // 正在关闭，现在要打开
-            closing = false;
-            opening = true;
-            open = true;
+    @Override
+    public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+        this.dragging = false;
+        if (expanded) {
+            for (ModuleEntry entry : moduleEntries) {
+                entry.mouseReleased(mouseX, mouseY, mouseButton);
+            }
         }
     }
 
-    public void mouseReleased(int mouseX, int mouseY, int state) {
-        this.dragging = false;
-        // ClickGuiScreen will handle calling onMouseReleased on the specific draggingComponent.
-        // This method only needs to handle the frame's own dragging state.
+    @Override
+    public void keyTyped(char typedChar, int keyCode) {
+        if (expanded) {
+            for (ModuleEntry entry : moduleEntries) {
+                entry.keyTyped(typedChar, keyCode);
+            }
+        }
     }
 
     public void updatePosition(int mouseX, int mouseY) {
@@ -306,77 +115,29 @@ public class Frame extends Component {
         }
     }
 
-    private boolean isMouseOnHeader(int mouseX, int mouseY) {
-        return mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height;
-    }
-
-    // --- Getters ---
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-    
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-    
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-    
-    public boolean isOpen() {
-        return open;
-    }
-    
     public Category getCategory() {
         return category;
     }
-    
-    /**
-     * 获取此Frame中的所有ModuleButton组件
-     * @return ModuleButton列表
-     */
-    public List<ModuleButton> getModuleButtons() {
-        List<ModuleButton> moduleButtons = new ArrayList<>();
-        for (Component component : components) {
-            if (component instanceof ModuleButton) {
-                moduleButtons.add((ModuleButton) component);
-            }
-        }
-        return moduleButtons;
+
+    public List<ModuleEntry> getModuleEntries() {
+        return moduleEntries;
     }
 
-    /**
-     * 处理键盘输入事件，并将其传递给子组件
-     * @param typedChar 键入的字符
-     * @param keyCode 键码
-     * @return 如果有组件处理了输入，则返回该组件；否则返回null
-     */
-    public Component handleInput(char typedChar, int keyCode) {
-        if (open && animationProgress >= 1.0f) {
-            for (Component component : components) {
-                Component handledComponent = component.handleInput(typedChar, keyCode);
-                if (handledComponent != null) {
-                    return handledComponent;
-                }
+    public int getTotalHeight() {
+        int total = height;
+        if (expanded) {
+            for (ModuleEntry entry : moduleEntries) {
+                total += entry.getTotalHeight();
             }
         }
-        return null;
+        return total;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
     }
 }

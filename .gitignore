@@ -20,3 +20,5 @@ Thumbs.db
 run/
 configs/
 OpenMyau-return.zip
+start.bat
+runClient.py

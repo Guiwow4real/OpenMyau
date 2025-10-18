@@ -7,7 +7,6 @@ import myau.event.EventManager;
 import myau.management.*;
 import myau.module.Module;
 import myau.module.ModuleManager;
-import myau.module.modules.GuiModule;
 import myau.module.modules.*;
 import myau.property.Property;
 import myau.property.PropertyManager;
@@ -75,8 +74,7 @@ public class Myau {
         moduleManager.modules.put(FullBright.class, new FullBright());
         moduleManager.modules.put(GhostHand.class, new GhostHand());
         moduleManager.modules.put(HUD.class, new HUD());
-        moduleManager.modules.put(ClickGUI.class, new ClickGUI());
-        moduleManager.modules.put(GuiModule.class, new GuiModule());
+        moduleManager.modules.put(ClickGUIModule.class, new ClickGUIModule()); // New ClickGUI Module
         moduleManager.modules.put(Indicators.class, new Indicators());
         moduleManager.modules.put(InvManager.class, new InvManager());
         moduleManager.modules.put(InvWalk.class, new InvWalk());
@@ -126,6 +124,7 @@ public class Myau {
         commandManager.commands.add(new TargetCommand());
         commandManager.commands.add(new ToggleCommand());
         commandManager.commands.add(new VclipCommand());
+        commandManager.commands.add(new ClickGuiCommand()); // Add ClickGuiCommand to CommandManager
         for (Module module : moduleManager.modules.values()) {
             ArrayList<Property<?>> properties = new ArrayList<>();
             for (final Field field : module.getClass().getDeclaredFields()) {

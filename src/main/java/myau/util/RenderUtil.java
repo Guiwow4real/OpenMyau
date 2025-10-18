@@ -467,62 +467,88 @@ public class RenderUtil {
     }
 
     /**
-     * 绘制圆角矩形
+     * 绘制圆角矩形，可单独控制每个角的圆角
      * @param x 左上角x坐标
      * @param y 左上角y坐标
      * @param width 宽度
      * @param height 高度
      * @param radius 圆角半径
      * @param color 颜色
+     * @param roundTopLeft 是否圆角左上角
+     * @param roundTopRight 是否圆角右上角
+     * @param roundBottomLeft 是否圆角左下角
+     * @param roundBottomRight 是否圆角右下角
      */
-    public static void drawRoundedRect(double x, double y, double width, double height, double radius, int color) {
+    public static void drawRoundedRect(double x, double y, double width, double height, double radius, int color, boolean roundTopLeft, boolean roundTopRight, boolean roundBottomLeft, boolean roundBottomRight) {
         RenderUtil.enableRenderState();
         RenderUtil.setColor(color);
-        
-        // 确保半径不超过矩形尺寸的一半
-        radius = Math.min(radius, Math.min(width, height) / 2.0);
-        
-        // 绘制圆角矩形
+
+        // Ensure radius doesn't exceed half of the shortest side
+        radius = Math.max(0, Math.min(radius, Math.min(width, height) / 2.0));
+
+        // Draw the main rectangle parts as straight segments
         GL11.glBegin(GL11.GL_POLYGON);
-        
-        // 左上角圆角
-        for (int i = 0; i <= 10; i++) {
-            double angle = Math.PI + (i * Math.PI / 20);
-            double px = x + radius + Math.cos(angle) * radius;
-            double py = y + radius + Math.sin(angle) * radius;
-            GL11.glVertex2d(px, py);
+
+        // Top edge
+        GL11.glVertex2d(x + (roundTopLeft ? radius : 0), y);
+        GL11.glVertex2d(x + width - (roundTopRight ? radius : 0), y);
+
+        // Right edge
+        GL11.glVertex2d(x + width, y + (roundTopRight ? radius : 0));
+        GL11.glVertex2d(x + width, y + height - (roundBottomRight ? radius : 0));
+
+        // Bottom edge
+        GL11.glVertex2d(x + width - (roundBottomRight ? radius : 0), y + height);
+        GL11.glVertex2d(x + (roundBottomLeft ? radius : 0), y + height);
+
+        // Left edge
+        GL11.glVertex2d(x, y + height - (roundBottomLeft ? radius : 0));
+        GL11.glVertex2d(x, y + (roundTopLeft ? radius : 0));
+
+        GL11.glEnd();
+
+        // Draw rounded corners
+        GL11.glBegin(GL11.GL_POLYGON); // Use a new polygon for arcs to ensure proper rendering
+        int segments = 10; // Number of segments for each arc
+
+        // Top-left corner
+        if (roundTopLeft) {
+            for (int i = 0; i <= segments; i++) {
+                double angle = Math.PI + (i * Math.PI / (2 * segments));
+                GL11.glVertex2d(x + radius + Math.cos(angle) * radius, y + radius + Math.sin(angle) * radius);
+            }
         }
-        
-        // 右上角圆角
-        for (int i = 0; i <= 10; i++) {
-            double angle = Math.PI * 1.5 + (i * Math.PI / 20);
-            double px = x + width - radius + Math.cos(angle) * radius;
-            double py = y + radius + Math.sin(angle) * radius;
-            GL11.glVertex2d(px, py);
+
+        // Top-right corner
+        if (roundTopRight) {
+            for (int i = 0; i <= segments; i++) {
+                double angle = Math.PI * 1.5 + (i * Math.PI / (2 * segments));
+                GL11.glVertex2d(x + width - radius + Math.cos(angle) * radius, y + radius + Math.sin(angle) * radius);
+            }
         }
-        
-        // 右下角圆角
-        for (int i = 0; i <= 10; i++) {
-            double angle = (i * Math.PI / 20);
-            double px = x + width - radius + Math.cos(angle) * radius;
-            double py = y + height - radius + Math.sin(angle) * radius;
-            GL11.glVertex2d(px, py);
+
+        // Bottom-right corner
+        if (roundBottomRight) {
+            for (int i = 0; i <= segments; i++) {
+                double angle = (i * Math.PI / (2 * segments));
+                GL11.glVertex2d(x + width - radius + Math.cos(angle) * radius, y + height - radius + Math.sin(angle) * radius);
+            }
         }
-        
-        // 左下角圆角
-        for (int i = 0; i <= 10; i++) {
-            double angle = Math.PI * 0.5 + (i * Math.PI / 20);
-            double px = x + radius + Math.cos(angle) * radius;
-            double py = y + height - radius + Math.sin(angle) * radius;
-            GL11.glVertex2d(px, py);
+
+        // Bottom-left corner
+        if (roundBottomLeft) {
+            for (int i = 0; i <= segments; i++) {
+                double angle = Math.PI * 0.5 + (i * Math.PI / (2 * segments));
+                GL11.glVertex2d(x + radius + Math.cos(angle) * radius, y + height - radius + Math.sin(angle) * radius);
+            }
         }
-        
+
         GL11.glEnd();
         RenderUtil.disableRenderState();
     }
 
     /**
-     * 绘制圆角边框
+     * 绘制圆角矩形边框，可单独控制每个角的圆角
      * @param x 左上角x坐标
      * @param y 左上角y坐标
      * @param width 宽度
@@ -530,52 +556,70 @@ public class RenderUtil {
      * @param radius 圆角半径
      * @param lineWidth 边框宽度
      * @param color 颜色
+     * @param roundTopLeft 是否圆角左上角
+     * @param roundTopRight 是否圆角右上角
+     * @param roundBottomLeft 是否圆角左下角
+     * @param roundBottomRight 是否圆角右下角
      */
-    public static void drawRoundedRectOutline(double x, double y, double width, double height, double radius, float lineWidth, int color) {
+    public static void drawRoundedRectOutline(double x, double y, double width, double height, double radius, float lineWidth, int color, boolean roundTopLeft, boolean roundTopRight, boolean roundBottomLeft, boolean roundBottomRight) {
         RenderUtil.enableRenderState();
         RenderUtil.setColor(color);
         GL11.glLineWidth(lineWidth);
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-        
-        // 确保半径不超过矩形尺寸的一半
-        radius = Math.min(radius, Math.min(width, height) / 2.0);
-        
-        // 绘制圆角边框
+
+        radius = Math.max(0, Math.min(radius, Math.min(width, height) / 2.0));
+
         GL11.glBegin(GL11.GL_LINE_LOOP);
-        
-        // 左上角圆角
-        for (int i = 0; i <= 10; i++) {
-            double angle = Math.PI + (i * Math.PI / 20);
-            double px = x + radius + Math.cos(angle) * radius;
-            double py = y + radius + Math.sin(angle) * radius;
-            GL11.glVertex2d(px, py);
+
+        // Top-left arc or straight lines
+        if (roundTopLeft) {
+            for (int i = 0; i <= 10; i++) {
+                double angle = Math.PI + (i * Math.PI / (2 * 10));
+                GL11.glVertex2d(x + radius + Math.cos(angle) * radius, y + radius + Math.sin(angle) * radius);
+            }
+        } else {
+            GL11.glVertex2d(x, y + radius);
+            GL11.glVertex2d(x, y);
+            GL11.glVertex2d(x + radius, y);
         }
-        
-        // 右上角圆角
-        for (int i = 0; i <= 10; i++) {
-            double angle = Math.PI * 1.5 + (i * Math.PI / 20);
-            double px = x + width - radius + Math.cos(angle) * radius;
-            double py = y + radius + Math.sin(angle) * radius;
-            GL11.glVertex2d(px, py);
+
+        // Top-right arc or straight lines
+        if (roundTopRight) {
+            for (int i = 0; i <= 10; i++) {
+                double angle = Math.PI * 1.5 + (i * Math.PI / (2 * 10));
+                GL11.glVertex2d(x + width - radius + Math.cos(angle) * radius, y + radius + Math.sin(angle) * radius);
+            }
+        } else {
+            GL11.glVertex2d(x + width - radius, y);
+            GL11.glVertex2d(x + width, y);
+            GL11.glVertex2d(x + width, y + radius);
         }
-        
-        // 右下角圆角
-        for (int i = 0; i <= 10; i++) {
-            double angle = (i * Math.PI / 20);
-            double px = x + width - radius + Math.cos(angle) * radius;
-            double py = y + height - radius + Math.sin(angle) * radius;
-            GL11.glVertex2d(px, py);
+
+        // Bottom-right arc or straight lines
+        if (roundBottomRight) {
+            for (int i = 0; i <= 10; i++) {
+                double angle = (i * Math.PI / (2 * 10));
+                GL11.glVertex2d(x + width - radius + Math.cos(angle) * radius, y + height - radius + Math.sin(angle) * radius);
+            }
+        } else {
+            GL11.glVertex2d(x + width, y + height - radius);
+            GL11.glVertex2d(x + width, y + height);
+            GL11.glVertex2d(x + width - radius, y + height);
         }
-        
-        // 左下角圆角
-        for (int i = 0; i <= 10; i++) {
-            double angle = Math.PI * 0.5 + (i * Math.PI / 20);
-            double px = x + radius + Math.cos(angle) * radius;
-            double py = y + height - radius + Math.sin(angle) * radius;
-            GL11.glVertex2d(px, py);
+
+        // Bottom-left arc or straight lines
+        if (roundBottomLeft) {
+            for (int i = 0; i <= 10; i++) {
+                double angle = Math.PI * 0.5 + (i * Math.PI / (2 * 10));
+                GL11.glVertex2d(x + radius + Math.cos(angle) * radius, y + height - radius + Math.sin(angle) * radius);
+            }
+        } else {
+            GL11.glVertex2d(x + radius, y + height);
+            GL11.glVertex2d(x, y + height);
+            GL11.glVertex2d(x, y + height - radius);
         }
-        
+
         GL11.glEnd();
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
         GL11.glLineWidth(2.0f);
@@ -597,7 +641,7 @@ public class RenderUtil {
         GL11.glLineWidth(lineWidth);
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-        
+
         GL11.glBegin(GL11.GL_LINE_LOOP);
         GL11.glVertex2d(x, y);
         GL11.glVertex2d(x + width, y);

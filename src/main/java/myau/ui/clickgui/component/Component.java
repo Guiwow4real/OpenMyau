@@ -1,88 +1,36 @@
 package myau.ui.clickgui.component;
 
-import myau.ui.clickgui.Frame;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
 public abstract class Component {
+    protected final Minecraft mc = Minecraft.getMinecraft();
+    protected final FontRenderer fr = mc.fontRendererObj;
 
-    protected final Frame parent;
-    public int x;
-    public int y;
-    protected int width;
-    protected int height;
+    public int x, y, width, height;
 
-    protected Minecraft mc = Minecraft.getMinecraft();
-    protected FontRenderer fr = mc.fontRendererObj;
-
-    public Component(Frame parent, int x, int y, int width, int height) {
-        this.parent = parent;
+    public Component(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
     }
 
-    public abstract void render(int mouseX, int mouseY);
-
-    public Component mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        return null; // Default: no drag initiated by this component
-    }
-
-    public void mouseReleased(int mouseX, int mouseY, int state) {}
-
-    // This method will be called by ClickGuiScreen directly on the draggingComponent.
-    public void onMouseReleased(int mouseX, int mouseY, int state) {
-        // Default implementation: do nothing. Subclasses like Slider will override this.
-    }
-
-    public void updatePosition(int mouseX, int mouseY) {
-        // Default implementation: update component position based on mouse drag
-        this.x = mouseX;
-        this.y = mouseY;
-    }
-
-    public void keyTyped(char typedChar, int keyCode) {}
-
-    public boolean isVisible() {
-        return true; // Default implementation: component is always visible
-    }
-
-    public boolean mouseScrolled(int mouseX, int mouseY, int wheel) {
-        return false; // Default implementation: component does not handle scroll
-    }
-
-    /**
-     * 处理键盘输入事件
-     * @param typedChar 键入的字符
-     * @param keyCode 键码
-     * @return 如果组件处理了输入，则返回自身；否则返回null
-     */
-    public Component handleInput(char typedChar, int keyCode) {
-        return null; // 默认不处理键盘输入
-    }
-
+    public abstract void render(int mouseX, int mouseY, float partialTicks);
+    public abstract boolean mouseClicked(int mouseX, int mouseY, int mouseButton);
+    public abstract void mouseReleased(int mouseX, int mouseY, int mouseButton);
+    public abstract void keyTyped(char typedChar, int keyCode);
     public boolean isMouseOver(int mouseX, int mouseY) {
-        return mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
     
-    public void setWidth(int width) {
-        this.width = width;
-    }
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getWidth() { return width; }
+    public int getHeight() { return height; }
+
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+    public void setWidth(int width) { this.width = width; }
+    public void setHeight(int height) { this.height = height; }
 }

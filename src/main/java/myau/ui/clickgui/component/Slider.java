@@ -1,47 +1,39 @@
-package myau.ui.clickgui.component.impl;
+package myau.ui.clickgui.component;
 
 import myau.property.Property;
 import myau.property.properties.FloatProperty;
 import myau.property.properties.IntProperty;
 import myau.property.properties.PercentProperty;
-import myau.ui.clickgui.Frame;
-import myau.ui.clickgui.component.Component;
-import myau.util.RenderUtils;
-import myau.ui.clickgui.IntelliJTheme;
+import myau.ui.clickgui.MaterialTheme;
+import myau.util.RenderUtil;
 import net.minecraft.client.gui.Gui;
 
 import java.awt.Color;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class Slider extends Component {
 
-    // Use the raw Property type to avoid generic casting issues.
-    @SuppressWarnings("rawtypes")
-    private final Property property;
+    private final Property<?> property;
     private boolean dragging;
-    
-    // IntelliJ IDEA主题颜色
-    private static final int BACKGROUND_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SECONDARY_BACKGROUND);
-    private static final int SLIDER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.SLIDER_COLOR);
-    private static final int TYPE_VALUE_COLOR = IntelliJTheme.getRGB(IntelliJTheme.TYPE_VALUE_COLOR);
-    private static final int HOVER_COLOR = IntelliJTheme.getRGB(IntelliJTheme.HOVER_COLOR);
+    private boolean hovered;
 
-    public Slider(@SuppressWarnings("rawtypes") Property property, Frame parent, int x, int y, int width, int height) {
-        super(parent, x, y, width, height);
+    public Slider(Property<?> property, int x, int y, int width, int height) {
+        super(x, y, width, height);
         this.property = property;
         this.dragging = false;
     }
 
     @Override
-    public void render(int mouseX, int mouseY) {
-        // IntelliJ风格背景 - 检查鼠标悬停
-        boolean isMouseOver = isMouseOver(mouseX, mouseY);
-        int backgroundColor = isMouseOver ? HOVER_COLOR : BACKGROUND_COLOR;
-        
-        // 使用IntelliJ背景色
-        Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, backgroundColor);
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        render(mouseX, mouseY, partialTicks, false);
+    }
+
+    public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
+        hovered = isMouseOver(mouseX, mouseY);
+
+        // Draw background for the property name, applying rounding if it's the last component
+        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
 
         double min = 0, max = 0;
         double value = 0;
@@ -51,29 +43,30 @@ public class Slider extends Component {
             max = ((IntProperty) this.property).getMaximum();
             value = (Integer) this.property.getValue();
         } else if (this.property instanceof FloatProperty) {
-            min = ((FloatProperty) this.property).getMinimum();
+            min = ((FloatProperty) this.property).getMaximum();
             max = ((FloatProperty) this.property).getMaximum();
             value = (Float) this.property.getValue();
         } else if (this.property instanceof PercentProperty) {
-            // PercentProperty默认是0-100的范围
             min = 0;
             max = 100;
             value = (Integer) this.property.getValue();
         }
 
-        double renderWidth = (this.width) * (value - min) / (max - min);
-        // 使用IntelliJ滑块颜色
-        Gui.drawRect(this.x, this.y, this.x + (int) renderWidth, this.y + this.height, SLIDER_COLOR);
+        double fillProgress = (value - min) / (max - min);
+        int fillWidth = (int) (width * fillProgress);
 
-        String name = this.property.getName();
+        // Draw the fill layer without rounded corners
+        RenderUtil.drawRect(x, y, x + fillWidth, y + height, MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR));
+
+        // Draw property name and value
+        String name = property.getName();
         String valStr = "" + round(value, 2);
-        // 为PercentProperty添加%符号
         if (this.property instanceof PercentProperty) {
             valStr = valStr + "%";
         }
-        // IntelliJ风格文字渲染
-        RenderUtils.drawWrappedString(fr, name, this.x + 6, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, this.width - 12, TYPE_VALUE_COLOR);
-        fr.drawStringWithShadow(valStr, this.x + this.width - fr.getStringWidth(valStr) - 6, this.y + this.height / 2 - fr.FONT_HEIGHT / 2, TYPE_VALUE_COLOR);
+
+        fr.drawStringWithShadow(name, x + 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        fr.drawStringWithShadow(valStr, x + width - fr.getStringWidth(valStr) - 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
 
         if (this.dragging) {
             updateValue(mouseX);
@@ -81,17 +74,27 @@ public class Slider extends Component {
     }
 
     @Override
-    public Component mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (isMouseOver(mouseX, mouseY) && mouseButton == 0) {
             this.dragging = true;
-            return this; // This component is now dragging
+            return true;
         }
-        return null; // No drag initiated by this component
+        return false;
     }
 
     @Override
-    public void onMouseReleased(int mouseX, int mouseY, int state) {
+    public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         this.dragging = false;
+    }
+
+    @Override
+    public void keyTyped(char typedChar, int keyCode) {
+        // Not applicable
+    }
+
+    @Override
+    public boolean isMouseOver(int mouseX, int mouseY) {
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
     private void updateValue(int mouseX) {
@@ -103,7 +106,6 @@ public class Slider extends Component {
             min = ((FloatProperty) this.property).getMinimum();
             max = ((FloatProperty) this.property).getMaximum();
         } else if (this.property instanceof PercentProperty) {
-            // PercentProperty默认是0-100的范围
             min = 0;
             max = 100;
         }
