@@ -38,20 +38,27 @@ public class Frame extends Component {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
+        render(mouseX, mouseY, partialTicks, 0);
+    }
+    
+    public void render(int mouseX, int mouseY, float partialTicks, int scrollOffset) {
+        // Apply scroll offset
+        int scrolledY = y - scrollOffset;
+        
         // Render Frame header (category name)
-        boolean hovered = isMouseOver(mouseX, mouseY);
+        boolean hovered = isMouseOver(mouseX, scrolledY);
         Color headerColor = hovered ? MaterialTheme.PRIMARY_CONTAINER_COLOR.brighter() : MaterialTheme.PRIMARY_CONTAINER_COLOR;
 
         // Draw Frame header with top-left and top-right rounded corners
-        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(headerColor), true, true, false, false);
-        fr.drawStringWithShadow(category.getName(), x + 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR));
+        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(headerColor), true, true, false, false);
+        fr.drawStringWithShadow(category.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR));
 
         // Draw expansion arrow
         String arrow = expanded ? "\u25B2" : "\u25BC";
-        fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR));
+        fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR));
 
         if (expanded) {
-            int currentY = y + height;
+            int currentY = scrolledY + height;
             for (int i = 0; i < moduleEntries.size(); i++) {
                 ModuleEntry entry = moduleEntries.get(i);
                 entry.setX(x);
@@ -59,7 +66,7 @@ public class Frame extends Component {
                 entry.setWidth(width);
                 // Determine if this is the last entry in the frame to apply bottom rounded corners
                 boolean isLastEntry = (i == moduleEntries.size() - 1);
-                entry.render(mouseX, mouseY, partialTicks, isLastEntry); // Pass flag to ModuleEntry
+                entry.render(mouseX, mouseY + scrollOffset, partialTicks, isLastEntry); // Pass flag to ModuleEntry
                 currentY += entry.getTotalHeight();
             }
         }
@@ -139,5 +146,12 @@ public class Frame extends Component {
 
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
+    }
+    
+    @Override
+    public boolean isMouseOver(int mouseX, int mouseY) {
+        // Calculate scrolled Y position for mouse over detection
+        int scrolledY = this.y - ClickGuiScreen.getInstance().getScrollY();
+        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
     }
 }

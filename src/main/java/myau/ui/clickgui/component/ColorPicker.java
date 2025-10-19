@@ -1,6 +1,7 @@
 package myau.ui.clickgui.component;
 
 import myau.property.properties.ColorProperty;
+import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
 import net.minecraft.client.gui.Gui;
@@ -45,34 +46,44 @@ public class ColorPicker extends Component {
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
-        hovered = mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        // Apply scroll offset
+        int scrolledY = y - scrollOffset;
+        hovered = mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
 
         boolean shouldRoundBottom = isLast && !pickingColor;
 
-        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, shouldRoundBottom, shouldRoundBottom);
+        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, shouldRoundBottom, shouldRoundBottom);
 
-        fr.drawStringWithShadow(colorProperty.getName(), x + 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        fr.drawStringWithShadow(colorProperty.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
 
         int previewSize = 16;
         int previewX = x + width - previewSize - 5;
-        int previewY = y + (height - previewSize) / 2;
+        int previewY = scrolledY + (height - previewSize) / 2;
         RenderUtil.drawRoundedRect(previewX, previewY, previewSize, previewSize, MaterialTheme.CORNER_RADIUS_SMALL / 2, colorProperty.getValue(), true, true, true, true);
         RenderUtil.drawRoundedRectOutline(previewX, previewY, previewSize, previewSize, MaterialTheme.CORNER_RADIUS_SMALL / 2, 1.0f, MaterialTheme.getRGB(MaterialTheme.OUTLINE_COLOR), true, true, true, true);
 
         if (pickingColor) {
             int pickerX = x;
-            int pickerY = y + height;
+            int pickerY = scrolledY + height;
             int pickerWidth = width;
 
             if (Mouse.isButtonDown(0)) {
-                updateColor(mouseX, mouseY);
+                updateColor(mouseX, mouseY + scrollOffset);
             }
 
-            drawPicker(pickerX, pickerY, pickerWidth);
+            drawPicker(pickerX, pickerY, pickerWidth, scrollOffset);
         }
     }
 
-    private void drawPicker(int pickerX, int pickerY, int pickerWidth) {
+    private void drawPicker(int pickerX, int pickerY, int pickerWidth, int scrollOffset) {
         int satBriHeight = PICKER_HEIGHT - HUE_SLIDER_HEIGHT;
 
         // Draw Saturation/Brightness box
@@ -133,8 +144,17 @@ public class ColorPicker extends Component {
     }
 
     private void updateColor(int mouseX, int mouseY) {
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        int scrolledY = this.y - scrollOffset;
         int pickerX = x;
-        int pickerY = y + height;
+        int pickerY = scrolledY + height;
         int pickerWidth = width;
         int satBriHeight = PICKER_HEIGHT - HUE_SLIDER_HEIGHT;
 
@@ -223,4 +243,6 @@ public class ColorPicker extends Component {
         GL11.glEnd();
         RenderUtil.disableRenderState();
     }
+    
+
 }

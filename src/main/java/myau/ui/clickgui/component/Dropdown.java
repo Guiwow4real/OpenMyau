@@ -1,6 +1,7 @@
 package myau.ui.clickgui.component;
 
 import myau.property.properties.ModeProperty;
+import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
 import net.minecraft.client.gui.Gui;
@@ -29,30 +30,40 @@ public class Dropdown extends Component {
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
-        hovered = isMouseOver(mouseX, mouseY);
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        // Apply scroll offset
+        int scrolledY = y - scrollOffset;
+        hovered = isMouseOver(mouseX, mouseY + scrollOffset);
 
         boolean shouldRoundBottom = isLast && !expanded;
 
         // Draw background for the property name
-        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, shouldRoundBottom, shouldRoundBottom);
+        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, shouldRoundBottom, shouldRoundBottom);
 
         // Draw property name and current mode
         String displayText = modeProperty.getName() + ": " + modeProperty.getModeString();
-        fr.drawStringWithShadow(displayText, x + 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        fr.drawStringWithShadow(displayText, x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
 
         // Draw dropdown arrow
         String arrow = expanded ? "\u25B2" : "\u25BC"; // Up or Down arrow
-        fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY));
+        fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY));
 
         if (expanded) {
             List<String> modes = Arrays.asList(modeProperty.getValuePrompt().split(", "));
-            int dropdownY = y + height;
+            int dropdownY = scrolledY + height;
             int dropdownHeight = modes.size() * ITEM_HEIGHT;
 
             boolean roundBottomList = isLast;
 
             // Scissor test to prevent dropdown items from drawing outside the visible area
-            RenderUtil.scissor(x, y + height, width, dropdownHeight);
+            RenderUtil.scissor(x, scrolledY + height, width, dropdownHeight);
 
             // Draw background for the entire dropdown list (with bottom rounded corners if it's the last component)
             RenderUtil.drawRoundedRect(x, dropdownY, width, dropdownHeight, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(MaterialTheme.SURFACE_CONTAINER_LOW), false, false, roundBottomList, roundBottomList);
@@ -60,7 +71,7 @@ public class Dropdown extends Component {
             for (int i = 0; i < modes.size(); i++) {
                 String mode = modes.get(i);
                 int itemY = dropdownY + i * ITEM_HEIGHT;
-                boolean itemHovered = mouseX >= x && mouseX <= x + width && mouseY >= itemY && mouseY <= itemY + ITEM_HEIGHT;
+                boolean itemHovered = mouseX >= x && mouseX <= x + width && mouseY + scrollOffset >= itemY && mouseY + scrollOffset <= itemY + ITEM_HEIGHT;
 
                 Color itemBgColor = itemHovered ? MaterialTheme.PRIMARY_CONTAINER_COLOR : MaterialTheme.SURFACE_CONTAINER_LOW;
                 // Draw individual item background (no rounded corners)
@@ -128,10 +139,20 @@ public class Dropdown extends Component {
 
     @Override
     public boolean isMouseOver(int mouseX, int mouseY) {
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        int scrolledY = this.y - scrollOffset;
+        
         // For dropdown, consider expanded area when checking mouse over
         if (expanded) {
-            return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + getHeight();
+            return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + getHeight();
         }
-        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
     }
 }

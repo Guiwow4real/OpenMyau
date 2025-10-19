@@ -37,7 +37,6 @@ public class ClickGUIModule extends Module {
         }
         ClickGuiScreen gui = ClickGuiScreen.getInstance();
         if (gui != null) {
-            // gui.updatePositionAndSize(windowX.getValue(), windowY.getValue(), windowWidth.getValue(), windowHeight.getValue()); // Removed as there is no main window anymore
             Minecraft.getMinecraft().displayGuiScreen(gui);
         }
     }
@@ -45,8 +44,6 @@ public class ClickGUIModule extends Module {
     @Override
     public void onDisabled() {
         super.onDisabled();
-        // Removed saving window position/size logic as there is no main window anymore.
-        // Frame positions and expansion states would need to be saved individually within the Frame class or a dedicated manager.
         Minecraft.getMinecraft().displayGuiScreen(null);
         if (Minecraft.getMinecraft().currentScreen == null) {
             Minecraft.getMinecraft().setIngameFocus();

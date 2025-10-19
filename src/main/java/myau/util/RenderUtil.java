@@ -483,67 +483,62 @@ public class RenderUtil {
         RenderUtil.enableRenderState();
         RenderUtil.setColor(color);
 
-        // Ensure radius doesn't exceed half of the shortest side
         radius = Math.max(0, Math.min(radius, Math.min(width, height) / 2.0));
+        int segments = 10;
 
-        // Draw the main rectangle parts as straight segments
-        GL11.glBegin(GL11.GL_POLYGON);
+        // Central rectangles
+        drawRect((float)(x + radius), (float)y, (float)(x + width - radius), (float)(y + height), color);
+        drawRect((float)x, (float)(y + radius), (float)(x + width), (float)(y + height - radius), color);
 
-        // Top edge
-        GL11.glVertex2d(x + (roundTopLeft ? radius : 0), y);
-        GL11.glVertex2d(x + width - (roundTopRight ? radius : 0), y);
-
-        // Right edge
-        GL11.glVertex2d(x + width, y + (roundTopRight ? radius : 0));
-        GL11.glVertex2d(x + width, y + height - (roundBottomRight ? radius : 0));
-
-        // Bottom edge
-        GL11.glVertex2d(x + width - (roundBottomRight ? radius : 0), y + height);
-        GL11.glVertex2d(x + (roundBottomLeft ? radius : 0), y + height);
-
-        // Left edge
-        GL11.glVertex2d(x, y + height - (roundBottomLeft ? radius : 0));
-        GL11.glVertex2d(x, y + (roundTopLeft ? radius : 0));
-
-        GL11.glEnd();
-
-        // Draw rounded corners
-        GL11.glBegin(GL11.GL_POLYGON); // Use a new polygon for arcs to ensure proper rendering
-        int segments = 10; // Number of segments for each arc
-
-        // Top-left corner
+        // Corners
         if (roundTopLeft) {
+            GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+            GL11.glVertex2d(x + radius, y + radius);
             for (int i = 0; i <= segments; i++) {
                 double angle = Math.PI + (i * Math.PI / (2 * segments));
                 GL11.glVertex2d(x + radius + Math.cos(angle) * radius, y + radius + Math.sin(angle) * radius);
             }
+            GL11.glEnd();
+        } else {
+            drawRect((float)x, (float)y, (float)(x + radius), (float)(y + radius), color);
         }
 
-        // Top-right corner
         if (roundTopRight) {
+            GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+            GL11.glVertex2d(x + width - radius, y + radius);
             for (int i = 0; i <= segments; i++) {
-                double angle = Math.PI * 1.5 + (i * Math.PI / (2 * segments));
+                double angle = 1.5 * Math.PI + (i * Math.PI / (2 * segments));
                 GL11.glVertex2d(x + width - radius + Math.cos(angle) * radius, y + radius + Math.sin(angle) * radius);
             }
+            GL11.glEnd();
+        } else {
+            drawRect((float)(x + width - radius), (float)y, (float)(x + width), (float)(y + radius), color);
         }
 
-        // Bottom-right corner
         if (roundBottomRight) {
+            GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+            GL11.glVertex2d(x + width - radius, y + height - radius);
             for (int i = 0; i <= segments; i++) {
                 double angle = (i * Math.PI / (2 * segments));
                 GL11.glVertex2d(x + width - radius + Math.cos(angle) * radius, y + height - radius + Math.sin(angle) * radius);
             }
+            GL11.glEnd();
+        } else {
+            drawRect((float)(x + width - radius), (float)(y + height - radius), (float)(x + width), (float)(y + height), color);
         }
 
-        // Bottom-left corner
         if (roundBottomLeft) {
+            GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+            GL11.glVertex2d(x + radius, y + height - radius);
             for (int i = 0; i <= segments; i++) {
-                double angle = Math.PI * 0.5 + (i * Math.PI / (2 * segments));
+                double angle = 0.5 * Math.PI + (i * Math.PI / (2 * segments));
                 GL11.glVertex2d(x + radius + Math.cos(angle) * radius, y + height - radius + Math.sin(angle) * radius);
             }
+            GL11.glEnd();
+        } else {
+            drawRect((float)x, (float)(y + height - radius), (float)(x + radius), (float)(y + height), color);
         }
 
-        GL11.glEnd();
         RenderUtil.disableRenderState();
     }
 

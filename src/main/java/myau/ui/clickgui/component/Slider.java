@@ -4,6 +4,7 @@ import myau.property.Property;
 import myau.property.properties.FloatProperty;
 import myau.property.properties.IntProperty;
 import myau.property.properties.PercentProperty;
+import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
 import net.minecraft.client.gui.Gui;
@@ -30,10 +31,20 @@ public class Slider extends Component {
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
-        hovered = isMouseOver(mouseX, mouseY);
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        // Apply scroll offset
+        int scrolledY = y - scrollOffset;
+        hovered = isMouseOver(mouseX, mouseY + scrollOffset);
 
         // Draw background for the property name, applying rounding if it's the last component
-        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
+        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
 
         double min = 0, max = 0;
         double value = 0;
@@ -43,7 +54,7 @@ public class Slider extends Component {
             max = ((IntProperty) this.property).getMaximum();
             value = (Integer) this.property.getValue();
         } else if (this.property instanceof FloatProperty) {
-            min = ((FloatProperty) this.property).getMaximum();
+            min = ((FloatProperty) this.property).getMinimum();
             max = ((FloatProperty) this.property).getMaximum();
             value = (Float) this.property.getValue();
         } else if (this.property instanceof PercentProperty) {
@@ -52,11 +63,27 @@ public class Slider extends Component {
             value = (Integer) this.property.getValue();
         }
 
-        double fillProgress = (value - min) / (max - min);
+        double fillProgress = 0;
+        if (max - min != 0) { // Prevent division by zero
+            fillProgress = (value - min) / (max - min);
+        } else { // If min == max, progress is 1 if value == min (or max), else 0
+            fillProgress = (value == min) ? 1 : 0;
+        }
+        fillProgress = Math.max(0, Math.min(1, fillProgress)); // Clamp between 0 and 1
         int fillWidth = (int) (width * fillProgress);
 
-        // Draw the fill layer without rounded corners
-        RenderUtil.drawRect(x, y, x + fillWidth, y + height, MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR));
+        // Draw the fill layer
+        if (fillWidth > 0) {
+            if (isLast && fillWidth >= MaterialTheme.CORNER_RADIUS_SMALL) {
+                // Only draw rounded corners if fill width is sufficient and it's the last component
+                RenderUtil.drawRoundedRect(x, scrolledY, fillWidth, height, MaterialTheme.CORNER_RADIUS_SMALL, 
+                    MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR), 
+                    false, false, isLast, isLast);
+            } else {
+                // Use regular rect for non-last components or when fill is too small for rounded corners
+                Gui.drawRect(x, scrolledY, x + fillWidth, scrolledY + height, MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR));
+            }
+        }
 
         // Draw property name and value
         String name = property.getName();
@@ -65,11 +92,11 @@ public class Slider extends Component {
             valStr = valStr + "%";
         }
 
-        fr.drawStringWithShadow(name, x + 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
-        fr.drawStringWithShadow(valStr, x + width - fr.getStringWidth(valStr) - 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        fr.drawStringWithShadow(name, x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        fr.drawStringWithShadow(valStr, x + width - fr.getStringWidth(valStr) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
 
         if (this.dragging) {
-            updateValue(mouseX);
+            updateValue(mouseX, scrollOffset);
         }
     }
 
@@ -94,10 +121,19 @@ public class Slider extends Component {
 
     @Override
     public boolean isMouseOver(int mouseX, int mouseY) {
-        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        int scrolledY = this.y - scrollOffset;
+        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
     }
 
-    private void updateValue(int mouseX) {
+    private void updateValue(int mouseX, int scrollOffset) {
         double min = 0, max = 0;
         if (this.property instanceof IntProperty) {
             min = ((IntProperty) this.property).getMinimum();

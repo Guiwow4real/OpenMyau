@@ -8,6 +8,7 @@ import myau.property.properties.IntProperty;
 import myau.property.properties.FloatProperty;
 import myau.property.properties.PercentProperty;
 import myau.property.properties.ModeProperty;
+import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
 import myau.ui.clickgui.component.Switch;
@@ -69,27 +70,37 @@ public class ModuleEntry extends Component {
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLastEntry) {
-        hovered = isMouseOver(mouseX, mouseY);
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        // Apply scroll offset
+        int scrolledY = y - scrollOffset;
+        hovered = isMouseOver(mouseX, mouseY + scrollOffset);
 
         // Determine if this entry itself should have rounded bottom corners
         boolean shouldRoundBottom = isLastEntry && !expanded;
 
         // Draw background
         Color bgColor = hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW;
-        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(bgColor),
+        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(bgColor),
                 false, false, shouldRoundBottom, shouldRoundBottom); // Apply rounding if it's the last and not expanded
 
         // Module Name
-        fr.drawStringWithShadow(module.getName(), x + 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(module.isEnabled() ? MaterialTheme.PRIMARY_COLOR : MaterialTheme.TEXT_COLOR_SECONDARY));
+        fr.drawStringWithShadow(module.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(module.isEnabled() ? MaterialTheme.PRIMARY_COLOR : MaterialTheme.TEXT_COLOR_SECONDARY));
 
         // Expansion arrow (only if module has properties)
         if (!propertiesComponents.isEmpty()) {
             String arrow = expanded ? "\u25B2" : "\u25BC";
-            fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY));
+            fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY));
         }
 
         if (expanded) {
-            int currentY = y + height;
+            int currentY = scrolledY + height;
             for (int i = 0; i < propertiesComponents.size(); i++) {
                 Component comp = propertiesComponents.get(i);
                 comp.setX(x);
@@ -102,15 +113,15 @@ public class ModuleEntry extends Component {
                 // A bit of a hacky way to call render with the new parameter.
                 // Assumes all property components will have this new render method.
                 if (comp instanceof Switch) {
-                    ((Switch) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
+                    ((Switch) comp).render(mouseX, mouseY + scrollOffset, partialTicks, isLastComponent);
                 } else if (comp instanceof Slider) {
-                    ((Slider) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
+                    ((Slider) comp).render(mouseX, mouseY + scrollOffset, partialTicks, isLastComponent);
                 } else if (comp instanceof Dropdown) {
-                    ((Dropdown) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
+                    ((Dropdown) comp).render(mouseX, mouseY + scrollOffset, partialTicks, isLastComponent);
                 } else if (comp instanceof ColorPicker) {
-                    ((ColorPicker) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
+                    ((ColorPicker) comp).render(mouseX, mouseY + scrollOffset, partialTicks, isLastComponent);
                 } else {
-                    comp.render(mouseX, mouseY, partialTicks);
+                    comp.render(mouseX, mouseY + scrollOffset, partialTicks);
                 }
 
                 currentY += comp.getHeight();
@@ -182,5 +193,19 @@ public class ModuleEntry extends Component {
             }
         }
         return total;
+    }
+    
+    @Override
+    public boolean isMouseOver(int mouseX, int mouseY) {
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        int scrolledY = this.y - scrollOffset;
+        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
     }
 }

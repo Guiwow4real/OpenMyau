@@ -1,6 +1,7 @@
 package myau.ui.clickgui.component;
 
 import myau.property.properties.BooleanProperty;
+import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
 import net.minecraft.client.gui.Gui;
@@ -23,19 +24,29 @@ public class Switch extends Component {
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
-        hovered = isMouseOver(mouseX, mouseY);
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        // Apply scroll offset
+        int scrolledY = y - scrollOffset;
+        hovered = isMouseOver(mouseX, mouseY + scrollOffset);
 
         // Draw background for the property name, applying rounding if it's the last component
-        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
+        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
 
         // Draw property name
-        fr.drawStringWithShadow(booleanProperty.getName(), x + 5, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        fr.drawStringWithShadow(booleanProperty.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
 
         // Draw switch itself (Material Design 3 style)
         int switchWidth = 28;
         int switchHeight = 16;
         int switchX = x + width - switchWidth - 5;
-        int switchY = y + (height - switchHeight) / 2;
+        int switchY = scrolledY + (height - switchHeight) / 2;
 
         // Track color
         Color trackColor = booleanProperty.getValue() ? MaterialTheme.PRIMARY_COLOR.darker().darker() : MaterialTheme.SURFACE_VARIANT_COLOR;
@@ -69,6 +80,15 @@ public class Switch extends Component {
 
     @Override
     public boolean isMouseOver(int mouseX, int mouseY) {
-        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        
+        int scrolledY = this.y - scrollOffset;
+        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
     }
 }
