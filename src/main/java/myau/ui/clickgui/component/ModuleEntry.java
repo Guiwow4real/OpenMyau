@@ -62,10 +62,14 @@ public class ModuleEntry extends Component {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, false);
+        render(mouseX, mouseY, partialTicks, false, 1.0f);
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLastEntry) {
+        render(mouseX, mouseY, partialTicks, isLastEntry, 1.0f);
+    }
+
+    public void render(int mouseX, int mouseY, float partialTicks, boolean isLastEntry, float animationProgress) {
         // Get scroll offset from ClickGuiScreen
         int scrollOffset = 0;
         try {
@@ -78,47 +82,49 @@ public class ModuleEntry extends Component {
         int scrolledY = y - scrollOffset;
         hovered = isMouseOver(mouseX, mouseY);
 
+        // Animation logic
+        float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
+
+        int scaledHeight = (int) (height * easedProgress);
+        int scaledY = scrolledY + (height - scaledHeight) / 2;
+
+        if (easedProgress <= 0) return;
+
         // Determine if this entry itself should have rounded bottom corners
         boolean shouldRoundBottom = isLastEntry && !expanded;
 
         // Draw background
         Color bgColor = hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW;
-        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(bgColor),
-                false, false, shouldRoundBottom, shouldRoundBottom); // Apply rounding if it's the last and not expanded
+        RenderUtil.drawRoundedRect(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress,
+                MaterialTheme.getRGB(bgColor), false, false, shouldRoundBottom, shouldRoundBottom);
 
-        // Module Name
-        fr.drawStringWithShadow(module.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(module.isEnabled() ? MaterialTheme.PRIMARY_COLOR : MaterialTheme.TEXT_COLOR_SECONDARY));
+        // Module Name & Arrow (fade in)
+        if (easedProgress > 0.9f) {
+            int alpha = (int) (((easedProgress - 0.9f) / 0.1f) * 255);
+            alpha = Math.max(0, Math.min(255, alpha));
+            int mainColor = (alpha << 24) | (MaterialTheme.getRGB(module.isEnabled() ? MaterialTheme.PRIMARY_COLOR : MaterialTheme.TEXT_COLOR_SECONDARY) & 0x00FFFFFF);
+            int secondaryColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY) & 0x00FFFFFF);
 
-        // Expansion arrow (only if module has properties)
-        if (!propertiesComponents.isEmpty()) {
-            String arrow = expanded ? "\u25B2" : "\u25BC";
-            fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY));
+            fr.drawStringWithShadow(module.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, mainColor);
+
+            if (!propertiesComponents.isEmpty()) {
+                String arrow = expanded ? "\u25B2" : "\u25BC";
+                fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, secondaryColor);
+            }
         }
 
-        if (expanded) {
-            int currentY = y + height;
+        if (expanded && easedProgress >= 1.0f) {
+            int currentY = y + height; // Use unscrolled Y for layout
             for (int i = 0; i < propertiesComponents.size(); i++) {
                 Component comp = propertiesComponents.get(i);
                 comp.setX(x);
                 comp.setY(currentY);
                 comp.setWidth(width);
 
-                // Pass down the 'isLast' flag if this is the last property of the last module entry
                 boolean isLastComponent = isLastEntry && (i == propertiesComponents.size() - 1);
                 
-                // A bit of a hacky way to call render with the new parameter.
-                // Assumes all property components will have this new render method.
-                if (comp instanceof Switch) {
-                    ((Switch) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
-                } else if (comp instanceof Slider) {
-                    ((Slider) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
-                } else if (comp instanceof Dropdown) {
-                    ((Dropdown) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
-                } else if (comp instanceof ColorPicker) {
-                    ((ColorPicker) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
-                } else {
-                    comp.render(mouseX, mouseY, partialTicks);
-                }
+                // Pass down animation progress
+                comp.render(mouseX, mouseY, partialTicks, animationProgress, isLastComponent);
 
                 currentY += comp.getHeight();
             }

@@ -5,6 +5,7 @@ import myau.module.Category;
 import myau.module.Module;
 import myau.module.modules.ClickGUIModule;
 import myau.ui.clickgui.component.Component;
+import myau.ui.clickgui.component.SearchBar;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.ScaledResolution;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class ClickGuiScreen extends GuiScreen {
     private static ClickGuiScreen instance;
@@ -29,12 +31,23 @@ public class ClickGuiScreen extends GuiScreen {
 
     protected Minecraft mc = Minecraft.getMinecraft();
     protected FontRenderer fr = mc.fontRendererObj;
+
+    // Animation states
+    private boolean isClosing = false;
+    private long openTime = 0L;
+    private static final long ANIMATION_DURATION = 200L;
+    private static final long STAGGER_DELAY = 50L;
+
+    // Search Bar
+    private SearchBar searchBar;
+    private String searchQuery = "";
     
     public ClickGuiScreen() {
         this.frames = new ArrayList<>();
+        this.searchBar = new SearchBar(0, 10, 120, 30);
         
         int currentX = 10;
-        int currentY = 10;
+        int currentY = 50; // Move frames down to make space for search bar
         int frameWidth = 120;
         int frameHeight = 25;
         for (Category category : Category.values()) {
@@ -50,33 +63,58 @@ public class ClickGuiScreen extends GuiScreen {
         }
         return instance;
     }
-    
-    private long openAnimationTimer = 0L;
-    private static final long ANIMATION_DURATION = 200L;
-    private static final long STAGGER_DELAY = 50L;
 
     @Override
     public void initGui() {
         super.initGui();
-        this.openAnimationTimer = System.currentTimeMillis();
+        this.isClosing = false;
+        this.openTime = System.currentTimeMillis();
+        for (Frame frame : frames) {
+            frame.refilter(this.searchQuery);
+        }
+    }
+
+    public void close() {
+        if (isClosing) return;
+        this.isClosing = true;
+        this.openTime = System.currentTimeMillis(); // Reset timer for closing animation
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         updateScroll();
 
-        long elapsedTime = System.currentTimeMillis() - openAnimationTimer;
+        // Handle Search Query Change
+        String newQuery = searchBar.getText();
+        if (!newQuery.equals(this.searchQuery)) {
+            this.searchQuery = newQuery;
+            for (Frame frame : frames) {
+                frame.refilter(this.searchQuery);
+            }
+        }
 
+        long elapsedTime = System.currentTimeMillis() - openTime;
+        long totalAnimationTime = (frames.size() * STAGGER_DELAY) + ANIMATION_DURATION;
+
+        if (isClosing && elapsedTime > totalAnimationTime) {
+            mc.displayGuiScreen(null);
+            return;
+        }
+
+        // Animate SearchBar
+        float searchBarProgress = Math.min(1.0f, (float) elapsedTime / (float) ANIMATION_DURATION);
+        searchBar.render(mouseX, mouseY, partialTicks, isClosing ? 1.0f - searchBarProgress : searchBarProgress);
+
+        // Animate Frames
         for (int i = 0; i < frames.size(); i++) {
-            Frame frame = frames.get(i);
-            long startTime = i * STAGGER_DELAY;
+            int frameIndex = isClosing ? (frames.size() - 1 - i) : i;
+            Frame frame = frames.get(frameIndex);
+            long startTime = i * STAGGER_DELAY + 50; // Add a small delay so it starts after the search bar
 
             if (elapsedTime >= startTime) {
                 long animationElapsedTime = elapsedTime - startTime;
                 float progress = Math.min(1.0f, (float) animationElapsedTime / (float) ANIMATION_DURATION);
-                frame.render(mouseX, mouseY, partialTicks, scrollY, progress);
-            } else {
-                // Don't render the frame until its start time is reached
+                frame.render(mouseX, mouseY, partialTicks, scrollY, isClosing ? 1.0f - progress : progress);
             }
         }
 
@@ -101,6 +139,7 @@ public class ClickGuiScreen extends GuiScreen {
     
     @Override
     public void handleMouseInput() throws IOException {
+        if (isClosing) return;
         super.handleMouseInput();
         
         int wheel = Mouse.getEventDWheel();
@@ -111,7 +150,10 @@ public class ClickGuiScreen extends GuiScreen {
     
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        if (isClosing) return;
         super.mouseClicked(mouseX, mouseY, mouseButton);
+
+        if (searchBar.mouseClicked(mouseX, mouseY, mouseButton)) return;
         
         for (Frame frame : frames) {
             if (frame.mouseClicked(mouseX, mouseY, mouseButton)) {
@@ -123,6 +165,7 @@ public class ClickGuiScreen extends GuiScreen {
         
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
+        if (isClosing) return;
         super.mouseReleased(mouseX, mouseY, state);
         
         if (draggingComponent != null) {
@@ -137,6 +180,7 @@ public class ClickGuiScreen extends GuiScreen {
     
     @Override
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+        if (isClosing) return;
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
         
         if (draggingComponent != null) {
@@ -148,7 +192,22 @@ public class ClickGuiScreen extends GuiScreen {
     
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
+        if (isClosing) return;
+
+        if (System.currentTimeMillis() - this.openTime < 100) {
+            return;
+        }
+
+        if (searchBar.isFocused()) {
+            searchBar.keyTyped(typedChar, keyCode);
+            return;
+        }
+
+        Module clickGUIModule = Myau.moduleManager.getModule("ClickGUI");
+        if (keyCode == Keyboard.KEY_ESCAPE || (clickGUIModule != null && keyCode == clickGUIModule.getKey())) {
+            close();
+            return;
+        }
         
         for (Frame frame : frames) {
             frame.keyTyped(typedChar, keyCode);

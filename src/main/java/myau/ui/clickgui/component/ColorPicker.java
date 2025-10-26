@@ -42,10 +42,20 @@ public class ColorPicker extends Component {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, false);
+        render(mouseX, mouseY, partialTicks, 1.0f, false);
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
+        render(mouseX, mouseY, partialTicks, 1.0f, isLast);
+    }
+
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+        // Animation
+        float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
+        if (easedProgress <= 0) return;
+
+        int scaledHeight = (int) (height * easedProgress);
+
         // Get scroll offset from ClickGuiScreen
         int scrollOffset = 0;
         try {
@@ -54,23 +64,32 @@ public class ColorPicker extends Component {
             // Ignore if we can't get scroll offset
         }
         
-        // Apply scroll offset
         int scrolledY = y - scrollOffset;
+        int scaledY = scrolledY + (height - scaledHeight) / 2;
+
         hovered = mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
 
         boolean shouldRoundBottom = isLast && !pickingColor;
 
-        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, shouldRoundBottom, shouldRoundBottom);
+        RenderUtil.drawRoundedRect(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, shouldRoundBottom, shouldRoundBottom);
 
-        fr.drawStringWithShadow(colorProperty.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        if (easedProgress > 0.9f) {
+            int alpha = (int) (((easedProgress - 0.9f) / 0.1f) * 255);
+            alpha = Math.max(0, Math.min(255, alpha));
+            int textColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR) & 0x00FFFFFF);
+            int colorValue = (alpha << 24) | (colorProperty.getValue() & 0x00FFFFFF);
+            int outlineColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.OUTLINE_COLOR) & 0x00FFFFFF);
 
-        int previewSize = 16;
-        int previewX = x + width - previewSize - 5;
-        int previewY = scrolledY + (height - previewSize) / 2;
-        RenderUtil.drawRoundedRect(previewX, previewY, previewSize, previewSize, MaterialTheme.CORNER_RADIUS_SMALL / 2, colorProperty.getValue(), true, true, true, true);
-        RenderUtil.drawRoundedRectOutline(previewX, previewY, previewSize, previewSize, MaterialTheme.CORNER_RADIUS_SMALL / 2, 1.0f, MaterialTheme.getRGB(MaterialTheme.OUTLINE_COLOR), true, true, true, true);
+            fr.drawStringWithShadow(colorProperty.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
 
-        if (pickingColor) {
+            int previewSize = 16;
+            int previewX = x + width - previewSize - 5;
+            int previewY = scrolledY + (height - previewSize) / 2;
+            RenderUtil.drawRoundedRect(previewX, previewY, previewSize, previewSize, MaterialTheme.CORNER_RADIUS_SMALL / 2, colorValue, true, true, true, true);
+            RenderUtil.drawRoundedRectOutline(previewX, previewY, previewSize, previewSize, MaterialTheme.CORNER_RADIUS_SMALL / 2, 1.0f, outlineColor, true, true, true, true);
+        }
+
+        if (pickingColor && easedProgress >= 1.0f) {
             int pickerX = x;
             int pickerY = scrolledY + height;
             int pickerWidth = width;

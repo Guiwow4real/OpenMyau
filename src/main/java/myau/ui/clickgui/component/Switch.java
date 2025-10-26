@@ -19,10 +19,20 @@ public class Switch extends Component {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, false);
+        render(mouseX, mouseY, partialTicks, 1.0f, false);
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
+        render(mouseX, mouseY, partialTicks, 1.0f, isLast);
+    }
+
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+        // Animation
+        float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
+        if (easedProgress <= 0) return;
+
+        int scaledHeight = (int) (height * easedProgress);
+
         // Get scroll offset from ClickGuiScreen
         int scrollOffset = 0;
         try {
@@ -31,31 +41,38 @@ public class Switch extends Component {
             // Ignore if we can't get scroll offset
         }
         
-        // Apply scroll offset
         int scrolledY = y - scrollOffset;
+        int scaledY = scrolledY + (height - scaledHeight) / 2;
+
         hovered = isMouseOver(mouseX, mouseY);
 
-        // Draw background for the property name, applying rounding if it's the last component
-        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
+        // Draw background
+        RenderUtil.drawRoundedRect(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
 
-        // Draw property name
-        fr.drawStringWithShadow(booleanProperty.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        if (easedProgress > 0.9f) {
+            int alpha = (int) (((easedProgress - 0.9f) / 0.1f) * 255);
+            alpha = Math.max(0, Math.min(255, alpha));
+            int textColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR) & 0x00FFFFFF);
 
-        // Draw switch itself (Material Design 3 style)
-        int switchWidth = 28;
-        int switchHeight = 16;
-        int switchX = x + width - switchWidth - 5;
-        int switchY = scrolledY + (height - switchHeight) / 2;
+            // Draw property name
+            fr.drawStringWithShadow(booleanProperty.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
 
-        // Track color
-        Color trackColor = booleanProperty.getValue() ? MaterialTheme.PRIMARY_COLOR.darker().darker() : MaterialTheme.SURFACE_VARIANT_COLOR;
-        RenderUtil.drawRoundedRect(switchX, switchY + switchHeight / 4, switchWidth, switchHeight / 2, switchHeight / 4, MaterialTheme.getRGB(trackColor), true, true, true, true);
+            // Draw switch itself
+            int switchWidth = 28;
+            int switchHeight = 16;
+            int switchX = x + width - switchWidth - 5;
+            int switchY = scrolledY + (height - switchHeight) / 2;
 
-        // Thumb color
-        Color thumbColor = booleanProperty.getValue() ? MaterialTheme.PRIMARY_COLOR : MaterialTheme.ON_PRIMARY_COLOR;
-        int thumbSize = switchHeight;
-        int thumbX = booleanProperty.getValue() ? switchX + switchWidth - thumbSize : switchX;
-        RenderUtil.drawRoundedRect(thumbX, switchY, thumbSize, thumbSize, thumbSize / 2, MaterialTheme.getRGB(thumbColor), true, true, true, true);
+            Color trackColor = booleanProperty.getValue() ? MaterialTheme.PRIMARY_COLOR.darker().darker() : MaterialTheme.SURFACE_VARIANT_COLOR;
+            int trackColorRgb = (alpha << 24) | (MaterialTheme.getRGB(trackColor) & 0x00FFFFFF);
+            RenderUtil.drawRoundedRect(switchX, switchY + switchHeight / 4, switchWidth, switchHeight / 2, switchHeight / 4, trackColorRgb, true, true, true, true);
+
+            Color thumbColor = booleanProperty.getValue() ? MaterialTheme.PRIMARY_COLOR : MaterialTheme.ON_PRIMARY_COLOR;
+            int thumbColorRgb = (alpha << 24) | (MaterialTheme.getRGB(thumbColor) & 0x00FFFFFF);
+            int thumbSize = switchHeight;
+            int thumbX = booleanProperty.getValue() ? switchX + switchWidth - thumbSize : switchX;
+            RenderUtil.drawRoundedRect(thumbX, switchY, thumbSize, thumbSize, thumbSize / 2, thumbColorRgb, true, true, true, true);
+        }
     }
 
     @Override

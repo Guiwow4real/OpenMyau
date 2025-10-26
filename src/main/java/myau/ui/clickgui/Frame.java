@@ -9,6 +9,7 @@ import myau.util.RenderUtil;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Frame extends Component {
 
@@ -16,7 +17,8 @@ public class Frame extends Component {
     private final Category category;
     private boolean dragging;
     private boolean expanded;
-    private final ArrayList<ModuleEntry> moduleEntries;
+    private final ArrayList<ModuleEntry> moduleEntries; // The master list of all modules
+    private ArrayList<ModuleEntry> visibleEntries; // The list of modules to display after filtering
 
     public Frame(Category category, int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -29,6 +31,17 @@ public class Frame extends Component {
             for (Module module : Myau.moduleManager.getModulesInCategory(this.category)) {
                 this.moduleEntries.add(new ModuleEntry(module, x, 0, width, 20));
             }
+        }
+        this.visibleEntries = new ArrayList<>(this.moduleEntries);
+    }
+
+    public void refilter(String query) {
+        if (query == null || query.isEmpty()) {
+            this.visibleEntries = new ArrayList<>(this.moduleEntries);
+        } else {
+            this.visibleEntries = this.moduleEntries.stream()
+                .filter(entry -> entry.getModule().getName().toLowerCase().contains(query.toLowerCase()))
+                .collect(Collectors.toCollection(ArrayList::new));
         }
     }
 
@@ -59,9 +72,7 @@ public class Frame extends Component {
 
         RenderUtil.drawRoundedRect(scaledX, scaledY, scaledWidth, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, MaterialTheme.getRGB(headerColor), true, true, false, false);
         
-        // Only render text and contents if the animation is mostly complete to avoid visual clutter
         if (easedProgress > 0.95f) {
-            // Fade in text
             int alpha = (int) (((easedProgress - 0.95f) / 0.05f) * 255);
             alpha = Math.max(0, Math.min(255, alpha));
             int textColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR) & 0x00FFFFFF);
@@ -72,17 +83,16 @@ public class Frame extends Component {
             fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
         }
 
-        // Only render module entries if animation is fully complete
-        if (expanded && easedProgress >= 1.0f) {
+        if (expanded && easedProgress > 0) {
             int currentWorldY = y + height;
-            for (int i = 0; i < moduleEntries.size(); i++) {
-                ModuleEntry entry = moduleEntries.get(i);
+            for (int i = 0; i < visibleEntries.size(); i++) {
+                ModuleEntry entry = visibleEntries.get(i);
                 entry.setX(x);
                 entry.setY(currentWorldY);
                 entry.setWidth(width);
                 
-                boolean isLastEntry = (i == moduleEntries.size() - 1);
-                entry.render(mouseX, mouseY, partialTicks, isLastEntry);
+                boolean isLastEntry = (i == visibleEntries.size() - 1);
+                entry.render(mouseX, mouseY, partialTicks, isLastEntry, animationProgress);
                 currentWorldY += entry.getTotalHeight();
             }
         }
@@ -103,7 +113,7 @@ public class Frame extends Component {
         }
 
         if (expanded) {
-            for (ModuleEntry entry : moduleEntries) {
+            for (ModuleEntry entry : visibleEntries) {
                 if (entry.mouseClicked(mouseX, mouseY, mouseButton)) {
                     return true;
                 }
@@ -116,7 +126,7 @@ public class Frame extends Component {
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         this.dragging = false;
         if (expanded) {
-            for (ModuleEntry entry : moduleEntries) {
+            for (ModuleEntry entry : visibleEntries) {
                 entry.mouseReleased(mouseX, mouseY, mouseButton);
             }
         }
@@ -125,7 +135,7 @@ public class Frame extends Component {
     @Override
     public void keyTyped(char typedChar, int keyCode) {
         if (expanded) {
-            for (ModuleEntry entry : moduleEntries) {
+            for (ModuleEntry entry : visibleEntries) {
                 entry.keyTyped(typedChar, keyCode);
             }
         }
@@ -149,7 +159,7 @@ public class Frame extends Component {
     public int getTotalHeight() {
         int total = height;
         if (expanded) {
-            for (ModuleEntry entry : moduleEntries) {
+            for (ModuleEntry entry : visibleEntries) {
                 total += entry.getTotalHeight();
             }
         }

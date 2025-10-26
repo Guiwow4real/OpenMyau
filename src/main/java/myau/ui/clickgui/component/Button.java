@@ -20,13 +20,30 @@ public class Button extends Component {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
+        render(mouseX, mouseY, partialTicks, 1.0f, true);
+    }
+
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+        // Animation
+        float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
+        if (easedProgress <= 0) return;
+
+        int scaledHeight = (int) (height * easedProgress);
+        int scaledY = y + (height - scaledHeight) / 2;
+
         hovered = isMouseOver(mouseX, mouseY);
 
         Color bgColor = hovered ? MaterialTheme.PRIMARY_COLOR.brighter() : MaterialTheme.PRIMARY_COLOR;
         Color textColor = MaterialTheme.ON_PRIMARY_COLOR;
 
-        RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(bgColor), true, true, true, true);
-        fr.drawStringWithShadow(text, x + (width - fr.getStringWidth(text)) / 2, y + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(textColor));
+        RenderUtil.drawRoundedRect(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, MaterialTheme.getRGB(bgColor), true, true, true, true);
+        
+        if (easedProgress > 0.9f) {
+            int alpha = (int) (((easedProgress - 0.9f) / 0.1f) * 255);
+            alpha = Math.max(0, Math.min(255, alpha));
+            int textColorRgb = (alpha << 24) | (MaterialTheme.getRGB(textColor) & 0x00FFFFFF);
+            fr.drawStringWithShadow(text, x + (width - fr.getStringWidth(text)) / 2, y + (height - fr.FONT_HEIGHT) / 2, textColorRgb);
+        }
     }
 
     @Override

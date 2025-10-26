@@ -26,10 +26,20 @@ public class Slider extends Component {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, false);
+        render(mouseX, mouseY, partialTicks, 1.0f, false);
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
+        render(mouseX, mouseY, partialTicks, 1.0f, isLast);
+    }
+
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+        // Animation
+        float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
+        if (easedProgress <= 0) return;
+
+        int scaledHeight = (int) (height * easedProgress);
+
         // Get scroll offset from ClickGuiScreen
         int scrollOffset = 0;
         try {
@@ -38,11 +48,12 @@ public class Slider extends Component {
             // Ignore if we can't get scroll offset
         }
         
-        // Apply scroll offset
         int scrolledY = y - scrollOffset;
+        int scaledY = scrolledY + (height - scaledHeight) / 2;
+
         hovered = isMouseOver(mouseX, mouseY);
 
-        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
+        RenderUtil.drawRoundedRect(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
 
         double min = 0, max = 0;
         double value = 0;
@@ -72,22 +83,28 @@ public class Slider extends Component {
 
         if (fillWidth > 0) {
             if (isLast && fillWidth >= MaterialTheme.CORNER_RADIUS_SMALL) {
-                RenderUtil.drawRoundedRect(x, scrolledY, fillWidth, height, MaterialTheme.CORNER_RADIUS_SMALL, 
+                RenderUtil.drawRoundedRect(x, scaledY, fillWidth, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, 
                     MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR), 
                     false, false, isLast, isLast);
             } else {
-                Gui.drawRect(x, scrolledY, x + fillWidth, scrolledY + height, MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR));
+                Gui.drawRect(x, scaledY, x + fillWidth, scaledY + scaledHeight, MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR));
             }
         }
 
-        String name = property.getName();
-        String valStr = "" + round(value, 2);
-        if (this.property instanceof PercentProperty) {
-            valStr = valStr + "%";
-        }
+        if (easedProgress > 0.9f) {
+            int alpha = (int) (((easedProgress - 0.9f) / 0.1f) * 255);
+            alpha = Math.max(0, Math.min(255, alpha));
+            int textColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR) & 0x00FFFFFF);
 
-        fr.drawStringWithShadow(name, x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
-        fr.drawStringWithShadow(valStr, x + width - fr.getStringWidth(valStr) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+            String name = property.getName();
+            String valStr = "" + round(value, 2);
+            if (this.property instanceof PercentProperty) {
+                valStr = valStr + "%";
+            }
+
+            fr.drawStringWithShadow(name, x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+            fr.drawStringWithShadow(valStr, x + width - fr.getStringWidth(valStr) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+        }
 
         if (this.dragging) {
             updateValue(mouseX);

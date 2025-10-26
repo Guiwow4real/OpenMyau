@@ -17,6 +17,17 @@ public abstract class Component {
     }
 
     public abstract void render(int mouseX, int mouseY, float partialTicks);
+
+    // Overloaded render method for animations. Components can override this to animate.
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress) {
+        render(mouseX, mouseY, partialTicks);
+    }
+
+    // Overloaded render method for animations and corner rounding. Components can override this.
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+        render(mouseX, mouseY, partialTicks, animationProgress);
+    }
+
     public abstract boolean mouseClicked(int mouseX, int mouseY, int mouseButton);
     public abstract void mouseReleased(int mouseX, int mouseY, int mouseButton);
     public abstract void keyTyped(char typedChar, int keyCode);

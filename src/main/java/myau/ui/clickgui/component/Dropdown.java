@@ -25,10 +25,20 @@ public class Dropdown extends Component {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, false);
+        render(mouseX, mouseY, partialTicks, 1.0f, false);
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
+        render(mouseX, mouseY, partialTicks, 1.0f, isLast);
+    }
+
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+        // Animation
+        float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
+        if (easedProgress <= 0) return;
+
+        int scaledHeight = (int) (height * easedProgress);
+
         // Get scroll offset from ClickGuiScreen
         int scrollOffset = 0;
         try {
@@ -37,34 +47,40 @@ public class Dropdown extends Component {
             // Ignore if we can't get scroll offset
         }
         
-        // Apply scroll offset
         int scrolledY = y - scrollOffset;
+        int scaledY = scrolledY + (height - scaledHeight) / 2;
+
         hovered = isMouseOver(mouseX, mouseY);
 
         boolean shouldRoundBottom = isLast && !expanded;
 
         // Draw background for the property name
-        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, shouldRoundBottom, shouldRoundBottom);
+        RenderUtil.drawRoundedRect(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, shouldRoundBottom, shouldRoundBottom);
 
-        // Draw property name and current mode
-        String displayText = modeProperty.getName() + ": " + modeProperty.getModeString();
-        fr.drawStringWithShadow(displayText, x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+        if (easedProgress > 0.9f) {
+            int alpha = (int) (((easedProgress - 0.9f) / 0.1f) * 255);
+            alpha = Math.max(0, Math.min(255, alpha));
+            int textColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR) & 0x00FFFFFF);
+            int secondaryColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY) & 0x00FFFFFF);
 
-        // Draw dropdown arrow
-        String arrow = expanded ? "\u25B2" : "\u25BC"; // Up or Down arrow
-        fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY));
+            // Draw property name and current mode
+            String displayText = modeProperty.getName() + ": " + modeProperty.getModeString();
+            fr.drawStringWithShadow(displayText, x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
 
-        if (expanded) {
+            // Draw dropdown arrow
+            String arrow = expanded ? "\u25B2" : "\u25BC"; // Up or Down arrow
+            fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, secondaryColor);
+        }
+
+        if (expanded && easedProgress >= 1.0f) {
             List<String> modes = Arrays.asList(modeProperty.getValuePrompt().split(", "));
             int dropdownY = scrolledY + height;
             int dropdownHeight = modes.size() * ITEM_HEIGHT;
 
             boolean roundBottomList = isLast;
 
-            // Scissor test to prevent dropdown items from drawing outside the visible area
             RenderUtil.scissor(x, scrolledY + height, width, dropdownHeight);
 
-            // Draw background for the entire dropdown list (with bottom rounded corners if it's the last component)
             RenderUtil.drawRoundedRect(x, dropdownY, width, dropdownHeight, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(MaterialTheme.SURFACE_CONTAINER_LOW), false, false, roundBottomList, roundBottomList);
 
             for (int i = 0; i < modes.size(); i++) {
@@ -73,12 +89,11 @@ public class Dropdown extends Component {
                 boolean itemHovered = mouseX >= x && mouseX <= x + width && mouseY >= itemY && mouseY <= itemY + ITEM_HEIGHT;
 
                 Color itemBgColor = itemHovered ? MaterialTheme.PRIMARY_CONTAINER_COLOR : MaterialTheme.SURFACE_CONTAINER_LOW;
-                // Draw individual item background (no rounded corners)
                 RenderUtil.drawRoundedRect(x, itemY, width, ITEM_HEIGHT, 0, MaterialTheme.getRGB(itemBgColor), false, false, false, false);
 
                 fr.drawStringWithShadow(mode, x + 10, itemY + (ITEM_HEIGHT - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
             }
-            RenderUtil.releaseScissor(); // Release scissor test
+            RenderUtil.releaseScissor();
         }
     }
 
