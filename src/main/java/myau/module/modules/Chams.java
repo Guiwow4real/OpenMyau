@@ -81,6 +81,8 @@ public class Chams extends Module {
                     case POST:
                         GL11.glPolygonOffset(1.0F, 2500000.0F);
                         GL11.glDisable(32823);
+                    default:
+                        break;
                 }
             }
         }

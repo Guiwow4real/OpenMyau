@@ -9,7 +9,6 @@ import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
 import net.minecraft.client.gui.Gui;
 
-import java.awt.Color;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -41,9 +40,8 @@ public class Slider extends Component {
         
         // Apply scroll offset
         int scrolledY = y - scrollOffset;
-        hovered = isMouseOver(mouseX, mouseY + scrollOffset);
+        hovered = isMouseOver(mouseX, mouseY);
 
-        // Draw background for the property name, applying rounding if it's the last component
         RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
 
         double min = 0, max = 0;
@@ -64,28 +62,24 @@ public class Slider extends Component {
         }
 
         double fillProgress = 0;
-        if (max - min != 0) { // Prevent division by zero
+        if (max - min != 0) {
             fillProgress = (value - min) / (max - min);
-        } else { // If min == max, progress is 1 if value == min (or max), else 0
+        } else {
             fillProgress = (value == min) ? 1 : 0;
         }
-        fillProgress = Math.max(0, Math.min(1, fillProgress)); // Clamp between 0 and 1
+        fillProgress = Math.max(0, Math.min(1, fillProgress));
         int fillWidth = (int) (width * fillProgress);
 
-        // Draw the fill layer
         if (fillWidth > 0) {
             if (isLast && fillWidth >= MaterialTheme.CORNER_RADIUS_SMALL) {
-                // Only draw rounded corners if fill width is sufficient and it's the last component
                 RenderUtil.drawRoundedRect(x, scrolledY, fillWidth, height, MaterialTheme.CORNER_RADIUS_SMALL, 
                     MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR), 
                     false, false, isLast, isLast);
             } else {
-                // Use regular rect for non-last components or when fill is too small for rounded corners
                 Gui.drawRect(x, scrolledY, x + fillWidth, scrolledY + height, MaterialTheme.getRGB(MaterialTheme.PRIMARY_CONTAINER_COLOR));
             }
         }
 
-        // Draw property name and value
         String name = property.getName();
         String valStr = "" + round(value, 2);
         if (this.property instanceof PercentProperty) {
@@ -96,7 +90,7 @@ public class Slider extends Component {
         fr.drawStringWithShadow(valStr, x + width - fr.getStringWidth(valStr) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
 
         if (this.dragging) {
-            updateValue(mouseX, scrollOffset);
+            updateValue(mouseX);
         }
     }
 
@@ -116,7 +110,6 @@ public class Slider extends Component {
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
-        // Not applicable
     }
 
     @Override
@@ -130,10 +123,10 @@ public class Slider extends Component {
         }
         
         int scrolledY = this.y - scrollOffset;
-        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY < scrolledY + height;
     }
 
-    private void updateValue(int mouseX, int scrollOffset) {
+    private void updateValue(int mouseX) {
         double min = 0, max = 0;
         if (this.property instanceof IntProperty) {
             min = ((IntProperty) this.property).getMinimum();
@@ -150,11 +143,11 @@ public class Slider extends Component {
         double value = min + (max - min) * percent;
 
         if (this.property instanceof IntProperty) {
-            this.property.setValue((int) Math.round(value));
+            this.property.setValue((int) round(value, 0));
         } else if (this.property instanceof FloatProperty) {
-            this.property.setValue((float) value);
+            this.property.setValue((float) round(value, 2));
         } else if (this.property instanceof PercentProperty) {
-            this.property.setValue((int) Math.round(value));
+            this.property.setValue((int) round(value, 0));
         }
     }
 

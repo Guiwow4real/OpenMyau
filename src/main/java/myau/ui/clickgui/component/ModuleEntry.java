@@ -11,10 +11,6 @@ import myau.property.properties.ModeProperty;
 import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
-import myau.ui.clickgui.component.Switch;
-import myau.ui.clickgui.component.Slider;
-import myau.ui.clickgui.component.Dropdown;
-import net.minecraft.client.gui.Gui;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -80,7 +76,7 @@ public class ModuleEntry extends Component {
         
         // Apply scroll offset
         int scrolledY = y - scrollOffset;
-        hovered = isMouseOver(mouseX, mouseY + scrollOffset);
+        hovered = isMouseOver(mouseX, mouseY);
 
         // Determine if this entry itself should have rounded bottom corners
         boolean shouldRoundBottom = isLastEntry && !expanded;
@@ -100,7 +96,7 @@ public class ModuleEntry extends Component {
         }
 
         if (expanded) {
-            int currentY = scrolledY + height;
+            int currentY = y + height;
             for (int i = 0; i < propertiesComponents.size(); i++) {
                 Component comp = propertiesComponents.get(i);
                 comp.setX(x);
@@ -113,15 +109,15 @@ public class ModuleEntry extends Component {
                 // A bit of a hacky way to call render with the new parameter.
                 // Assumes all property components will have this new render method.
                 if (comp instanceof Switch) {
-                    ((Switch) comp).render(mouseX, mouseY + scrollOffset, partialTicks, isLastComponent);
+                    ((Switch) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
                 } else if (comp instanceof Slider) {
-                    ((Slider) comp).render(mouseX, mouseY + scrollOffset, partialTicks, isLastComponent);
+                    ((Slider) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
                 } else if (comp instanceof Dropdown) {
-                    ((Dropdown) comp).render(mouseX, mouseY + scrollOffset, partialTicks, isLastComponent);
+                    ((Dropdown) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
                 } else if (comp instanceof ColorPicker) {
-                    ((ColorPicker) comp).render(mouseX, mouseY + scrollOffset, partialTicks, isLastComponent);
+                    ((ColorPicker) comp).render(mouseX, mouseY, partialTicks, isLastComponent);
                 } else {
-                    comp.render(mouseX, mouseY + scrollOffset, partialTicks);
+                    comp.render(mouseX, mouseY, partialTicks);
                 }
 
                 currentY += comp.getHeight();
@@ -131,8 +127,17 @@ public class ModuleEntry extends Component {
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        // Get scroll offset from ClickGuiScreen
+        int scrollOffset = 0;
+        try {
+            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
+        } catch (Exception e) {
+            // Ignore if we can't get scroll offset
+        }
+        int scrolledY = y - scrollOffset;
+
         // Check if click is on the module entry header (where module name and arrow are)
-        if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
+        if (mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height) {
             if (mouseButton == 0) { // Left click: toggle module enable/disable state
                 module.toggle();
                 return true;
@@ -206,6 +211,6 @@ public class ModuleEntry extends Component {
         }
         
         int scrolledY = this.y - scrollOffset;
-        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY < scrolledY + height;
     }
 }

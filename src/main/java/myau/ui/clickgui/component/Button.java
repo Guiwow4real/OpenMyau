@@ -2,7 +2,6 @@ package myau.ui.clickgui.component;
 
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
-import net.minecraft.client.gui.Gui;
 
 import java.awt.Color;
 

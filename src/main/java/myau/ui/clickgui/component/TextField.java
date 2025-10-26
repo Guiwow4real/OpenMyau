@@ -27,7 +27,7 @@ public class TextField extends Component {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        boolean hovered = isMouseOver(mouseX, mouseY);
+        //boolean hovered = isMouseOver(mouseX, mouseY);
 
         // Background
         RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(MaterialTheme.SURFACE_CONTAINER_LOW), true, true, true, true);

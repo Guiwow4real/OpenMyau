@@ -4,7 +4,6 @@ import myau.property.properties.ModeProperty;
 import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
-import net.minecraft.client.gui.Gui;
 
 import java.awt.Color;
 import java.util.Arrays;
@@ -40,7 +39,7 @@ public class Dropdown extends Component {
         
         // Apply scroll offset
         int scrolledY = y - scrollOffset;
-        hovered = isMouseOver(mouseX, mouseY + scrollOffset);
+        hovered = isMouseOver(mouseX, mouseY);
 
         boolean shouldRoundBottom = isLast && !expanded;
 
@@ -71,7 +70,7 @@ public class Dropdown extends Component {
             for (int i = 0; i < modes.size(); i++) {
                 String mode = modes.get(i);
                 int itemY = dropdownY + i * ITEM_HEIGHT;
-                boolean itemHovered = mouseX >= x && mouseX <= x + width && mouseY + scrollOffset >= itemY && mouseY + scrollOffset <= itemY + ITEM_HEIGHT;
+                boolean itemHovered = mouseX >= x && mouseX <= x + width && mouseY >= itemY && mouseY <= itemY + ITEM_HEIGHT;
 
                 Color itemBgColor = itemHovered ? MaterialTheme.PRIMARY_CONTAINER_COLOR : MaterialTheme.SURFACE_CONTAINER_LOW;
                 // Draw individual item background (no rounded corners)
@@ -139,20 +138,10 @@ public class Dropdown extends Component {
 
     @Override
     public boolean isMouseOver(int mouseX, int mouseY) {
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
-        
-        int scrolledY = this.y - scrollOffset;
-        
         // For dropdown, consider expanded area when checking mouse over
         if (expanded) {
-            return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + getHeight();
+            return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + getHeight();
         }
-        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 }

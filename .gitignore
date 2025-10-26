@@ -22,3 +22,6 @@ configs/
 OpenMyau-return.zip
 start.bat
 runClient.py
+bin/main/myau/*
+bin/main/mixins.myau.json
+bin/main/mcmod.info

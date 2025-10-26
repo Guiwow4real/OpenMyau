@@ -4,7 +4,6 @@ import myau.property.properties.BooleanProperty;
 import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
-import net.minecraft.client.gui.Gui;
 
 import java.awt.Color;
 
@@ -34,7 +33,7 @@ public class Switch extends Component {
         
         // Apply scroll offset
         int scrolledY = y - scrollOffset;
-        hovered = isMouseOver(mouseX, mouseY + scrollOffset);
+        hovered = isMouseOver(mouseX, mouseY);
 
         // Draw background for the property name, applying rounding if it's the last component
         RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW), false, false, isLast, isLast);
@@ -80,15 +79,6 @@ public class Switch extends Component {
 
     @Override
     public boolean isMouseOver(int mouseX, int mouseY) {
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
-        
-        int scrolledY = this.y - scrollOffset;
-        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 }

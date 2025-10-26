@@ -6,9 +6,6 @@ import myau.module.Module;
 import myau.ui.clickgui.component.Component;
 import myau.ui.clickgui.component.ModuleEntry;
 import myau.util.RenderUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,49 +22,68 @@ public class Frame extends Component {
         super(x, y, width, height);
         this.category = category;
         this.dragging = false;
-        this.expanded = true; // By default, categories are expanded
+        this.expanded = true;
         this.moduleEntries = new ArrayList<>();
 
-        // Populate module entries
         if (Myau.moduleManager != null) {
             for (Module module : Myau.moduleManager.getModulesInCategory(this.category)) {
-                this.moduleEntries.add(new ModuleEntry(module, x, 0, width, 20)); // Y will be set during render
+                this.moduleEntries.add(new ModuleEntry(module, x, 0, width, 20));
             }
         }
     }
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, 0);
+        render(mouseX, mouseY, partialTicks, 0, 1.0f);
     }
     
     public void render(int mouseX, int mouseY, float partialTicks, int scrollOffset) {
-        // Apply scroll offset
+        render(mouseX, mouseY, partialTicks, scrollOffset, 1.0f);
+    }
+
+    public void render(int mouseX, int mouseY, float partialTicks, int scrollOffset, float animationProgress) {
+        // Ease-out quint function for smooth animation
+        float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
+
+        int scaledWidth = (int) (width * easedProgress);
+        int scaledHeight = (int) (height * easedProgress);
+
+        int scaledX = x + (width - scaledWidth) / 2;
         int scrolledY = y - scrollOffset;
-        
-        // Render Frame header (category name)
-        boolean hovered = isMouseOver(mouseX, scrolledY);
+        int scaledY = scrolledY + (height - scaledHeight) / 2;
+
+        if (easedProgress <= 0) return; // Don't render if invisible
+
+        boolean hovered = isMouseOver(mouseX, mouseY);
         Color headerColor = hovered ? MaterialTheme.PRIMARY_CONTAINER_COLOR.brighter() : MaterialTheme.PRIMARY_CONTAINER_COLOR;
 
-        // Draw Frame header with top-left and top-right rounded corners
-        RenderUtil.drawRoundedRect(x, scrolledY, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(headerColor), true, true, false, false);
-        fr.drawStringWithShadow(category.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR));
+        RenderUtil.drawRoundedRect(scaledX, scaledY, scaledWidth, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, MaterialTheme.getRGB(headerColor), true, true, false, false);
+        
+        // Only render text and contents if the animation is mostly complete to avoid visual clutter
+        if (easedProgress > 0.95f) {
+            // Fade in text
+            int alpha = (int) (((easedProgress - 0.95f) / 0.05f) * 255);
+            alpha = Math.max(0, Math.min(255, alpha));
+            int textColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR) & 0x00FFFFFF);
 
-        // Draw expansion arrow
-        String arrow = expanded ? "\u25B2" : "\u25BC";
-        fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR));
+            fr.drawStringWithShadow(category.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
 
-        if (expanded) {
-            int currentY = scrolledY + height;
+            String arrow = expanded ? "\u25B2" : "\u25BC";
+            fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+        }
+
+        // Only render module entries if animation is fully complete
+        if (expanded && easedProgress >= 1.0f) {
+            int currentWorldY = y + height;
             for (int i = 0; i < moduleEntries.size(); i++) {
                 ModuleEntry entry = moduleEntries.get(i);
                 entry.setX(x);
-                entry.setY(currentY);
+                entry.setY(currentWorldY);
                 entry.setWidth(width);
-                // Determine if this is the last entry in the frame to apply bottom rounded corners
+                
                 boolean isLastEntry = (i == moduleEntries.size() - 1);
-                entry.render(mouseX, mouseY + scrollOffset, partialTicks, isLastEntry); // Pass flag to ModuleEntry
-                currentY += entry.getTotalHeight();
+                entry.render(mouseX, mouseY, partialTicks, isLastEntry);
+                currentWorldY += entry.getTotalHeight();
             }
         }
     }
@@ -75,12 +91,12 @@ public class Frame extends Component {
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (isMouseOver(mouseX, mouseY)) {
-            if (mouseButton == 0) { // Left click: drag frame or interact with modules
+            if (mouseButton == 0) {
                 this.dragging = true;
                 this.dragX = mouseX - this.x;
                 this.dragY = mouseY - this.y;
                 return true;
-            } else if (mouseButton == 1) { // Right click: toggle expansion
+            } else if (mouseButton == 1) {
                 expanded = !expanded;
                 return true;
             }
@@ -150,8 +166,6 @@ public class Frame extends Component {
     
     @Override
     public boolean isMouseOver(int mouseX, int mouseY) {
-        // Calculate scrolled Y position for mouse over detection
-        int scrolledY = this.y - ClickGuiScreen.getInstance().getScrollY();
-        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= this.y && mouseY < this.y + height;
     }
 }
