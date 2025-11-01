@@ -31,43 +31,34 @@ public class TextField extends Component {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, 1.0f, true);
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
+        int scrolledY = y - scrollOffset;
+        RenderUtil.drawRect(x, scrolledY, width, height, 0xFF000000); // Black background
+        RenderUtil.getFontRenderer().drawStringWithShadow(this.text, x + 2, scrolledY + 2, 0xFFFFFFFF); // White text
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
-        // Animation
-        float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
-        if (easedProgress <= 0) return;
-
-        int scaledHeight = (int) (height * easedProgress);
-        int scaledY = y + (height - scaledHeight) / 2;
-
         if (this.drawBackground) {
             // Background
-            RenderUtil.drawRoundedRect(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, MaterialTheme.getRGB(MaterialTheme.SURFACE_CONTAINER_LOW), true, true, true, true);
+            RenderUtil.drawRoundedRect(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(MaterialTheme.SURFACE_CONTAINER_LOW), true, true, true, true);
             // Border
             Color borderColor = focused ? MaterialTheme.PRIMARY_COLOR : MaterialTheme.OUTLINE_COLOR;
-            RenderUtil.drawRoundedRectOutline(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress, 1.0f, MaterialTheme.getRGB(borderColor), true, true, true, true);
+            RenderUtil.drawRoundedRectOutline(x, y, width, height, MaterialTheme.CORNER_RADIUS_SMALL, 1.0f, MaterialTheme.getRGB(borderColor), true, true, true, true);
         }
 
-        if (easedProgress > 0.9f) {
-            int alpha = (int) (((easedProgress - 0.9f) / 0.1f) * 255);
-            alpha = Math.max(0, Math.min(255, alpha));
-            int textColorValue = text.isEmpty() && !focused ? MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY) : MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR);
-            int textColor = (alpha << 24) | (textColorValue & 0x00FFFFFF);
+        int textColorValue = text.isEmpty() && !focused ? MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY) : MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR);
+        int textColor = (0xFF << 24) | (textColorValue & 0x00FFFFFF); // Ensure full alpha
 
-            // Text
-            String displayedText = text.isEmpty() && !focused ? hintText : text;
-            fr.drawStringWithShadow(displayedText, x + 5, y + (height - fr.FONT_HEIGHT) / 2, textColor);
+        // Text
+        String displayedText = text.isEmpty() && !focused ? hintText : text;
+        RenderUtil.getFontRenderer().drawStringWithShadow(displayedText, x + 5, y + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, textColor);
 
-            // Cursor
-            if (focused && System.currentTimeMillis() - lastCursorToggle > 500) {
-                if (System.currentTimeMillis() % 1000 < 500) { // Blink every 500ms
-                    String currentTextUntilCursor = text.substring(0, cursorPosition);
-                    int cursorX = x + 5 + fr.getStringWidth(currentTextUntilCursor);
-                    Gui.drawRect(cursorX, y + (height - fr.FONT_HEIGHT) / 2 - 1, cursorX + 1, y + (height + fr.FONT_HEIGHT) / 2 + 1, textColor);
-                }
+        // Cursor
+        if (focused && System.currentTimeMillis() - lastCursorToggle > 500) {
+            if (System.currentTimeMillis() % 1000 < 500) { // Blink every 500ms
+                String currentTextUntilCursor = text.substring(0, cursorPosition);
+                int cursorX = x + 5 + RenderUtil.getFontRenderer().getStringWidth(currentTextUntilCursor);
+                Gui.drawRect(cursorX, y + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2 - 1, cursorX + 1, y + (height + RenderUtil.getFontRenderer().getFontHeight()) / 2 + 1, textColor);
             }
         }
     }

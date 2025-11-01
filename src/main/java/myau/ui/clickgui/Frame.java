@@ -46,15 +46,7 @@ public class Frame extends Component {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, 0, 1.0f);
-    }
-    
-    public void render(int mouseX, int mouseY, float partialTicks, int scrollOffset) {
-        render(mouseX, mouseY, partialTicks, scrollOffset, 1.0f);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, int scrollOffset, float animationProgress) {
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
         // Ease-out quint function for smooth animation
         float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
 
@@ -77,14 +69,14 @@ public class Frame extends Component {
             alpha = Math.max(0, Math.min(255, alpha));
             int textColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.ON_PRIMARY_CONTAINER_COLOR) & 0x00FFFFFF);
 
-            fr.drawStringWithShadow(category.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(category.getName(), x + 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, textColor);
 
             String arrow = expanded ? "\u25B2" : "\u25BC";
-            fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(arrow, x + width - RenderUtil.getFontRenderer().getStringWidth(arrow) - 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, textColor);
         }
 
         if (expanded && easedProgress > 0) {
-            int currentWorldY = y + height;
+            int currentWorldY = y + height; // Use world-space Y for layout
             for (int i = 0; i < visibleEntries.size(); i++) {
                 ModuleEntry entry = visibleEntries.get(i);
                 entry.setX(x);
@@ -92,7 +84,8 @@ public class Frame extends Component {
                 entry.setWidth(width);
                 
                 boolean isLastEntry = (i == visibleEntries.size() - 1);
-                entry.render(mouseX, mouseY, partialTicks, isLastEntry, animationProgress);
+                // Pass world-space mouse coords and the scroll offset to the child
+                entry.render(mouseX, mouseY + scrollOffset, partialTicks, animationProgress, isLastEntry, scrollOffset);
                 currentWorldY += entry.getTotalHeight();
             }
         }

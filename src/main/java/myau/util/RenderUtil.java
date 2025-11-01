@@ -1,5 +1,8 @@
 package myau.util;
 
+import myau.font.IFontRenderer;
+import myau.font.MinecraftFontRendererWrapper;
+import myau.Myau;
 import myau.enums.ChatColors;
 import myau.mixin.IAccessorEntityRenderer;
 import myau.mixin.IAccessorMinecraft;
@@ -49,6 +52,10 @@ public class RenderUtil {
         RenderUtil.projectionBuffer = GLAllocation.createDirectFloatBuffer(16);
         RenderUtil.vectorBuffer = GLAllocation.createDirectFloatBuffer(4);
         RenderUtil.enchantmentMap = new EnchantmentMap();
+    }
+
+    public static IFontRenderer getFontRenderer() {
+        return Myau.fontManager.getFontRenderer();
     }
 
     private static ChatColors getColorForLevel(int currentLevel, int maxLevel) {

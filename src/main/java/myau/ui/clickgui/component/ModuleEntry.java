@@ -8,7 +8,6 @@ import myau.property.properties.IntProperty;
 import myau.property.properties.FloatProperty;
 import myau.property.properties.PercentProperty;
 import myau.property.properties.ModeProperty;
-import myau.ui.clickgui.ClickGuiScreen;
 import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
 
@@ -49,11 +48,10 @@ public class ModuleEntry extends Component {
                         comp = new ColorPicker((myau.property.properties.ColorProperty) property, x, currentY, width, 50); // ColorPicker might need more height
                         compHeight = 50;
                     }
-                    // Add more property types as needed
                     
                     if (comp != null) {
                         propertiesComponents.add(comp);
-                        currentY += compHeight; // Increment currentY based on component height
+                        currentY += compHeight;
                     }
                 }
             }
@@ -61,71 +59,46 @@ public class ModuleEntry extends Component {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, false, 1.0f);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, boolean isLastEntry) {
-        render(mouseX, mouseY, partialTicks, isLastEntry, 1.0f);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, boolean isLastEntry, float animationProgress) {
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
-        
-        // Apply scroll offset
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
         int scrolledY = y - scrollOffset;
         hovered = isMouseOver(mouseX, mouseY);
 
-        // Animation logic
         float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
-
         int scaledHeight = (int) (height * easedProgress);
         int scaledY = scrolledY + (height - scaledHeight) / 2;
 
         if (easedProgress <= 0) return;
 
-        // Determine if this entry itself should have rounded bottom corners
-        boolean shouldRoundBottom = isLastEntry && !expanded;
+        boolean shouldRoundBottom = isLast && !expanded;
 
-        // Draw background
         Color bgColor = hovered ? MaterialTheme.SURFACE_CONTAINER_HIGH : MaterialTheme.SURFACE_CONTAINER_LOW;
         RenderUtil.drawRoundedRect(x, scaledY, width, scaledHeight, MaterialTheme.CORNER_RADIUS_SMALL * easedProgress,
                 MaterialTheme.getRGB(bgColor), false, false, shouldRoundBottom, shouldRoundBottom);
 
-        // Module Name & Arrow (fade in)
         if (easedProgress > 0.9f) {
             int alpha = (int) (((easedProgress - 0.9f) / 0.1f) * 255);
             alpha = Math.max(0, Math.min(255, alpha));
             int mainColor = (alpha << 24) | (MaterialTheme.getRGB(module.isEnabled() ? MaterialTheme.PRIMARY_COLOR : MaterialTheme.TEXT_COLOR_SECONDARY) & 0x00FFFFFF);
             int secondaryColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR_SECONDARY) & 0x00FFFFFF);
 
-            fr.drawStringWithShadow(module.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, mainColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(module.getName(), x + 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, mainColor);
 
             if (!propertiesComponents.isEmpty()) {
                 String arrow = expanded ? "\u25B2" : "\u25BC";
-                fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, secondaryColor);
+                RenderUtil.getFontRenderer().drawStringWithShadow(arrow, x + width - RenderUtil.getFontRenderer().getStringWidth(arrow) - 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, secondaryColor);
             }
         }
 
         if (expanded && easedProgress >= 1.0f) {
-            int currentY = y + height; // Use unscrolled Y for layout
+            int currentY = y + height;
             for (int i = 0; i < propertiesComponents.size(); i++) {
                 Component comp = propertiesComponents.get(i);
                 comp.setX(x);
                 comp.setY(currentY);
                 comp.setWidth(width);
 
-                boolean isLastComponent = isLastEntry && (i == propertiesComponents.size() - 1);
-                
-                // Pass down animation progress
-                comp.render(mouseX, mouseY, partialTicks, animationProgress, isLastComponent);
-
+                boolean isLastComponent = isLast && (i == propertiesComponents.size() - 1);
+                comp.render(mouseX, mouseY, partialTicks, animationProgress, isLastComponent, scrollOffset);
                 currentY += comp.getHeight();
             }
         }
@@ -133,21 +106,11 @@ public class ModuleEntry extends Component {
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
-        int scrolledY = y - scrollOffset;
-
-        // Check if click is on the module entry header (where module name and arrow are)
-        if (mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height) {
-            if (mouseButton == 0) { // Left click: toggle module enable/disable state
+        if (isMouseOver(mouseX, mouseY)) {
+            if (mouseButton == 0) {
                 module.toggle();
                 return true;
-            } else if (mouseButton == 1) { // Right click: toggle expansion if properties exist
+            } else if (mouseButton == 1) {
                 if (!propertiesComponents.isEmpty()) {
                     expanded = !expanded;
                 }
@@ -155,7 +118,6 @@ public class ModuleEntry extends Component {
             }
         }
 
-        // If expanded, pass click to properties components
         if (expanded) {
             for (Component comp : propertiesComponents) {
                 if (comp.mouseClicked(mouseX, mouseY, mouseButton)) {
@@ -208,15 +170,6 @@ public class ModuleEntry extends Component {
     
     @Override
     public boolean isMouseOver(int mouseX, int mouseY) {
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
-        
-        int scrolledY = this.y - scrollOffset;
-        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY < scrolledY + height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY < y + height;
     }
 }

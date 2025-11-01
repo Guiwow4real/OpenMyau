@@ -4,11 +4,14 @@ import myau.ui.clickgui.MaterialTheme;
 import myau.util.RenderUtil;
 import net.minecraft.client.gui.ScaledResolution;
 
+import java.awt.Color;
+
 public class SearchBar extends Component {
 
     private final TextField textField;
     private boolean focused = false;
     private long focusTime = 0;
+    private static final long FOCUS_ANIMATION_DURATION = 200L; // ms for the click animation
 
     public SearchBar(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -16,42 +19,57 @@ public class SearchBar extends Component {
         this.textField.setDrawBackground(false); // Disable the inner background
     }
 
+    public void updatePosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.textField.setY(y + (this.height - this.textField.getHeight()) / 2);
+    }
+
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         render(mouseX, mouseY, partialTicks, 1.0f);
     }
 
-    public void render(int mouseX, int mouseY, float partialTicks, float openCloseProgress) {
-        // Main open/close animation
-        float openCloseEased = 1.0f - (float) Math.pow(1.0f - openCloseProgress, 4);
-        if (openCloseEased <= 0) return;
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
+        // Opening animation (eased)
+        float openProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
+        if (openProgress <= 0) return;
 
-        // Dynamic Island-like width animation on focus
-        float focusProgress = focused ? Math.min(1.0f, (System.currentTimeMillis() - focusTime) / 200.0f) : Math.max(0.0f, 1.0f - (System.currentTimeMillis() - focusTime) / 200.0f);
-        float focusEased = 1.0f - (float) Math.pow(1.0f - focusProgress, 3);
+        // Click/Focus animation (eased)
+        long focusElapsedTime = System.currentTimeMillis() - focusTime;
+        float focusProgress = Math.min(1.0f, (float) focusElapsedTime / (float) FOCUS_ANIMATION_DURATION);
+        float easedFocusProgress = 1.0f - (float) Math.pow(1.0f - focusProgress, 3);
 
-        ScaledResolution sr = new ScaledResolution(mc);
-        int screenWidth = sr.getScaledWidth();
-        int baseWidth = 120;
-        int focusedWidth = 240;
-        int currentWidth = (int) (baseWidth + (focusedWidth - baseWidth) * focusEased);
+        // Determine scale based on focus state and animation progress
+        float scale;
+        if (this.focused) {
+            scale = 1.0f + 0.05f * easedFocusProgress; // Scale up to 105%
+        } else {
+            scale = 1.05f - 0.05f * easedFocusProgress; // Scale back down from 105%
+        }
 
-        this.x = (screenWidth - currentWidth) / 2;
-        this.width = currentWidth;
+        float animatedWidth = this.width * openProgress * scale;
+        float animatedHeight = this.height * scale;
 
-        int scaledHeight = (int) (this.height * openCloseEased);
-        int scaledY = this.y + (this.height - scaledHeight) / 2;
+        // Center the expanding and scaling bar
+        float currentX = this.x + (this.width - animatedWidth) / 2.0f;
+        float currentY = this.y + (this.height - animatedHeight) / 2.0f;
 
-        this.textField.x = this.x + 10;
-        this.textField.y = this.y + (this.height - (this.textField.height)) / 2; // Center textfield vertically
-        this.textField.width = this.width - 20;
+        // Background
+        RenderUtil.drawRoundedRect(currentX, currentY, animatedWidth, animatedHeight, MaterialTheme.CORNER_RADIUS_SMALL, MaterialTheme.getRGB(MaterialTheme.SURFACE_CONTAINER_LOW), true, true, true, true);
+        
+        // Border - only show when focused to guide the user
+        if (this.focused) {
+            RenderUtil.drawRoundedRectOutline(currentX, currentY, animatedWidth, animatedHeight, MaterialTheme.CORNER_RADIUS_SMALL, 1.0f, MaterialTheme.getRGB(MaterialTheme.PRIMARY_COLOR), true, true, true, true);
+        }
 
-        // Render background
-        RenderUtil.drawRoundedRect(this.x, scaledY, this.width, scaledHeight, scaledHeight / 2.0f, MaterialTheme.getRGB(MaterialTheme.SURFACE_CONTAINER_HIGH), true, true, true, true);
-
-        // Render text field (only if animation is mostly complete)
-        if (openCloseEased > 0.9f) {
-            textField.render(mouseX, mouseY, partialTicks);
+        // Render the text field only when the bar is almost fully expanded
+        if (openProgress > 0.9f) {
+            // Adjust text field position to be inside the animated bar
+            this.textField.setX((int)(currentX + 5 * scale));
+            this.textField.setWidth((int)(animatedWidth - 10 * scale));
+            this.textField.render(mouseX, mouseY, partialTicks, 1.0f, isLast, scrollOffset);
         }
     }
 

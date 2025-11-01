@@ -25,28 +25,12 @@ public class Slider extends Component {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, 1.0f, false);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
-        render(mouseX, mouseY, partialTicks, 1.0f, isLast);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
         // Animation
         float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
         if (easedProgress <= 0) return;
 
         int scaledHeight = (int) (height * easedProgress);
-
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
         
         int scrolledY = y - scrollOffset;
         int scaledY = scrolledY + (height - scaledHeight) / 2;
@@ -102,8 +86,8 @@ public class Slider extends Component {
                 valStr = valStr + "%";
             }
 
-            fr.drawStringWithShadow(name, x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
-            fr.drawStringWithShadow(valStr, x + width - fr.getStringWidth(valStr) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(name, x + 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, textColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(valStr, x + width - RenderUtil.getFontRenderer().getStringWidth(valStr) - 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, textColor);
         }
 
         if (this.dragging) {
@@ -112,35 +96,8 @@ public class Slider extends Component {
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (isMouseOver(mouseX, mouseY) && mouseButton == 0) {
-            this.dragging = true;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
-        this.dragging = false;
-    }
-
-    @Override
-    public void keyTyped(char typedChar, int keyCode) {
-    }
-
-    @Override
     public boolean isMouseOver(int mouseX, int mouseY) {
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
-        
-        int scrolledY = this.y - scrollOffset;
-        return mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY < scrolledY + height;
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY < y + height;
     }
 
     private void updateValue(int mouseX) {
@@ -173,5 +130,24 @@ public class Slider extends Component {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    @Override
+    public void keyTyped(char typedChar, int keyCode) {
+        // Not needed for this component
+    }
+
+    @Override
+    public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+        this.dragging = false;
+    }
+
+    @Override
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        if (isMouseOver(mouseX, mouseY) && mouseButton == 0) {
+            this.dragging = true;
+            return true;
+        }
+        return false;
     }
 }

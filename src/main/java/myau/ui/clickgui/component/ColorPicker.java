@@ -41,33 +41,17 @@ public class ColorPicker extends Component {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, 1.0f, false);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
-        render(mouseX, mouseY, partialTicks, 1.0f, isLast);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
         // Animation
         float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
         if (easedProgress <= 0) return;
 
         int scaledHeight = (int) (height * easedProgress);
-
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
         
         int scrolledY = y - scrollOffset;
         int scaledY = scrolledY + (height - scaledHeight) / 2;
 
-        hovered = mouseX >= x && mouseX <= x + width && mouseY >= scrolledY && mouseY <= scrolledY + height;
+        hovered = mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
 
         boolean shouldRoundBottom = isLast && !pickingColor;
 
@@ -80,7 +64,7 @@ public class ColorPicker extends Component {
             int colorValue = (alpha << 24) | (colorProperty.getValue() & 0x00FFFFFF);
             int outlineColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.OUTLINE_COLOR) & 0x00FFFFFF);
 
-            fr.drawStringWithShadow(colorProperty.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(colorProperty.getName(), x + 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, textColor);
 
             int previewSize = 16;
             int previewX = x + width - previewSize - 5;
@@ -95,7 +79,7 @@ public class ColorPicker extends Component {
             int pickerWidth = width;
 
             if (Mouse.isButtonDown(0)) {
-                updateColor(mouseX, mouseY + scrollOffset);
+                updateColor(mouseX, mouseY); // Pass world-space mouse coords
             }
 
             drawPicker(pickerX, pickerY, pickerWidth, scrollOffset);
@@ -163,17 +147,8 @@ public class ColorPicker extends Component {
     }
 
     private void updateColor(int mouseX, int mouseY) {
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
-        
-        int scrolledY = this.y - scrollOffset;
         int pickerX = x;
-        int pickerY = scrolledY + height;
+        int pickerY = y + height; // Use world-space Y
         int pickerWidth = width;
         int satBriHeight = PICKER_HEIGHT - HUE_SLIDER_HEIGHT;
 

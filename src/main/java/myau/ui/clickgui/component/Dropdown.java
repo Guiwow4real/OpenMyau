@@ -24,33 +24,17 @@ public class Dropdown extends Component {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, 1.0f, false);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
-        render(mouseX, mouseY, partialTicks, 1.0f, isLast);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
         // Animation
         float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
         if (easedProgress <= 0) return;
 
         int scaledHeight = (int) (height * easedProgress);
-
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
         
         int scrolledY = y - scrollOffset;
         int scaledY = scrolledY + (height - scaledHeight) / 2;
 
-        hovered = isMouseOver(mouseX, mouseY);
+        hovered = mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
 
         boolean shouldRoundBottom = isLast && !expanded;
 
@@ -65,11 +49,11 @@ public class Dropdown extends Component {
 
             // Draw property name and current mode
             String displayText = modeProperty.getName() + ": " + modeProperty.getModeString();
-            fr.drawStringWithShadow(displayText, x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(displayText, x + 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, textColor);
 
             // Draw dropdown arrow
             String arrow = expanded ? "\u25B2" : "\u25BC"; // Up or Down arrow
-            fr.drawStringWithShadow(arrow, x + width - fr.getStringWidth(arrow) - 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, secondaryColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(arrow, x + width - RenderUtil.getFontRenderer().getStringWidth(arrow) - 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, secondaryColor);
         }
 
         if (expanded && easedProgress >= 1.0f) {
@@ -86,12 +70,13 @@ public class Dropdown extends Component {
             for (int i = 0; i < modes.size(); i++) {
                 String mode = modes.get(i);
                 int itemY = dropdownY + i * ITEM_HEIGHT;
-                boolean itemHovered = mouseX >= x && mouseX <= x + width && mouseY >= itemY && mouseY <= itemY + ITEM_HEIGHT;
+                // Use world-space mouse coords for hover check
+                boolean itemHovered = mouseX >= x && mouseX <= x + width && mouseY >= (y + height + i * ITEM_HEIGHT) && mouseY <= (y + height + (i + 1) * ITEM_HEIGHT);
 
                 Color itemBgColor = itemHovered ? MaterialTheme.PRIMARY_CONTAINER_COLOR : MaterialTheme.SURFACE_CONTAINER_LOW;
                 RenderUtil.drawRoundedRect(x, itemY, width, ITEM_HEIGHT, 0, MaterialTheme.getRGB(itemBgColor), false, false, false, false);
 
-                fr.drawStringWithShadow(mode, x + 10, itemY + (ITEM_HEIGHT - fr.FONT_HEIGHT) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
+                RenderUtil.getFontRenderer().drawStringWithShadow(mode, x + 10, itemY + (ITEM_HEIGHT - RenderUtil.getFontRenderer().getFontHeight()) / 2, MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR));
             }
             RenderUtil.releaseScissor();
         }

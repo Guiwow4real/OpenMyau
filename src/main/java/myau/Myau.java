@@ -10,6 +10,7 @@ import myau.module.ModuleManager;
 import myau.module.modules.*;
 import myau.property.Property;
 import myau.property.PropertyManager;
+import myau.font.FontManager; // Import FontManager
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Myau {
     public static PropertyManager propertyManager;
     public static ModuleManager moduleManager;
     public static CommandManager commandManager;
+    public static FontManager fontManager; // Declare FontManager
 
     public Myau() {
         this.init();
@@ -44,6 +46,7 @@ public class Myau {
         propertyManager = new PropertyManager();
         moduleManager = new ModuleManager();
         commandManager = new CommandManager();
+        fontManager = new FontManager(); // Initialize FontManager
         EventManager.register(rotationManager);
         EventManager.register(floatManager);
         EventManager.register(blinkManager);

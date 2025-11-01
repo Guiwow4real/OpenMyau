@@ -19,8 +19,12 @@ public class Button extends Component {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, 1.0f, true);
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
+        int scrolledY = y - scrollOffset;
+        boolean hovered = isMouseOver(mouseX, mouseY);
+        int color = hovered ? 0xFF777777 : 0xFF555555;
+        RenderUtil.drawRect(x, scrolledY, width, height, color);
+        fr.drawStringWithShadow(this.text, x + (width - fr.getStringWidth(this.text)) / 2, scrolledY + (height - fr.FONT_HEIGHT) / 2, 0xFFFFFFFF);
     }
 
     public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {

@@ -18,28 +18,12 @@ public class Switch extends Component {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        render(mouseX, mouseY, partialTicks, 1.0f, false);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, boolean isLast) {
-        render(mouseX, mouseY, partialTicks, 1.0f, isLast);
-    }
-
-    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
+    public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset) {
         // Animation
         float easedProgress = 1.0f - (float) Math.pow(1.0f - animationProgress, 4);
         if (easedProgress <= 0) return;
 
         int scaledHeight = (int) (height * easedProgress);
-
-        // Get scroll offset from ClickGuiScreen
-        int scrollOffset = 0;
-        try {
-            scrollOffset = ClickGuiScreen.getInstance().getScrollY();
-        } catch (Exception e) {
-            // Ignore if we can't get scroll offset
-        }
         
         int scrolledY = y - scrollOffset;
         int scaledY = scrolledY + (height - scaledHeight) / 2;
@@ -55,7 +39,7 @@ public class Switch extends Component {
             int textColor = (alpha << 24) | (MaterialTheme.getRGB(MaterialTheme.TEXT_COLOR) & 0x00FFFFFF);
 
             // Draw property name
-            fr.drawStringWithShadow(booleanProperty.getName(), x + 5, scrolledY + (height - fr.FONT_HEIGHT) / 2, textColor);
+            RenderUtil.getFontRenderer().drawStringWithShadow(booleanProperty.getName(), x + 5, scrolledY + (height - RenderUtil.getFontRenderer().getFontHeight()) / 2, textColor);
 
             // Draw switch itself
             int switchWidth = 28;
@@ -76,12 +60,13 @@ public class Switch extends Component {
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (isMouseOver(mouseX, mouseY) && mouseButton == 0) {
-            booleanProperty.setValue(!booleanProperty.getValue());
-            return true;
-        }
-        return false;
+    public boolean isMouseOver(int mouseX, int mouseY) {
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+    }
+
+    @Override
+    public void keyTyped(char typedChar, int keyCode) {
+        // Not needed for this component
     }
 
     @Override
@@ -90,12 +75,11 @@ public class Switch extends Component {
     }
 
     @Override
-    public void keyTyped(char typedChar, int keyCode) {
-        // Not applicable
-    }
-
-    @Override
-    public boolean isMouseOver(int mouseX, int mouseY) {
-        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        if (isMouseOver(mouseX, mouseY) && mouseButton == 0) {
+            booleanProperty.setValue(!booleanProperty.getValue());
+            return true;
+        }
+        return false;
     }
 }

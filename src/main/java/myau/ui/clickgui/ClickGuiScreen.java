@@ -30,7 +30,6 @@ public class ClickGuiScreen extends GuiScreen {
     private static final double SNAP_STRENGTH = 0.15;
 
     protected Minecraft mc = Minecraft.getMinecraft();
-    protected FontRenderer fr = mc.fontRendererObj;
 
     // Animation states
     private boolean isClosing = false;
@@ -44,10 +43,11 @@ public class ClickGuiScreen extends GuiScreen {
     
     public ClickGuiScreen() {
         this.frames = new ArrayList<>();
-        this.searchBar = new SearchBar(0, 10, 120, 30);
+        // Initialize SearchBar at a temporary position; it will be centered in drawScreen
+        this.searchBar = new SearchBar(0, 10, 120, 20); // Reduced height for a sleeker look
         
         int currentX = 10;
-        int currentY = 50; // Move frames down to make space for search bar
+        int currentY = 40; // Move frames down to make space for the centered search bar
         int frameWidth = 120;
         int frameHeight = 25;
         for (Category category : Category.values()) {
@@ -101,11 +101,7 @@ public class ClickGuiScreen extends GuiScreen {
             return;
         }
 
-        // Animate SearchBar
-        float searchBarProgress = Math.min(1.0f, (float) elapsedTime / (float) ANIMATION_DURATION);
-        searchBar.render(mouseX, mouseY, partialTicks, isClosing ? 1.0f - searchBarProgress : searchBarProgress);
-
-        // Animate Frames
+        // Animate Frames first to ensure they are in the background
         for (int i = 0; i < frames.size(); i++) {
             int frameIndex = isClosing ? (frames.size() - 1 - i) : i;
             Frame frame = frames.get(frameIndex);
@@ -114,9 +110,15 @@ public class ClickGuiScreen extends GuiScreen {
             if (elapsedTime >= startTime) {
                 long animationElapsedTime = elapsedTime - startTime;
                 float progress = Math.min(1.0f, (float) animationElapsedTime / (float) ANIMATION_DURATION);
-                frame.render(mouseX, mouseY, partialTicks, scrollY, isClosing ? 1.0f - progress : progress);
+                frame.render(mouseX, mouseY, partialTicks, isClosing ? 1.0f - progress : progress, false, scrollY);
             }
         }
+
+        // Center and animate SearchBar on top
+        ScaledResolution sr = new ScaledResolution(mc);
+        searchBar.updatePosition(sr.getScaledWidth() / 2 - searchBar.getWidth() / 2, searchBar.getY());
+        float searchBarProgress = Math.min(1.0f, (float) elapsedTime / (float) ANIMATION_DURATION);
+        searchBar.render(mouseX, mouseY, partialTicks, isClosing ? 1.0f - searchBarProgress : searchBarProgress);
 
         // InvWalk implementation
         try {
@@ -156,7 +158,7 @@ public class ClickGuiScreen extends GuiScreen {
         if (searchBar.mouseClicked(mouseX, mouseY, mouseButton)) return;
         
         for (Frame frame : frames) {
-            if (frame.mouseClicked(mouseX, mouseY, mouseButton)) {
+            if (frame.mouseClicked(mouseX, mouseY + scrollY, mouseButton)) {
                 draggingComponent = frame;
                 return;
             }
@@ -169,12 +171,12 @@ public class ClickGuiScreen extends GuiScreen {
         super.mouseReleased(mouseX, mouseY, state);
         
         if (draggingComponent != null) {
-            draggingComponent.mouseReleased(mouseX, mouseY, state);
+            draggingComponent.mouseReleased(mouseX, mouseY + scrollY, state);
             draggingComponent = null;
         }
 
         for (Frame frame : frames) {
-            frame.mouseReleased(mouseX, mouseY, state);
+            frame.mouseReleased(mouseX, mouseY + scrollY, state);
         }
     }
     

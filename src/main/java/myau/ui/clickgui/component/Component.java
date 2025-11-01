@@ -16,16 +16,20 @@ public abstract class Component {
         this.height = height;
     }
 
-    public abstract void render(int mouseX, int mouseY, float partialTicks);
+    public abstract void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast, int scrollOffset);
+
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        render(mouseX, mouseY, partialTicks, 1.0f, false, 0);
+    }
 
     // Overloaded render method for animations. Components can override this to animate.
     public void render(int mouseX, int mouseY, float partialTicks, float animationProgress) {
-        render(mouseX, mouseY, partialTicks);
+        render(mouseX, mouseY, partialTicks, animationProgress, false, 0);
     }
 
     // Overloaded render method for animations and corner rounding. Components can override this.
     public void render(int mouseX, int mouseY, float partialTicks, float animationProgress, boolean isLast) {
-        render(mouseX, mouseY, partialTicks, animationProgress);
+        render(mouseX, mouseY, partialTicks, animationProgress, isLast, 0);
     }
 
     public abstract boolean mouseClicked(int mouseX, int mouseY, int mouseButton);
