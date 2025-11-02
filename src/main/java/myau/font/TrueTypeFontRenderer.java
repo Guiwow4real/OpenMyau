@@ -89,10 +89,10 @@ public class TrueTypeFontRenderer implements IFontRenderer {
         }
 
         fontTexture = new DynamicTexture(bufferedImage); // Store DynamicTexture directly
-        // Apply linear filtering for smoother font rendering
+        // Apply nearest filtering for sharper font rendering
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTexture.getGlTextureId());
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0); // Unbind texture
     }
 
